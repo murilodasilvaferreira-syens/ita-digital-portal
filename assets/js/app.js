@@ -29,12 +29,17 @@ function lerHash() {
     .map((s) => FASE_POR_SLUG.get(s.trim()))
     .filter(Boolean);
 
+  // `i` só vale se for id inteiro: sem isso um `#i=abc` vira NaN e volta para a
+  // URL como `i=NaN` na primeira escrita seguinte, e fica grudado ali.
+  const idBruto = Number(params.get('i'));
+  const aberta = params.get('i') && Number.isInteger(idBruto) ? idBruto : null;
+
   return {
     fases: new Set(fases),
     projeto: params.get('projeto') || '',
     tech: params.get('tech') || '',
     busca: params.get('q') || '',
-    aberta: params.get('i') ? Number(params.get('i')) : null,
+    aberta,
     resumo: params.get('raia') || '',
   };
 }
@@ -138,12 +143,17 @@ async function iniciar() {
   /* ---- cabeçalho --------------------------------------------------------- */
 
   document.title = `${area ? area.name : site.allAreasLabel} · ${site.portalTitle} · ${site.plantName}`;
-  $('#portal-nome').textContent = [site.portalTitle, site.plantName].filter(Boolean).join(' · ');
   $('#area-nome').textContent = area ? area.name : site.allAreasLabel;
+
   const descricao = area ? area.description : site.allAreasDescription;
   const nodeDescricao = $('#area-descricao');
-  if (descricao) nodeDescricao.textContent = descricao;
-  else nodeDescricao.hidden = true;
+  if (descricao) {
+    nodeDescricao.textContent = descricao;
+    // A descrição fica numa linha só; o texto inteiro vem no title.
+    nodeDescricao.title = descricao;
+  } else {
+    nodeDescricao.hidden = true;
+  }
 
   const atualizacao = formatarDataHora(dataset.atualizadoEm);
   const nodeAtualizacao = $('#atualizacao');
@@ -275,6 +285,7 @@ async function iniciar() {
   $('[data-acao="centralizar"]').addEventListener('click', () => arvore.centralizar());
   $('[data-acao="mais"]').addEventListener('click', () => arvore.zoomMais());
   $('[data-acao="menos"]').addEventListener('click', () => arvore.zoomMenos());
+  $('[data-acao="ampliar"]').addEventListener('click', () => arvore.ampliar());
 
   /* ---- render ------------------------------------------------------------ */
 
@@ -320,7 +331,8 @@ async function iniciar() {
         idQueAbriu = estado.aberta;
         raiaAberta = '';
         detalhe.abrir(estado.aberta);
-        arvore.focarNo(estado.aberta, { rolar: mudouFiltro === false });
+        // Depois de refiltrar a árvore já se reorganizou: não mexe no enquadramento.
+        arvore.focarNo(estado.aberta, { centralizar: !mudouFiltro });
       }
     } else if (estado.resumo) {
       if (raiaAberta !== estado.resumo) {
@@ -357,15 +369,6 @@ async function iniciar() {
   });
 
   render();
-
-  // As medidas de texto dependem da Poppins: se ela chegar depois do primeiro
-  // render, refaz o layout uma vez.
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => {
-      ultimoEstadoFiltro = '';
-      render();
-    });
-  }
 }
 
 if (document.readyState === 'loading') {

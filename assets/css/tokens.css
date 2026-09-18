@@ -140,13 +140,11 @@
   --escalonamento: 34ms;           /* atraso entre cards na entrada */
   --easing: cubic-bezier(0.22, 0.61, 0.36, 1);
 
-  /* --- Métricas da árvore (lidas também pelo JS em tree.js) -------------- */
-  --no-largura: 200px;
-  --no-altura: 88px;
-  --no-gap-x: 56px;
-  --no-gap-y: 16px;
-
-  --alt-cabecalho: auto;
+  /* --- Métricas -------------------------------------------------------- */
+  /* As métricas da árvore (largura/altura do card, gaps) NÃO moram aqui: o SVG
+     é medido e posicionado em JS, e a fonte única delas é a constante `M` no
+     topo de assets/js/tree.js. Não adicione tokens de árvore neste arquivo —
+     o CSS não consegue aplicá-los ao layout do SVG e eles saem de sincronia. */
   --larg-detalhe: 420px;
 }
 

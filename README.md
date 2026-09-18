@@ -129,13 +129,26 @@ por isso uma dependência que cruza projetos é desenhada como qualquer outra.
 | Serpentina | não cabe | quebra em zigue-zague, com conector curvo de continuidade |
 | Vertical | abaixo de 600px | um card de largura total por linha, traço vertical entre eles |
 
+Uma aresta que liga projetos diferentes desce por um corredor — o vão entre duas
+colunas, que é livre de cards em toda a altura — e entra pela lateral do
+destino. É isso que impede a curva de acabar escondida atrás de um card.
+
 O nível de cada iniciativa é o **caminho mais longo** pelas dependências do
 mesmo projeto, e os níveis são recompactados quando um filtro esvazia um deles.
 A ordem das raias é topológica: se um projeto depende de outro, ele vem depois,
 e as duas ficam vizinhas para a linha não atravessar raia alheia.
 
 Zoom fica nos botões **+ / −**, no Ctrl+roda e na pinça — a roda sozinha nunca é
-capturada, para não sequestrar a rolagem da página do SharePoint.
+capturada, para não sequestrar a rolagem da página do SharePoint. Em 100% a
+árvore inteira cabe na largura e não há nada a arrastar; passando disso, a área
+vira uma superfície com cursor `grab`, inércia ao soltar e limite elástico. O
+arrasto pode começar em cima de um card (que é quase toda a superfície): só
+depois de 4px de movimento o gesto vira arrasto, e aí o clique não abre o
+detalhe. Duplo clique num card enquadra ele no centro.
+
+**Ampliar** expande a árvore sobre a área visível do iframe, escondendo
+cabeçalho e painel de gestão — por CSS, não pela API de tela cheia, que costuma
+ser bloqueada dentro de iframe. Sai pelo botão ou por Esc.
 
 ### `panels.js` — as três listas
 
@@ -153,6 +166,50 @@ Seção sem conteúdo é omitida inteira, no painel e nos cards: nunca aparece
 rótulo seguido de traço.
 
 ---
+
+## Altura do web part
+
+A página **não rola por dentro**: ela cresce com o conteúdo e quem rola é o
+iframe. Por isso a altura do web part é o que decide se o gestor vê tudo de uma
+vez ou precisa rolar.
+
+Alturas reais do conteúdo, medidas com os 87 itens de hoje:
+
+| Área | itens | 1200px | 900px | 640px | 380px |
+| --- | --- | --- | --- | --- | --- |
+| Digital | 18 | 1805px | 3036px | 3965px | 4222px |
+| Confiabilidade | 14 | 1806px | 3059px | 3713px | 4091px |
+| Automação | 12 | 1523px | 2519px | 3341px | 3559px |
+| SGI | 10 | 1259px | 2332px | 2880px | 3051px |
+| Laboratório | 8 | 1063px | 1636px | 2163px | 2455px |
+| Produção | 8 | 1164px | 1993px | 2413px | 2589px |
+| Processos | 6 | 1019px | 1764px | 2066px | 2224px |
+| Manutenção | 5 | 852px | 1236px | 1626px | 1781px |
+| Logística | 3 | 671px | 1060px | 1206px | 1383px |
+| HSE | 3 | 646px | 1060px | 1206px | 1338px |
+| Todas as áreas | 87 | 8325px | 9777px | 14391px | 14661px |
+
+**Recomendação por porte de área**, para o monitor da planta (~1200px de largura
+disponível), já com folga para a área crescer:
+
+| Porte | Áreas de hoje | Altura do web part |
+| --- | --- | --- |
+| Grande (12+ iniciativas) | Digital, Confiabilidade, Automação | **1900px** |
+| Média (6 a 11) | SGI, Laboratório, Produção, Processos | **1300px** |
+| Pequena (até 5) | Manutenção, Logística, HSE | **900px** |
+
+Duas observações que mudam a conta:
+
+- **A altura mais que dobra no celular.** No app do Teams (~380px) a mesma
+  Confiabilidade passa de 1806px para 4091px, porque cada iniciativa vira um
+  card de largura total. Se o web part tiver altura fixa em pixels, no celular
+  vai sobrar rolagem — o que está certo, é o iframe rolando.
+- **A visão consolidada não cabe em web part nenhum** (8325px com 87 itens).
+  Use `areas.html` como entrada e deixe o consolidado para quem abre o portal
+  fora do SharePoint.
+
+Se não quiser calibrar altura por área, o botão **Ampliar** resolve pelo outro
+lado: a árvore passa a ocupar a área visível do iframe, seja ela qual for.
 
 ## Adicionar uma área nova
 
@@ -210,8 +267,12 @@ como parada (padrão: 30).
 - **Fontes versionadas.** A Poppins está em `assets/fonts/` e é carregada por
   `@font-face` local, com fallback de sistema declarado — a rede corporativa
   pode bloquear o Google Fonts. Licença SIL OFL, em `assets/fonts/OFL.txt`.
-- **Nada de `position: fixed` contra o SharePoint.** O cabeçalho é do próprio
-  documento e o conteúdo rola por dentro dos painéis.
+- **Nenhuma rolagem interna.** A página é um documento que flui: cabeçalho,
+  árvore inteira e painel de gestão inteiro, com a altura dada pelo conteúdo.
+  Quem rola é o iframe. As duas exceções são sobrepostas — o painel de detalhe
+  e o modo Ampliar.
+- **O painel de gestão é `sticky`** no topo da coluna em telas largas: acompanha
+  a leitura da árvore sem precisar rolar por dentro.
 - **Links externos** sempre com `target="_blank"` e `rel="noopener"`.
 - **`prefers-reduced-motion`** desliga entrada escalonada, pulso, fluxo das
   arestas e preenchimento das barras.

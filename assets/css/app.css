@@ -1,7 +1,8 @@
 /* ==========================================================================
    Portal de Iniciativas Digitais — layout e componentes.
-   A página é uma aplicação dentro de um iframe de altura fixa: o cabeçalho
-   fica no topo do próprio documento e o conteúdo rola por dentro.
+   A página cresce com o conteúdo e não rola por dentro: quem rola é o iframe
+   do SharePoint. As duas exceções são sobrepostas — o <dialog> de detalhe e o
+   painel em modo Ampliar.
    ========================================================================== */
 
 *,
@@ -12,9 +13,18 @@
    e elementos ocultos (#app, "Limpar filtros") voltariam a aparecer. */
 [hidden] { display: none !important; }
 
+/* A página cresce com o conteúdo: quem rola é o iframe do SharePoint, cuja
+   altura é definida no web part. Nenhum componente rola por dentro — só o
+   painel de detalhe, que é sobreposto. */
+html {
+  /* Reserva a calha da barra de rolagem: sem isso a largura salta ~15px
+     quando o painel de detalhe (modal) bloqueia a rolagem do documento, e a
+     árvore sai do lugar. */
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
-  height: 100%;
   margin: 0;
 }
 
@@ -82,62 +92,73 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Esqueleto da aplicação ---------------------------------------------- */
 
-.app {
-  height: 100%;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-/* --- Cabeçalho ------------------------------------------------------------ */
+/* --- Cabeçalho: duas faixas compactas -------------------------------------- */
 
 .cabecalho {
   background: var(--cor-superficie);
   border-bottom: var(--borda-fina);
-  padding: var(--esp-4) var(--esp-5) var(--esp-3);
+  padding: var(--esp-3) var(--esp-5);
   display: grid;
-  gap: var(--esp-3);
+  gap: var(--esp-2);
 }
 
 .cabecalho__topo {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: baseline;
   justify-content: space-between;
-  gap: var(--esp-4);
+  gap: var(--esp-2) var(--esp-4);
 }
 
+.cabecalho__identidade {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--esp-1) var(--esp-3);
+  min-width: 0;
+}
+
+/* O nome do portal só aparece onde sobra espaço: a área é que manda aqui. */
 .cabecalho__supra {
   font-family: var(--fonte-titulo);
-  font-size: var(--texto-xs);
+  font-size: 10px;
   font-weight: var(--peso-medio);
   letter-spacing: var(--tracking-rotulo);
   text-transform: uppercase;
   color: var(--cor-quente);
+  flex-basis: 100%;
 }
 
 .cabecalho__titulo {
-  font-size: var(--texto-xl);
+  font-size: var(--texto-lg);
   font-weight: var(--peso-forte);
-  margin-top: 2px;
+  line-height: 1.2;
 }
 
 .cabecalho__descricao {
   font-size: var(--texto-sm);
   color: var(--cor-tinta-3);
-  max-width: 62ch;
-  margin-top: var(--esp-1);
-}
-
-.cabecalho__atualizacao {
-  font-size: var(--texto-xs);
-  color: var(--cor-quente);
-  margin-top: var(--esp-2);
+  max-width: 58ch;
+  /* Uma linha discreta ao lado do nome; o texto inteiro fica no title. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1 1 260px;
 }
 
 .cabecalho__acoes {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--esp-2);
+}
+
+/* Data de atualização na mesma linha dos botões, discreta. */
+.cabecalho__atualizacao {
+  font-size: var(--texto-xs);
+  color: var(--cor-quente);
+  white-space: nowrap;
 }
 
 /* --- Botões --------------------------------------------------------------- */
@@ -249,7 +270,7 @@ button, input, select { font: inherit; color: inherit; }
 .chip--ativo .chip__contagem { color: rgba(255, 255, 255, 0.85); }
 
 .campo {
-  padding: 7px 10px;
+  padding: 6px 9px;
   border: 1px solid var(--cor-borda-forte);
   border-radius: var(--raio-sm);
   background: var(--cor-superficie);
@@ -266,10 +287,9 @@ button, input, select { font: inherit; color: inherit; }
 .conteudo {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  gap: var(--esp-4);
-  padding: var(--esp-4) var(--esp-5);
-  min-height: 0;
-  overflow: hidden;
+  align-items: start;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-5) var(--esp-5);
 }
 
 .painel {
@@ -278,8 +298,16 @@ button, input, select { font: inherit; color: inherit; }
   border-radius: var(--raio-lg);
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
+  /* Sem overflow, o painel cresce com o conteúdo — e sem min-width: 0 o texto
+     dos cards empurraria a coluna para fora da página. */
+  min-width: 0;
+}
+
+/* A gestão costuma ser bem mais curta que a árvore: acompanha a leitura
+   grudando no topo da coluna, o que substitui a rolagem interna que existia. */
+.painel--gestao {
+  position: sticky;
+  top: var(--esp-3);
 }
 
 .painel__topo {
@@ -331,19 +359,28 @@ button, input, select { font: inherit; color: inherit; }
 }
 
 .arvore__container {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-x pan-y;
+  /* overflow hidden (não auto): contém o excesso quando o zoom passa de 100%,
+     sem criar barra de rolagem própria. A altura vem do SVG. */
+  overflow: hidden;
+  touch-action: pan-y;
   background:
     radial-gradient(circle at 1px 1px, rgba(154, 145, 134, 0.22) 1px, transparent 0)
     0 0 / 24px 24px;
 }
 
-.arvore--arrastando { cursor: grabbing; }
+/* Só vira superfície arrastável quando há o que arrastar. */
+.arvore__container--movel { cursor: grab; }
+.arvore__container--arrastando { cursor: grabbing; }
+.arvore__container--arrastando .arvore__palco { transition: none; }
 
-.arvore__palco { display: block; width: max-content; min-width: 100%; }
+.arvore__palco {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  will-change: transform;
+}
+
+.arvore__palco--suave { transition: transform var(--dur-media) var(--easing); }
 
 /* --- Árvore: SVG ---------------------------------------------------------- */
 
@@ -391,27 +428,41 @@ button, input, select { font: inherit; color: inherit; }
   transition: stroke var(--dur-rapida) var(--easing), filter var(--dur-rapida) var(--easing);
 }
 
+/* Hierarquia dentro do card: título manda, status é apoio, número é discreto. */
 .no__titulo {
   font-family: var(--fonte-titulo);
   font-size: 13px;
   font-weight: var(--peso-medio);
   fill: var(--cor-tinta);
+  letter-spacing: -0.005em;
 }
 
 .no__status {
   font-family: var(--fonte-titulo);
   font-size: 11px;
+  font-weight: var(--peso-medio);
   fill: var(--cor-tinta-3);
 }
 
 .no__percentual {
   font-family: var(--fonte-titulo);
   font-size: 11px;
-  font-weight: var(--peso-medio);
+  font-weight: var(--peso-forte);
   fill: var(--cor-tinta-3);
   text-anchor: end;
   font-variant-numeric: tabular-nums;
 }
+
+/* Ícone da fase: a forma distingue mesmo sem cor. */
+.no__icone-traco {
+  fill: none;
+  stroke: var(--cor-tinta-3);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.no__icone-cheio { fill: var(--cor-tinta-3); }
 
 .no__trilha { fill: var(--cor-borda); }
 
@@ -421,13 +472,19 @@ button, input, select { font: inherit; color: inherit; }
   transform-origin: left center;
   transform: scaleX(var(--valor, 0));
   animation: preencher-barra var(--dur-lenta) var(--easing) backwards;
-  animation-delay: calc(var(--indice, 0) * var(--escalonamento) + 120ms);
+  animation-delay: calc(var(--indice, 0) * var(--escalonamento) + 140ms);
 }
 
-.no__check { fill: none; stroke: var(--cor-superficie); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* Marcadores de estado: triângulo para atraso, cadeado para bloqueio. */
+.marcador__forma { fill: none; stroke-width: 1.4; stroke-linejoin: round; }
+.marcador__detalhe { fill: none; stroke-width: 1.4; stroke-linecap: round; }
 
-.marcador--bloqueio { fill: var(--cor-espera); }
-.marcador--atraso { fill: var(--cor-alerta); }
+.marcador--atraso .marcador__forma { stroke: var(--cor-alerta); fill: var(--cor-alerta-fraco); }
+.marcador--atraso .marcador__detalhe { stroke: var(--cor-alerta); }
+.marcador--atraso .marcador__ponto { fill: var(--cor-alerta); }
+
+.marcador--bloqueio .marcador__forma { stroke: var(--cor-espera); fill: var(--cor-superficie-2); }
+.marcador--bloqueio .marcador__detalhe { stroke: var(--cor-espera); }
 
 /* Fases */
 
@@ -442,12 +499,15 @@ button, input, select { font: inherit; color: inherit; }
 .no--execucao .no__progresso { fill: var(--cor-laranja); }
 .no--execucao .no__status { fill: var(--cor-laranja-forte); }
 
+.no--execucao .no__icone-cheio { fill: var(--cor-laranja-forte); }
+
 .no--entregue .no__corpo { fill: var(--fase-entregue); stroke: var(--fase-entregue); }
 .no--entregue .no__titulo { fill: #fff; }
 .no--entregue .no__status,
-.no--entregue .no__percentual { fill: rgba(255, 255, 255, 0.7); }
+.no--entregue .no__percentual { fill: rgba(255, 255, 255, 0.72); }
 .no--entregue .no__trilha { fill: rgba(255, 255, 255, 0.22); }
 .no--entregue .no__progresso { fill: rgba(255, 255, 255, 0.85); }
+.no--entregue .no__icone-traco { stroke: #fff; }
 
 .no--interrompida .no__corpo {
   fill: var(--cor-superficie-2);
@@ -469,8 +529,14 @@ button, input, select { font: inherit; color: inherit; }
   stroke: var(--cor-borda-forte);
   stroke-width: 1.5;
   stroke-linecap: round;
-  transition: stroke var(--dur-media) var(--easing), opacity var(--dur-media) var(--easing);
+  marker-end: url(#seta);
+  transition: stroke var(--dur-media) var(--easing),
+              stroke-width var(--dur-media) var(--easing),
+              opacity var(--dur-media) var(--easing);
 }
+
+.seta path { fill: var(--cor-borda-forte); }
+.seta--acesa path { fill: var(--cor-laranja); }
 
 .aresta--entre-raias { stroke-dasharray: 2 6; stroke: var(--cor-quente); }
 
@@ -491,7 +557,8 @@ button, input, select { font: inherit; color: inherit; }
 .arvore--destacando .aresta--acesa {
   opacity: 1;
   stroke: var(--cor-laranja);
-  stroke-width: 2;
+  stroke-width: 2.6;
+  marker-end: url(#seta-acesa);
 }
 
 .no--ativo .no__corpo { stroke: var(--cor-laranja); stroke-width: 2; }
@@ -499,10 +566,6 @@ button, input, select { font: inherit; color: inherit; }
 /* --- Painel de gestão ------------------------------------------------------ */
 
 .gestao {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   padding: var(--esp-2) var(--esp-3) var(--esp-4);
 }
 
@@ -513,10 +576,7 @@ button, input, select { font: inherit; color: inherit; }
   align-items: baseline;
   gap: var(--esp-2);
   padding: 0 var(--esp-2) var(--esp-2);
-  position: sticky;
-  top: 0;
   background: var(--cor-superficie);
-  z-index: 1;
 }
 
 .gestao__nome {
@@ -546,6 +606,7 @@ button, input, select { font: inherit; color: inherit; }
   display: grid;
   gap: 5px;
   width: 100%;
+  min-width: 0;
   text-align: left;
   padding: var(--esp-3);
   border: var(--borda-fina);
@@ -567,6 +628,7 @@ button, input, select { font: inherit; color: inherit; }
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--esp-2);
+  min-width: 0;
 }
 
 .gestao__titulo {
@@ -575,6 +637,8 @@ button, input, select { font: inherit; color: inherit; }
   font-weight: var(--peso-medio);
   color: var(--cor-tinta);
   line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .gestao__meta {
@@ -582,8 +646,10 @@ button, input, select { font: inherit; color: inherit; }
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   font-size: var(--texto-xs);
   color: var(--cor-quente);
+  overflow-wrap: anywhere;
 }
 
 .gestao__projeto { color: var(--cor-tinta-3); }
@@ -592,8 +658,10 @@ button, input, select { font: inherit; color: inherit; }
 .gestao__extra {
   display: grid;
   gap: 3px;
+  min-width: 0;
   font-size: var(--texto-xs);
   color: var(--cor-tinta-3);
+  overflow-wrap: anywhere;
 }
 
 .gestao__extra--alerta { color: var(--cor-alerta); }
@@ -611,10 +679,12 @@ button, input, select { font: inherit; color: inherit; }
   justify-content: space-between;
   gap: var(--esp-2);
   padding-top: 2px;
+  min-width: 0;
 }
 
 .gestao__dependencia-titulo {
   color: var(--cor-tinta-3);
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1043,30 +1113,59 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Responsivo ------------------------------------------------------------ */
 
+/* --- Modo ampliado: a árvore toma a área visível do iframe ------------------ */
+/* Sem a API de tela cheia, que costuma ser bloqueada dentro de iframe. */
+
+.com-arvore-ampliada,
+.com-arvore-ampliada body { overflow: hidden; }
+
+.painel--ampliado {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  border-radius: 0;
+  border: none;
+  /* Único caso em que a árvore rola por dentro: é uma camada sobreposta,
+     como o painel de detalhe. */
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.painel--ampliado .painel__topo {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* O container da árvore é item de flex e tem overflow:hidden, o que zera o
+   min-height automático: dentro do painel ampliado (altura fixa) ele encolhia
+   em vez de transbordar, e o fim da árvore ficava cortado e inalcançável.
+   Com flex:none ele mantém a altura do SVG e quem rola é o painel. */
+.painel--ampliado .arvore__container { flex: none; }
+
+.com-arvore-ampliada .cabecalho,
+.com-arvore-ampliada .painel--gestao { display: none; }
+
 @media (max-width: 1000px) {
   /* O painel de gestão deixa de ser coluna e vira seção abaixo da árvore. */
   .conteudo {
     grid-template-columns: minmax(0, 1fr);
-    overflow-y: auto;
-    overscroll-behavior: contain;
     padding: var(--esp-3) var(--esp-4) var(--esp-5);
   }
 
-  .painel--arvore { height: min(62vh, 560px); }
-  .painel--gestao { max-height: none; }
-  .gestao { overflow: visible; }
+  .painel--gestao { position: static; }
 }
 
 @media (max-width: 720px) {
   .cabecalho { padding: var(--esp-3) var(--esp-4); }
-  .cabecalho__topo { flex-direction: column; gap: var(--esp-3); }
+  .cabecalho__topo { flex-direction: column; align-items: stretch; gap: var(--esp-2); }
+  .cabecalho__descricao { white-space: normal; flex-basis: auto; }
   .cabecalho__acoes { width: 100%; }
+  .cabecalho__atualizacao { flex-basis: 100%; }
   .botao { flex: 1; }
   .filtros { gap: var(--esp-2); }
   .filtros__controles { width: 100%; }
   .campo { flex: 1; min-width: 0; }
-  .cabecalho__titulo { font-size: var(--texto-lg); }
-  .painel--arvore { height: min(68vh, 520px); }
 }
 
 @media (max-width: 480px) {

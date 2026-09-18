@@ -162,6 +162,7 @@ export function criarPainelGestao({ container, dataset, aoAbrir, aoDestacar }) {
 
   function montarBloco({ chave, titulo, itens, vazio, extras }) {
     const secao = criar('section', 'gestao__bloco');
+    secao.dataset.bloco = chave;
     const cabecalho = criar('header', 'gestao__cabecalho');
     cabecalho.appendChild(criar('h3', 'gestao__nome', titulo));
     if (itens.length) cabecalho.appendChild(criar('span', 'gestao__contagem', itens.length));
@@ -189,6 +190,10 @@ export function criarPainelGestao({ container, dataset, aoAbrir, aoDestacar }) {
         if (expandido) expandidos.delete(chave);
         else expandidos.add(chave);
         render(ultimosItens);
+        // O render recria o painel inteiro e o botão clicado deixa de existir:
+        // sem devolver o foco, quem usa teclado cai no <body> e recomeça a
+        // tabulação do topo da página.
+        container.querySelector(`[data-bloco="${chave}"] .gestao__mais`)?.focus();
       });
       secao.appendChild(alternar);
     }
