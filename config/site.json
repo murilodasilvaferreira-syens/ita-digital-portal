@@ -1,0 +1,19 @@
+{
+  "_comment": "Textos e links do portal. Os valores com SUBSTITUIR sao placeholders e precisam ser trocados antes de publicar.",
+  "portalTitle": "Iniciativas Digitais",
+  "plantName": "Syensqo Itatiba",
+  "allAreasLabel": "Todas as áreas",
+  "allAreasDescription": "Visão consolidada das iniciativas digitais do site.",
+  "newInitiative": {
+    "label": "Nova iniciativa",
+    "url": "https://forms.office.com/r/SUBSTITUIR-ID-DO-FORMS"
+  },
+  "teams": {
+    "label": "Falar com o Digital",
+    "email": "SUBSTITUIR-EMAIL@syensqo.com",
+    "message": "Olá! Vim pelo portal de iniciativas digitais e gostaria de falar sobre",
+    "initiativeLabel": "Falar sobre esta iniciativa",
+    "initiativeMessage": "Olá! Gostaria de falar sobre a iniciativa \"{titulo}\"."
+  },
+  "staleDays": 30
+}

@@ -1,0 +1,55 @@
+{
+  "_comment": "Mapa de slug -> area. O slug e o valor aceito em ?area= na URL do iframe (sem acento, minusculo). O nome precisa ser identico ao campo 'area' da Microsoft List. A descricao e editavel a vontade: aparece sob o titulo no cabecalho.",
+  "areas": [
+    {
+      "slug": "digital",
+      "name": "Digital",
+      "description": "Plataforma de dados, IA e Digital Batchsheet — a base técnica que as demais áreas consomem."
+    },
+    {
+      "slug": "confiabilidade",
+      "name": "Confiabilidade",
+      "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva."
+    },
+    {
+      "slug": "automacao",
+      "name": "Automação",
+      "description": "PI System, alarmes do DCS, acionamentos SIS e receitas de batelada."
+    },
+    {
+      "slug": "sgi",
+      "name": "SGI",
+      "description": "Gestão documental, 5S, reclamações de clientes e o portal do Sistema de Gestão Integrado."
+    },
+    {
+      "slug": "laboratorio",
+      "name": "Laboratório",
+      "description": "Central de Amostras: controle, follow-up e rastreabilidade das análises."
+    },
+    {
+      "slug": "producao",
+      "name": "Produção",
+      "description": "Aplicativos de produção, inspeções de turno e analytics do processo produtivo."
+    },
+    {
+      "slug": "processos",
+      "name": "Processos",
+      "description": "Analytics de bateladas, OEE e capacitação em análise de dados de processo."
+    },
+    {
+      "slug": "manutencao",
+      "name": "Manutenção",
+      "description": "Custos, planejamento e indicadores de manutenção em analytics."
+    },
+    {
+      "slug": "hse",
+      "name": "HSE",
+      "description": "Aplicativos de segurança, saúde e meio ambiente."
+    },
+    {
+      "slug": "logistica",
+      "name": "Logística",
+      "description": "Aplicativos de logística, inspeções e relatórios de expedição."
+    }
+  ]
+}

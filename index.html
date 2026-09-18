@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Iniciativas Digitais · Syensqo Itatiba</title>
+<!-- Sem favicon o navegador pede /favicon.ico e toma 404. -->
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div id="estado-carga" class="estado">
+  <p>Carregando iniciativas…</p>
+</div>
+
+<div id="app" class="app" hidden>
+
+  <header class="cabecalho">
+    <div class="cabecalho__topo">
+      <div class="cabecalho__identidade">
+        <p class="cabecalho__supra" id="portal-nome"></p>
+        <h1 class="cabecalho__titulo" id="area-nome"></h1>
+        <p class="cabecalho__descricao" id="area-descricao"></p>
+        <p class="cabecalho__atualizacao" id="atualizacao"></p>
+      </div>
+
+      <div class="cabecalho__acoes">
+        <a class="botao botao--primario" id="botao-nova" target="_blank" rel="noopener">Nova iniciativa</a>
+        <a class="botao botao--secundario" id="botao-teams" target="_blank" rel="noopener">Falar com o Digital</a>
+      </div>
+    </div>
+
+    <div class="filtros">
+      <div class="filtros__chips" id="filtro-fases" role="group" aria-label="Filtrar por fase"></div>
+
+      <div class="filtros__controles">
+        <label class="visualmente-oculto" for="filtro-projeto">Projeto</label>
+        <select class="campo campo--select" id="filtro-projeto"></select>
+
+        <label class="visualmente-oculto" for="filtro-tech">Tecnologia</label>
+        <select class="campo campo--select" id="filtro-tech"></select>
+
+        <label class="visualmente-oculto" for="filtro-busca">Buscar iniciativa</label>
+        <input class="campo campo--busca" id="filtro-busca" type="search" placeholder="Buscar iniciativa" autocomplete="off">
+
+        <button class="botao botao--texto" id="limpar-filtros" type="button" hidden>Limpar filtros</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="conteudo">
+
+    <section class="painel painel--arvore" aria-labelledby="titulo-arvore">
+      <header class="painel__topo">
+        <div class="painel__titulo-area">
+          <h2 class="painel__titulo" id="titulo-arvore">Dependências</h2>
+          <p class="painel__resumo" id="resumo-filtro" aria-live="polite"></p>
+        </div>
+
+        <div class="arvore__controles" role="group" aria-label="Controles da árvore">
+          <button class="botao-icone" type="button" data-acao="menos" aria-label="Diminuir zoom">−</button>
+          <span class="arvore__zoom-valor" aria-hidden="true">100%</span>
+          <button class="botao-icone" type="button" data-acao="mais" aria-label="Aumentar zoom">+</button>
+          <button class="botao botao--texto" type="button" data-acao="centralizar">Centralizar</button>
+        </div>
+      </header>
+
+      <div class="arvore__container" id="arvore"></div>
+      <p class="painel__vazio" id="arvore-vazia" hidden>Nenhuma iniciativa corresponde aos filtros.</p>
+    </section>
+
+    <aside class="painel painel--gestao" aria-labelledby="titulo-gestao">
+      <header class="painel__topo">
+        <h2 class="painel__titulo" id="titulo-gestao">Gestão</h2>
+      </header>
+      <div class="gestao" id="gestao"></div>
+    </aside>
+
+  </main>
+</div>
+
+<dialog class="detalhe" id="detalhe" aria-label="Detalhe da iniciativa"></dialog>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

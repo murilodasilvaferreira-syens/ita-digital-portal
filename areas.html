@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Áreas · Iniciativas Digitais · Syensqo Itatiba</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body class="pagina-hub">
+
+<div id="estado-carga" class="estado">
+  <p>Carregando áreas…</p>
+</div>
+
+<div class="hub" id="hub" hidden>
+  <header class="hub__cabecalho">
+    <p class="cabecalho__supra" id="portal-nome"></p>
+    <h1 class="hub__titulo">Áreas</h1>
+    <p class="hub__descricao">
+      Cada área tem seu próprio painel. Abra para visualizar, ou use o endereço
+      de incorporação na página do SharePoint da área.
+    </p>
+    <p class="cabecalho__atualizacao" id="atualizacao"></p>
+  </header>
+
+  <div class="hub__grade" id="hub-grade"></div>
+
+  <footer class="hub__rodape">
+    <a class="botao botao--secundario" href="index.html">Ver todas as áreas num painel só</a>
+  </footer>
+</div>
+
+<script type="module" src="assets/js/hub.js"></script>
+</body>
+</html>

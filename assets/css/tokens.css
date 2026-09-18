@@ -1,0 +1,160 @@
+/* ==========================================================================
+   Tokens de identidade visual — Portal de Iniciativas Digitais Itatiba
+   Nenhuma regra de layout aqui: só variáveis e as fontes locais.
+   ========================================================================== */
+
+/* --- Poppins local (assets/fonts). Sem Google Fonts: a rede corporativa
+       pode bloquear. Se algum arquivo faltar, o fallback de sistema assume. -- */
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/poppins-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/poppins-400-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/poppins-500-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/poppins-500-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/poppins-600-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/poppins-600-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+:root {
+  /* --- Cor -------------------------------------------------------------- */
+  --cor-laranja: #e8752a;          /* só ação, execução e foco */
+  --cor-laranja-forte: #cf5f18;
+  --cor-laranja-fraco: #f7e4d6;
+  --cor-laranja-vidro: rgba(232, 117, 42, 0.12);
+
+  --cor-fundo: #f5f1ea;            /* off-white da página */
+  --cor-superficie: #ffffff;       /* cards */
+  --cor-superficie-2: #faf8f4;     /* faixas e cabeçalhos de bloco */
+
+  --cor-tinta: #111111;            /* títulos */
+  --cor-tinta-2: #3a3a3a;          /* corpo de texto */
+  --cor-tinta-3: #6b645c;          /* apoio legível */
+  --cor-quente: #9a9186;           /* cinza quente: elementos secundários */
+
+  --cor-borda: #e2dbd0;
+  --cor-borda-forte: #cdc4b6;
+
+  --cor-alerta: #b3411f;           /* atraso */
+  --cor-alerta-fraco: #f6e3dc;
+  --cor-espera: #8a7f6f;           /* bloqueio */
+
+  /* --- Fase (usada na árvore, nas barras e nos selos) -------------------- */
+  --fase-planejamento: #9a9186;
+  --fase-execucao: var(--cor-laranja);
+  --fase-entregue: #3a3a3a;
+  --fase-interrompida: #b8b0a4;
+
+  /* --- Tipografia ------------------------------------------------------- */
+  --fonte-titulo: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --fonte-corpo: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+  --texto-corpo: 15px;
+  --altura-corpo: 1.65;
+  --texto-xs: 11px;
+  --texto-sm: 13px;
+  --texto-md: 15px;
+  --texto-lg: 18px;
+  --texto-xl: 22px;
+  --peso-medio: 500;
+  --peso-forte: 600;
+  --tracking-rotulo: 0.06em;
+
+  /* --- Espaço e forma --------------------------------------------------- */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 24px;
+  --esp-6: 32px;
+
+  --raio-sm: 4px;
+  --raio-md: 8px;
+  --raio-lg: 12px;
+  --raio-pill: 999px;
+
+  --borda-fina: 1px solid var(--cor-borda);
+  --sombra-hover: 0 2px 10px rgba(17, 17, 17, 0.08);
+  --sombra-painel: -12px 0 32px rgba(17, 17, 17, 0.12);
+
+  /* --- Movimento -------------------------------------------------------- */
+  --dur-rapida: 120ms;
+  --dur-media: 220ms;
+  --dur-lenta: 420ms;
+  --escalonamento: 34ms;           /* atraso entre cards na entrada */
+  --easing: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* --- Métricas da árvore (lidas também pelo JS em tree.js) -------------- */
+  --no-largura: 200px;
+  --no-altura: 88px;
+  --no-gap-x: 56px;
+  --no-gap-y: 16px;
+
+  --alt-cabecalho: auto;
+  --larg-detalhe: 420px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-rapida: 0ms;
+    --dur-media: 0ms;
+    --dur-lenta: 0ms;
+    --escalonamento: 0ms;
+  }
+}
