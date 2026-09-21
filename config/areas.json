@@ -1,55 +1,75 @@
 {
-  "_comment": "Mapa de slug -> area. O slug e o valor aceito em ?area= na URL do iframe (sem acento, minusculo). O nome precisa ser identico ao campo 'area' da Microsoft List. A descricao e editavel a vontade: aparece sob o titulo no cabecalho.",
+  "_comment": "Mapa de slug -> area. O slug e o valor aceito em ?area= na URL do iframe (sem acento, minusculo). O nome precisa ser identico ao campo 'area' da Microsoft List. A descricao aparece no cabecalho e nos cards do hub. pageUrl e o endereco da pagina do SharePoint daquela area, usado pelo hub.html: enquanto estiver vazio, o card aparece como 'em breve' e nao e clicavel. ocultarEstatisticas: true mostra so o nome e o acesso, sem o resumo de iniciativas.",
   "areas": [
     {
       "slug": "digital",
       "name": "Digital",
-      "description": "Plataforma de dados, IA e Digital Batchsheet — a base técnica que as demais áreas consomem."
+      "description": "Plataforma de dados, IA e Digital Batchsheet — a base técnica que as demais áreas consomem.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "confiabilidade",
       "name": "Confiabilidade",
-      "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva."
+      "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "automacao",
       "name": "Automação",
-      "description": "PI System, alarmes do DCS, acionamentos SIS e receitas de batelada."
+      "description": "PI System, alarmes do DCS, acionamentos SIS e receitas de batelada.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "sgi",
       "name": "SGI",
-      "description": "Gestão documental, 5S, reclamações de clientes e o portal do Sistema de Gestão Integrado."
+      "description": "Gestão documental, 5S, reclamações de clientes e o portal do Sistema de Gestão Integrado.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "laboratorio",
       "name": "Laboratório",
-      "description": "Central de Amostras: controle, follow-up e rastreabilidade das análises."
+      "description": "Central de Amostras: controle, follow-up e rastreabilidade das análises.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "producao",
       "name": "Produção",
-      "description": "Aplicativos de produção, inspeções de turno e analytics do processo produtivo."
+      "description": "Aplicativos de produção, inspeções de turno e analytics do processo produtivo.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "processos",
       "name": "Processos",
-      "description": "Analytics de bateladas, OEE e capacitação em análise de dados de processo."
+      "description": "Analytics de bateladas, OEE e capacitação em análise de dados de processo.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "manutencao",
       "name": "Manutenção",
-      "description": "Custos, planejamento e indicadores de manutenção em analytics."
+      "description": "Custos, planejamento e indicadores de manutenção em analytics.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "hse",
       "name": "HSE",
-      "description": "Aplicativos de segurança, saúde e meio ambiente."
+      "description": "Aplicativos de segurança, saúde e meio ambiente.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     },
     {
       "slug": "logistica",
       "name": "Logística",
-      "description": "Aplicativos de logística, inspeções e relatórios de expedição."
+      "description": "Aplicativos de logística, inspeções e relatórios de expedição.",
+      "pageUrl": "",
+      "ocultarEstatisticas": false
     }
   ]
 }

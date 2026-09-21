@@ -1,0 +1,390 @@
+/* ==========================================================================
+   Hub (hub.html) — porta de entrada do roadmap digital.
+
+   Usa os mesmos tokens de assets/css/tokens.css das páginas de área: nenhuma
+   cor e nenhuma fonte são redeclaradas aqui. A página cresce com o conteúdo;
+   quem rola é o iframe do SharePoint.
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html { scrollbar-gutter: stable; }
+
+html,
+body { margin: 0; }
+
+body {
+  background: var(--cor-fundo);
+  color: var(--cor-tinta-2);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-corpo);
+  line-height: var(--altura-corpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-tinta);
+  margin: 0;
+  line-height: 1.2;
+}
+
+p, dl, dd { margin: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--cor-tinta);
+  outline-offset: 3px;
+  border-radius: var(--raio-md);
+}
+
+.portal__estado {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--esp-6) var(--esp-5);
+  color: var(--cor-tinta-3);
+}
+
+.portal__conteudo {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--esp-6) var(--esp-5) var(--esp-6);
+}
+
+/* --- Cabeçalho: mesma família visual do cabeçalho das páginas de área ------ */
+
+.portal__cabecalho {
+  display: grid;
+  gap: var(--esp-2);
+  margin-bottom: var(--esp-6);
+  max-width: 62ch;
+}
+
+.portal__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cor-tinta-3);
+  animation: portal-entrada var(--dur-lenta) var(--easing) backwards;
+}
+
+/* Único acento de cor do cabeçalho, e seu único movimento próprio. */
+.portal__fio {
+  display: block;
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--cor-laranja);
+  transform-origin: left center;
+  animation: portal-fio 560ms var(--easing) 180ms backwards;
+}
+
+.portal__titulo {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: var(--peso-forte);
+  letter-spacing: -0.025em;
+  animation: portal-entrada var(--dur-lenta) var(--easing) 70ms backwards;
+}
+
+.portal__apoio {
+  font-size: var(--texto-md);
+  color: var(--cor-tinta-3);
+  animation: portal-entrada var(--dur-lenta) var(--easing) 140ms backwards;
+}
+
+.portal__atualizacao {
+  font-size: var(--texto-xs);
+  color: var(--cor-tinta-3);
+  margin-top: var(--esp-1);
+  animation: portal-entrada var(--dur-lenta) var(--easing) 200ms backwards;
+}
+
+/* --- Grade de cards -------------------------------------------------------- */
+
+.portal__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--esp-4);
+}
+
+.cartao {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  gap: var(--esp-3);
+  align-content: start;
+  padding: var(--esp-5) var(--esp-4) var(--esp-4);
+  background: var(--cor-superficie);
+  border: var(--borda-fina);
+  border-radius: var(--raio-lg);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.03);
+  animation: portal-entrada var(--dur-lenta) var(--easing) backwards;
+  animation-delay: calc(240ms + var(--indice, 0) * 50ms);
+  transition: transform var(--dur-media) var(--easing),
+              border-color var(--dur-media) var(--easing),
+              box-shadow var(--dur-media) var(--easing);
+}
+
+/* O gesto principal: elevação leve, borda assumindo o acento e um brilho que
+   acompanha o ponteiro. Só onde existe ponteiro de verdade. */
+@media (hover: hover) {
+  .cartao::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: radial-gradient(
+      340px circle at var(--mx, 50%) var(--my, 0%),
+      var(--cor-laranja-vidro),
+      transparent 68%
+    );
+    transition: opacity var(--dur-media) var(--easing);
+  }
+
+  a.cartao:hover {
+    transform: translateY(-3px);
+    border-color: var(--cor-laranja);
+    box-shadow: 0 10px 26px rgba(17, 17, 17, 0.09);
+  }
+
+  a.cartao:hover::before { opacity: 1; }
+}
+
+.cartao__topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--esp-3);
+}
+
+.cartao__nome {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-forte);
+  letter-spacing: -0.02em;
+}
+
+.cartao__seta {
+  font-size: 15px;
+  color: var(--cor-tinta-3);
+  transition: transform var(--dur-media) var(--easing), color var(--dur-media) var(--easing);
+}
+
+a.cartao:hover .cartao__seta {
+  color: var(--cor-laranja-forte);
+  transform: translate(2px, -2px);
+}
+
+.cartao__selo {
+  flex: none;
+  padding: 2px 9px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-pill);
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.06em;
+  color: var(--cor-tinta-3);
+}
+
+.cartao__descricao {
+  font-size: var(--texto-sm);
+  color: var(--cor-tinta-3);
+  /* Duas linhas com altura reservada: dá contexto sem deixar os cards da
+     fileira com alturas diferentes. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.5 * var(--texto-sm));
+}
+
+.cartao__vazio {
+  font-size: var(--texto-sm);
+  color: var(--cor-tinta-3);
+}
+
+/* Card sem página publicada: presente, legível, e claramente não clicável. */
+.cartao--em-breve {
+  background: var(--cor-superficie-2);
+  box-shadow: none;
+}
+
+.cartao--em-breve .cartao__nome { color: var(--cor-tinta-2); }
+
+/* --- Resumo vivo ----------------------------------------------------------- */
+
+.cartao__resumo {
+  display: grid;
+  gap: var(--esp-3);
+  padding-top: var(--esp-3);
+  border-top: var(--borda-fina);
+}
+
+.cartao__progresso {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+.anel {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  transform: rotate(-90deg);
+}
+
+.anel__trilha,
+.anel__valor {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.anel__trilha { stroke: var(--cor-borda); }
+
+.anel__valor {
+  stroke: var(--fase-entregue);
+  stroke-dasharray: var(--traco) var(--volta);
+  animation: portal-anel var(--dur-lenta) var(--easing) backwards;
+  animation-delay: calc(360ms + var(--indice, 0) * 50ms);
+}
+
+.cartao__progresso-texto { display: grid; }
+
+.cartao__percentual {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-forte);
+  color: var(--cor-tinta);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartao__legenda {
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  letter-spacing: var(--tracking-rotulo);
+  text-transform: uppercase;
+  color: var(--cor-tinta-3);
+}
+
+/* Grade em vez de linha corrida: as fases ficam alinhadas entre um card e
+   outro, mesmo quando o rótulo precisa de duas linhas. */
+.cartao__fases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--esp-2) var(--esp-3);
+}
+
+.cartao__fase {
+  display: grid;
+  gap: 1px;
+  align-content: start;
+}
+
+.cartao__fase-rotulo {
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  letter-spacing: var(--tracking-rotulo);
+  text-transform: uppercase;
+  color: var(--cor-tinta-3);
+}
+
+.cartao__fase-valor {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-forte);
+  color: var(--cor-tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+/* O laranja marca só o que está em execução — como um ponto ao lado do rótulo,
+   e não no número: em 15px o laranja sobre branco dá 3,96:1 e reprovaria em AA. */
+.cartao__fase--execucao .cartao__fase-rotulo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cartao__fase--execucao .cartao__fase-rotulo::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--cor-laranja);
+}
+
+.cartao__alerta {
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--cor-alerta);
+}
+
+.cartao__alerta::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--cor-alerta);
+  vertical-align: middle;
+}
+
+/* --- Movimento -------------------------------------------------------------- */
+
+@keyframes portal-entrada {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes portal-fio {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes portal-anel {
+  from { stroke-dasharray: 0 var(--volta); }
+  to { stroke-dasharray: var(--traco) var(--volta); }
+}
+
+/* --- Responsivo ------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .portal__grade { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  /* A contagem de colunas fica com o auto-fill: duas no intermediário e uma
+     quando o card não couber mais ao lado do outro. */
+  .portal__conteudo { padding: var(--esp-5) var(--esp-4); }
+  .portal__cabecalho { margin-bottom: var(--esp-5); }
+  .portal__grade { gap: var(--esp-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .cartao { transform: none !important; }
+  .anel__valor { animation: none; }
+}

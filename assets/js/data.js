@@ -409,6 +409,10 @@ export async function carregarPortal(opcoes = {}) {
     slug: criarSlug(a.slug),
     name: limparTexto(a.name) || a.slug,
     description: limparTexto(a.description),
+    // Usados pelo hub: endereço da página da área no SharePoint e a opção de
+    // mostrar só o acesso, sem o resumo de iniciativas.
+    pageUrl: limparTexto(a.pageUrl),
+    ocultarEstatisticas: a.ocultarEstatisticas === true,
   }));
 
   const dataset = criarDataset(dados.initiatives, {

@@ -45,7 +45,8 @@ E abra:
 
 | URL | O que mostra |
 | --- | --- |
-| `http://localhost:8000/areas.html` | Índice com as 10 áreas e o endereço de cada painel |
+| `http://localhost:8000/hub.html` | Portal central: um card por área, com o resumo vivo |
+| `http://localhost:8000/areas.html` | Índice técnico, com o endereço de incorporação de cada painel |
 | `http://localhost:8000/areas/confiabilidade/` | Painel de uma área (endereço estável, usado no iframe) |
 | `http://localhost:8000/index.html?area=confiabilidade` | O mesmo painel, na forma com parâmetro |
 | `http://localhost:8000/index.html` | Todas as áreas, consolidado |
@@ -62,12 +63,14 @@ Estado da interface vai na hash, então esses endereços também funcionam:
 
 ```
 index.html                a aplicação: cabeçalho, filtros, árvore, gestão e <dialog> do detalhe
-areas.html                índice das áreas, com contagens e endereço de incorporação
+hub.html                  portal central: um card por área, com acesso e resumo vivo
+areas.html                índice técnico, com o endereço de incorporação de cada painel
 areas/<slug>/index.html   endereço estável de cada área; encaminha para a aplicação
-config/areas.json         slug -> nome oficial da área + descrição
+config/areas.json         slug -> nome oficial, descrição, pageUrl e flag de estatísticas
 config/site.json          link do Forms, contato do Teams, textos do portal
 assets/css/tokens.css     cores, tipografia, espaçamento, movimento e @font-face
 assets/css/app.css        layout, componentes, responsivo, prefers-reduced-motion
+assets/css/hub.css        estilo do portal central (usa os mesmos tokens)
 assets/fonts/             Poppins 400/500/600 (latin e latin-ext) + licença OFL
 assets/img/favicon.svg    ícone do portal
 assets/js/data.js         carga, saneamento, derivações e índices do grafo
@@ -75,6 +78,7 @@ assets/js/tree.js         layout e render da árvore em SVG, zoom, destaque de c
 assets/js/panels.js       painel de gestão e painel de detalhe/resumo
 assets/js/app.js          estado, filtros, hash e orquestração
 assets/js/hub.js          monta o índice de areas.html
+assets/js/portal.js       monta os cards do hub.html, com o resumo por área
 data/initiatives.json     escrito pelo Power Automate — não mexer
 ```
 
@@ -211,6 +215,37 @@ Duas observações que mudam a conta:
 Se não quiser calibrar altura por área, o botão **Ampliar** resolve pelo outro
 lado: a árvore passa a ocupar a área visível do iframe, seja ela qual for.
 
+## O portal central (`hub.html`)
+
+Página aberta a todos, para ser incorporada numa página do SharePoint como
+qualquer outra: um card por área, levando ao roadmap daquela área.
+
+Cada card lê o mesmo `data/initiatives.json` pela mesma camada `data.js`, então
+os números do card são os mesmos que o gestor vê ao abrir a área: proporção de
+entregues, contagem por fase e — só quando existe — o número de atrasadas. Não
+há nada para preencher à mão.
+
+O link de cada card vai para o campo **`pageUrl`** da área em
+`config/areas.json`, que é o endereço da página dela no SharePoint:
+
+```json
+{
+  "slug": "confiabilidade",
+  "name": "Confiabilidade",
+  "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva.",
+  "pageUrl": "https://<tenant>.sharepoint.com/sites/<site>/SitePages/confiabilidade.aspx",
+  "ocultarEstatisticas": false
+}
+```
+
+- Enquanto `pageUrl` estiver vazio, o card aparece como **"em breve"**, em tom
+  neutro e sem link — melhor do que um endereço quebrado. Hoje todas as áreas
+  estão assim: preencha conforme publicar cada página.
+- `ocultarEstatisticas: true` mostra só o nome e o acesso, sem o resumo.
+- Os cards abrem em nova aba (`target="_blank" rel="noopener"`). Isso é
+  necessário, e não estético: o hub roda dentro de um iframe, e um link comum
+  abriria a página da área espremida nele.
+
 ## Adicionar uma área nova
 
 1. Confira como a área está escrita na coluna `area` da Microsoft List — o nome
@@ -221,12 +256,16 @@ lado: a árvore passa a ocupar a área visível do iframe, seja ela qual for.
    {
      "slug": "utilidades",
      "name": "Utilidades",
-     "description": "Vapor, ar comprimido e água gelada."
+     "description": "Vapor, ar comprimido e água gelada.",
+     "pageUrl": "",
+     "ocultarEstatisticas": false
    }
    ```
 
    O `slug` é o valor aceito em `?area=`: minúsculo, sem acento e sem espaço
-   (`Manutenção` → `manutencao`).
+   (`Manutenção` → `manutencao`). Deixe `pageUrl` vazio por enquanto: o card no
+   hub já aparece, como "em breve", e vira link assim que você publicar a
+   página da área no SharePoint e colar o endereço aqui.
 3. Crie o endereço da área copiando qualquer pasta existente e trocando as duas
    ocorrências do slug e o nome:
 
@@ -239,6 +278,8 @@ lado: a árvore passa a ocupar a área visível do iframe, seja ela qual for.
 4. Na página do SharePoint da área, incorpore
    `https://<usuário>.github.io/ita-digital-portal/areas/utilidades/`.
    O endereço de cada área também aparece pronto em `areas.html`.
+5. Copie o endereço dessa página do SharePoint para o `pageUrl` da área, para
+   o card do hub deixar de ser "em breve".
 
 Se o slug não existir na configuração, a página mostra "Área não encontrada" com
 os slugs válidos — falha visível, para ninguém rodar meses com o embed errado.
