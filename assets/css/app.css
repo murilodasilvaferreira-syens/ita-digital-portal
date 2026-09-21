@@ -284,10 +284,11 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Conteúdo: árvore + gestão -------------------------------------------- */
 
+/* Árvore em cima, gestão embaixo — as duas em largura total, em qualquer
+   tamanho de tela. A árvore é o elemento central e fica com a página inteira. */
 .conteudo {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--esp-3);
   padding: var(--esp-3) var(--esp-5) var(--esp-5);
 }
@@ -301,13 +302,6 @@ button, input, select { font: inherit; color: inherit; }
   /* Sem overflow, o painel cresce com o conteúdo — e sem min-width: 0 o texto
      dos cards empurraria a coluna para fora da página. */
   min-width: 0;
-}
-
-/* A gestão costuma ser bem mais curta que a árvore: acompanha a leitura
-   grudando no topo da coluna, o que substitui a rolagem interna que existia. */
-.painel--gestao {
-  position: sticky;
-  top: var(--esp-3);
 }
 
 .painel__topo {
@@ -565,11 +559,21 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Painel de gestão ------------------------------------------------------ */
 
+/* As três listas lado a lado, cada uma com a altura do seu próprio conteúdo:
+   `align-items: start` impede que uma lista vazia estique para acompanhar a
+   maior. Abaixo de 900px caem para duas colunas e, abaixo de 600px, para uma. */
 .gestao {
-  padding: var(--esp-2) var(--esp-3) var(--esp-4);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--esp-2) var(--esp-5);
+  padding: var(--esp-2) var(--esp-4) var(--esp-4);
 }
 
-.gestao__bloco { padding-top: var(--esp-3); }
+.gestao__bloco {
+  padding-top: var(--esp-3);
+  min-width: 0;
+}
 
 .gestao__cabecalho {
   display: flex;
@@ -580,6 +584,9 @@ button, input, select { font: inherit; color: inherit; }
 }
 
 .gestao__nome {
+  /* Mesma entrelinha do contador ao lado: senão o bloco que tem número fica
+     alguns pixels mais baixo que os outros dois, na fileira de colunas. */
+  line-height: 1.4;
   font-size: var(--texto-xs);
   font-weight: var(--peso-forte);
   letter-spacing: var(--tracking-rotulo);
@@ -590,6 +597,7 @@ button, input, select { font: inherit; color: inherit; }
 .gestao__contagem {
   font-family: var(--fonte-titulo);
   font-size: var(--texto-xs);
+  line-height: 1.4;
   color: var(--cor-quente);
   font-variant-numeric: tabular-nums;
 }
@@ -1146,14 +1154,18 @@ button, input, select { font: inherit; color: inherit; }
 .com-arvore-ampliada .cabecalho,
 .com-arvore-ampliada .painel--gestao { display: none; }
 
-@media (max-width: 1000px) {
-  /* O painel de gestão deixa de ser coluna e vira seção abaixo da árvore. */
-  .conteudo {
-    grid-template-columns: minmax(0, 1fr);
-    padding: var(--esp-3) var(--esp-4) var(--esp-5);
-  }
+@media (max-width: 900px) {
+  /* Duas colunas: a terceira lista quebra para baixo. */
+  .gestao { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
-  .painel--gestao { position: static; }
+@media (max-width: 1000px) {
+  .conteudo { padding: var(--esp-3) var(--esp-4) var(--esp-5); }
+}
+
+@media (max-width: 600px) {
+  /* Uma coluna: Atrasadas, Próximas e Aguardando, nessa ordem. */
+  .gestao { grid-template-columns: minmax(0, 1fr); gap: var(--esp-1); }
 }
 
 @media (max-width: 720px) {

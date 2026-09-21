@@ -177,34 +177,34 @@ Alturas reais do conteúdo, medidas com os 87 itens de hoje:
 
 | Área | itens | 1200px | 900px | 640px | 380px |
 | --- | --- | --- | --- | --- | --- |
-| Digital | 18 | 1805px | 3036px | 3965px | 4222px |
-| Confiabilidade | 14 | 1806px | 3059px | 3713px | 4091px |
-| Automação | 12 | 1523px | 2519px | 3341px | 3559px |
-| SGI | 10 | 1259px | 2332px | 2880px | 3051px |
-| Laboratório | 8 | 1063px | 1636px | 2163px | 2455px |
-| Produção | 8 | 1164px | 1993px | 2413px | 2589px |
-| Processos | 6 | 1019px | 1764px | 2066px | 2224px |
-| Manutenção | 5 | 852px | 1236px | 1626px | 1781px |
-| Logística | 3 | 671px | 1060px | 1206px | 1383px |
-| HSE | 3 | 646px | 1060px | 1206px | 1338px |
-| Todas as áreas | 87 | 8325px | 9777px | 14391px | 14661px |
+| Digital | 18 | 2180px | 3030px | 4169px | 4270px |
+| Confiabilidade | 14 | 2509px | 3160px | 4296px | 4095px |
+| Automação | 12 | 2075px | 2534px | 3567px | 3563px |
+| SGI | 10 | 1974px | 2309px | 3027px | 3055px |
+| Laboratório | 8 | 1492px | 1638px | 2451px | 2460px |
+| Produção | 8 | 1726px | 1995px | 2626px | 2593px |
+| Processos | 6 | 1467px | 1779px | 2206px | 2228px |
+| Manutenção | 5 | 918px | 1226px | 1717px | 1785px |
+| Logística | 3 | 930px | 1029px | 1262px | 1392px |
+| HSE | 3 | 906px | 1029px | 1244px | 1346px |
+| Todas as áreas | 87 | 8785px | 9735px | 14620px | 14709px |
 
 **Recomendação por porte de área**, para o monitor da planta (~1200px de largura
 disponível), já com folga para a área crescer:
 
 | Porte | Áreas de hoje | Altura do web part |
 | --- | --- | --- |
-| Grande (12+ iniciativas) | Digital, Confiabilidade, Automação | **1900px** |
-| Média (6 a 11) | SGI, Laboratório, Produção, Processos | **1300px** |
-| Pequena (até 5) | Manutenção, Logística, HSE | **900px** |
+| Grande (12+ iniciativas) | Digital (2180px), Confiabilidade (2509px), Automação | **2600px** |
+| Média (6 a 11) | SGI, Laboratório, Produção, Processos | **2100px** |
+| Pequena (até 5) | Manutenção, Logística (930px), HSE | **1000px** |
 
 Duas observações que mudam a conta:
 
-- **A altura mais que dobra no celular.** No app do Teams (~380px) a mesma
-  Confiabilidade passa de 1806px para 4091px, porque cada iniciativa vira um
+- **A altura cresce cerca de 60% no celular.** No app do Teams (~380px) a mesma
+  Confiabilidade passa de 2509px para 4095px, porque cada iniciativa vira um
   card de largura total. Se o web part tiver altura fixa em pixels, no celular
   vai sobrar rolagem — o que está certo, é o iframe rolando.
-- **A visão consolidada não cabe em web part nenhum** (8325px com 87 itens).
+- **A visão consolidada não cabe em web part nenhum** (8785px com 87 itens).
   Use `areas.html` como entrada e deixe o consolidado para quem abre o portal
   fora do SharePoint.
 
@@ -271,8 +271,10 @@ como parada (padrão: 30).
   árvore inteira e painel de gestão inteiro, com a altura dada pelo conteúdo.
   Quem rola é o iframe. As duas exceções são sobrepostas — o painel de detalhe
   e o modo Ampliar.
-- **O painel de gestão é `sticky`** no topo da coluna em telas largas: acompanha
-  a leitura da árvore sem precisar rolar por dentro.
+- **Árvore em cima, gestão embaixo**, as duas em largura total. A árvore é o
+  elemento central e recebe a página inteira; as três listas da gestão se
+  distribuem em três colunas acima de 900px, duas entre 600 e 900px e uma
+  abaixo disso. Coluna com lista vazia não estica para acompanhar as outras.
 - **Links externos** sempre com `target="_blank"` e `rel="noopener"`.
 - **`prefers-reduced-motion`** desliga entrada escalonada, pulso, fluxo das
   arestas e preenchimento das barras.
