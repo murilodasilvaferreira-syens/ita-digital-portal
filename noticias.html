@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Notícias · Digital Itatiba</title>
+<meta name="description" content="Novidades sobre IA, Microsoft 365, dados e transformação digital na planta de Itatiba.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/noticias.css">
+</head>
+<body>
+
+<!-- Progresso de leitura: só aparece dentro do artigo. -->
+<div class="progresso" id="progresso" hidden><span class="progresso__barra" id="progresso-barra"></span></div>
+
+<div id="estado-carga" class="noticias__estado">
+  <p>Carregando notícias…</p>
+</div>
+
+<!-- Listagem ------------------------------------------------------------- -->
+<main class="noticias" id="lista" hidden>
+  <header class="topo noticias__topo">
+    <p class="topo__kicker">
+      <span class="topo__fio" aria-hidden="true"></span>Notícias · Digital Itatiba
+    </p>
+    <h1 class="topo__titulo">O que está acontecendo <span class="topo__destaque">no digital</span></h1>
+    <p class="topo__apoio">Novidades sobre IA, Microsoft 365, dados e as ferramentas que estamos trazendo para a planta.</p>
+  </header>
+
+  <div class="filtros-noticias" role="group" aria-label="Filtros das notícias">
+    <div class="filtros-noticias__chips" id="filtro-categoria" role="group" aria-label="Filtrar por categoria"></div>
+    <div class="filtros-noticias__busca">
+      <label class="visualmente-oculto" for="busca">Buscar notícia</label>
+      <input class="campo campo--busca" id="busca" type="search" placeholder="Buscar notícia" autocomplete="off">
+      <button class="botao botao--texto" id="limpar" type="button" hidden>Limpar filtros</button>
+    </div>
+  </div>
+
+  <p class="noticias__resumo" id="resumo" aria-live="polite"></p>
+
+  <article class="manchete" id="manchete" hidden></article>
+
+  <div class="secundarios" id="secundarios" hidden></div>
+
+  <div class="feed" id="feed"></div>
+
+  <p class="noticias__vazio" id="vazio" hidden>
+    Nenhuma notícia corresponde aos filtros.
+    <button class="botao botao--texto" type="button" data-limpar>Limpar filtros</button>
+  </p>
+</main>
+
+<!-- Artigo ---------------------------------------------------------------- -->
+<main class="artigo" id="artigo" hidden>
+  <a class="artigo__voltar" href="#" id="voltar-topo" data-voltar>
+    <span>Voltar para notícias</span>
+  </a>
+
+  <header class="artigo__cabecalho" id="artigo-cabecalho"></header>
+  <div class="artigo__corpo" id="artigo-corpo"></div>
+  <footer class="artigo__rodape" id="artigo-rodape"></footer>
+</main>
+
+<!-- Artigo inexistente ----------------------------------------------------- -->
+<main class="noticias__estado" id="nao-encontrado" hidden>
+  <h1 class="nao-encontrado__titulo">Artigo não encontrado</h1>
+  <p class="nao-encontrado__texto" id="nao-encontrado-texto"></p>
+  <p><a class="botao botao--secundario" href="#" data-voltar>Voltar para notícias</a></p>
+</main>
+
+<script src="assets/vendor/marked.min.js"></script>
+<script type="module" src="assets/js/noticias.js"></script>
+</body>
+</html>

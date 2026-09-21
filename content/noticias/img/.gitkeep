@@ -1,0 +1,2 @@
+Pasta das imagens de capa das publicações. O caminho vai no campo "capa" do
+index.json, por exemplo "content/noticias/img/sharepoint.png".

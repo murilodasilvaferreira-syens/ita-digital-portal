@@ -1,0 +1,24 @@
+{
+  "_comment": "Índice do portal de notícias. Uma entrada por artigo; o corpo fica em content/noticias/<slug>.md. Campos obrigatórios: slug, titulo, data (YYYY-MM-DD), categoria, resumo, autor. Opcionais: link (URL externa), destaque (booleano), capa (caminho em content/noticias/img/), rascunho (booleano).",
+  "artigos": [
+    {
+      "slug": "centralizar-arquivos-sharepoint",
+      "titulo": "Por que centralizar nossos arquivos no SharePoint",
+      "data": "2026-09-21",
+      "categoria": "Dados",
+      "resumo": "Arquivo espalhado em desktop e pen drive não vira conhecimento da planta. Um lugar só muda o que a empresa consegue fazer com o que já sabe — inclusive com IA.",
+      "autor": "Murilo Ferreira",
+      "destaque": true,
+      "rascunho": true
+    },
+    {
+      "slug": "o-que-e-rag",
+      "titulo": "O que é RAG, em linguagem simples",
+      "data": "2026-09-21",
+      "categoria": "IA",
+      "resumo": "A sigla aparece em toda conversa sobre IA corporativa. A ideia por trás dela é bem mais simples do que o nome sugere, e explica por que organizar documento importa tanto.",
+      "autor": "Murilo Ferreira",
+      "rascunho": true
+    }
+  ]
+}

@@ -1,12 +1,18 @@
-# Portal de Iniciativas Digitais — Syensqo Itatiba
+# Site da área Digital — Syensqo Itatiba
 
-Página interna que mostra a cada área da planta o andamento das suas iniciativas
-digitais: uma árvore de dependências e um painel de gestão com o que está
-atrasado, o que vem a seguir e o que está travado.
+Site interno da área de Digital da planta. São quatro páginas, todas publicadas
+no GitHub Pages e incorporadas em páginas do SharePoint por iframe:
+
+| Página | O que é |
+| --- | --- |
+| `index.html?area=<slug>` | Roadmap de uma área: árvore de dependências e painel de gestão |
+| `hub.html` | Portal central, com um card por área e o resumo de cada uma |
+| `academia.html` | Academia Digital: trilhas de treinamento, recursos e casos |
+| `noticias.html` | Portal de notícias: publicações curtas sobre IA, dados e M365 |
 
 É um site estático puro — sem build, sem npm, sem framework e sem nenhuma
-requisição a domínio externo. Abre direto no GitHub Pages e é incorporado num
-iframe dentro do SharePoint de cada área.
+requisição a domínio externo. Fontes, ícones e bibliotecas ficam versionados em
+`assets/`.
 
 ---
 
@@ -46,6 +52,9 @@ E abra:
 | URL | O que mostra |
 | --- | --- |
 | `http://localhost:8000/hub.html` | Portal central: um card por área, com o resumo vivo |
+| `http://localhost:8000/academia.html` | Academia Digital: trilhas, recursos e casos |
+| `http://localhost:8000/noticias.html` | Portal de notícias |
+| `http://localhost:8000/noticias.html#/o-que-e-rag` | Uma publicação aberta |
 | `http://localhost:8000/areas.html` | Índice técnico, com o endereço de incorporação de cada painel |
 | `http://localhost:8000/areas/confiabilidade/` | Painel de uma área (endereço estável, usado no iframe) |
 | `http://localhost:8000/index.html?area=confiabilidade` | O mesmo painel, na forma com parâmetro |
@@ -62,15 +71,21 @@ Estado da interface vai na hash, então esses endereços também funcionam:
 ## Arquitetura
 
 ```
-index.html                a aplicação: cabeçalho, filtros, árvore, gestão e <dialog> do detalhe
+index.html                roadmap de uma área: cabeçalho, filtros, árvore, gestão e detalhe
 hub.html                  portal central: um card por área, com acesso e resumo vivo
+academia.html             Academia Digital: trilhas, recursos, curiosidade e casos
+noticias.html             portal de notícias: listagem editorial e leitura do artigo
 areas.html                índice técnico, com o endereço de incorporação de cada painel
 areas/<slug>/index.html   endereço estável de cada área; encaminha para a aplicação
+.nojekyll                 impede o Jekyll do Pages de mexer nos arquivos
 config/areas.json         slug -> nome oficial, descrição, pageUrl e flag de estatísticas
 config/site.json          link do Forms, contato do Teams, textos do portal
 assets/css/tokens.css     cores, tipografia, espaçamento, movimento e @font-face
-assets/css/app.css        layout, componentes, responsivo, prefers-reduced-motion
-assets/css/hub.css        estilo do portal central (usa os mesmos tokens)
+assets/css/base.css       reset, tipografia, botões, chips, selos, ícones, cabeçalho e cartão
+assets/css/app.css        o que é só do roadmap
+assets/css/hub.css        o que é só do portal central
+assets/css/academia.css   o que é só da Academia
+assets/css/noticias.css   o que é só das Notícias
 assets/fonts/             Poppins 400/500/600 (latin e latin-ext) + licença OFL
 assets/img/favicon.svg    ícone do portal
 assets/js/data.js         carga, saneamento, derivações e índices do grafo
@@ -79,6 +94,13 @@ assets/js/panels.js       painel de gestão e painel de detalhe/resumo
 assets/js/app.js          estado, filtros, hash e orquestração
 assets/js/hub.js          monta o índice de areas.html
 assets/js/portal.js       monta os cards do hub.html, com o resumo por área
+assets/js/ui.js           utilitários comuns: DOM, hash, foco, spotlight, contagem
+assets/js/academia.js     monta a Academia a partir de data/academia/
+assets/js/noticias.js     listagem, roteamento por hash e leitura do artigo
+assets/icons/icones.js    conjunto único de ícones SVG do site
+assets/vendor/            marked (MIT), versionado com a licença
+data/academia/            trilhas, casos, recursos, curiosidade e textos da página
+content/noticias/         index.json, um .md por artigo e as imagens de capa
 data/initiatives.json     escrito pelo Power Automate — não mexer
 ```
 
@@ -245,6 +267,126 @@ O link de cada card vai para o campo **`pageUrl`** da área em
 - Os cards abrem em nova aba (`target="_blank" rel="noopener"`). Isso é
   necessário, e não estético: o hub roda dentro de um iframe, e um link comum
   abriria a página da área espremida nele.
+
+## Academia Digital (`academia.html`)
+
+Todo o conteúdo vem de `data/academia/`, e é lá que se publica — o JavaScript
+não tem conteúdo dentro dele.
+
+| Arquivo | O que guarda |
+| --- | --- |
+| `trilhas.json` | As trilhas e os perfis de "Por onde começar" |
+| `recursos.json` | Os atalhos da seção Recursos rápidos |
+| `casos.json` | Os casos de sucesso |
+| `curiosidade.json` | A curiosidade da semana |
+| `site.json` | Kicker, título, frase de apoio e o link do Teams |
+
+Os indicadores do topo (trilhas disponíveis, ferramentas e horas de conteúdo)
+são **calculados** a partir de `trilhas.json`. Não existe número digitado à mão.
+
+### Adicionar ou mudar uma trilha
+
+Acrescente um item em `trilhas.json`:
+
+```json
+{
+  "id": "power-bi",
+  "nome": "Power BI",
+  "icone": "barras",
+  "descricao": "Construa relatórios e dashboards interativos de dados.",
+  "nivel": "Iniciante",
+  "ferramenta": "Power BI",
+  "disponivel": true,
+  "link": "https://…",
+  "duracaoHoras": 5,
+  "aulas": 8,
+  "publico": "Quem acompanha indicadores e quer montar o próprio painel.",
+  "aprende": ["Conectar a primeira fonte", "Modelar os dados", "Publicar o relatório"],
+  "preRequisitos": ["Conta Microsoft 365 da Syensqo"]
+}
+```
+
+- `disponivel: false` põe a trilha no grupo **Em breve**, discreta e sem link —
+  aí `link` pode ficar de fora.
+- `icone` é um nome de `assets/icons/icones.js` (`raio`, `serie`, `monitor`,
+  `fluxo`, `barras`, `fabrica`, `dados`, `livro`…). Nome desconhecido
+  simplesmente não desenha ícone, sem quebrar o card.
+- `duracaoHoras`, `aulas`, `aprende`, `preRequisitos` e `publico` são opcionais:
+  cada um some do card e do painel quando não existe.
+
+Para mudar as recomendações de "Por onde começar", edite `perfis` no mesmo
+arquivo — cada perfil aponta para o `id` de uma trilha. Perfil apontando para
+trilha inexistente é ignorado, e a seção some se nenhum sobrar.
+
+---
+
+## Portal de Notícias (`noticias.html`)
+
+Publicar uma notícia são **dois passos**: criar o arquivo do texto e acrescentar
+a entrada no índice.
+
+### 1. Escreva o artigo
+
+Crie `content/noticias/<slug>.md`. O slug é o endereço da publicação: minúsculo,
+sem acento, com hífens. Modelo para copiar:
+
+```markdown
+Abertura em um parágrafo, que é o que prende a leitura. Sem repetir o título.
+
+## Primeiro subtítulo
+
+Texto do primeiro bloco. Pode usar **negrito**, *itálico*, [link](https://…),
+listas, tabelas, citação com `>` e bloco de código.
+
+## Segundo subtítulo
+
+Fechamento, de preferência com o que muda na prática para quem leu.
+```
+
+### 2. Acrescente ao índice
+
+Em `content/noticias/index.json`, no topo da lista `artigos`:
+
+```json
+{
+  "slug": "nome-do-arquivo-sem-md",
+  "titulo": "Título da publicação",
+  "data": "2026-09-21",
+  "categoria": "IA",
+  "resumo": "Uma ou duas frases que aparecem no card e no topo do artigo.",
+  "autor": "Seu nome",
+  "destaque": false,
+  "link": "",
+  "capa": "",
+  "rascunho": false
+}
+```
+
+| Campo | Para que serve |
+| --- | --- |
+| `destaque` | `true` põe a publicação como manchete; sem nenhum, entra a mais recente |
+| `link` | Botão "Abrir link relacionado" no fim do artigo; sem ele, o botão some |
+| `capa` | Imagem em `content/noticias/img/`; sem ela, o card usa a capa tipográfica |
+| `rascunho` | `true` marca visivelmente que o texto ainda está sendo escrito |
+
+O **tempo de leitura é calculado** do próprio texto (200 palavras por minuto) —
+não existe campo para isso. As categorias dos chips saem sozinhas do índice: use
+uma categoria nova e o chip aparece.
+
+### Detalhes que valem saber
+
+- O endereço de uma publicação é `noticias.html#/<slug>`, e funciona para
+  compartilhar direto.
+- Slug que não existe mostra "Artigo não encontrado" com a volta para a lista,
+  em vez de página em branco.
+- O corpo do artigo é a única parte do site renderizada como HTML. Por isso o
+  HTML embutido no Markdown fica **desligado**: uma tag escrita no texto aparece
+  como texto. Link e imagem só aceitam `http:`, `https:` e `mailto:` (mais
+  endereço relativo e âncora) — `javascript:` e `data:` perdem o atributo. O
+  renderizador é o `marked`, versionado em `assets/vendor/` com a licença MIT
+  junto — nada é buscado de CDN.
+
+---
 
 ## Adicionar uma área nova
 
