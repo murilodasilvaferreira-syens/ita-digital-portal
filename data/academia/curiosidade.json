@@ -1,0 +1,11 @@
+{
+  "_comment": "Curiosidade da semana. Trocar o conteúdo deste arquivo troca o card na página. 'dica' é opcional.",
+  "categoria": "Inteligência Artificial",
+  "icone": "ideia",
+  "titulo": "O que é um \"prompt\" e por que a forma de perguntar muda tudo",
+  "paragrafos": [
+    "Um prompt é simplesmente a instrução ou pergunta que você dá para uma IA (como o Copilot ou o ChatGPT). A qualidade da resposta depende muito de como você pergunta: quanto mais claro e específico for o pedido, melhor será o resultado.",
+    "Por exemplo, em vez de pedir \"me ajude com um relatório\", tente \"crie um resumo de 5 linhas sobre a produção de julho, em tom formal, para enviar à diretoria\". Dar contexto, formato e objetivo ajuda a IA a entregar exatamente o que você precisa."
+  ],
+  "dica": "Regra prática: trate a IA como um assistente muito capaz, mas que só acerta quando você explica bem o que quer. Quanto melhor o pedido, melhor a resposta."
+}

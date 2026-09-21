@@ -1,0 +1,100 @@
+{
+  "_comment": "Trilhas da Academia Digital. Campos obrigatórios: id, nome, icone, descricao, nivel, disponivel. Opcionais (some quando ausentes): link, duracaoHoras, aulas, aprende[], preRequisitos[], publico. O ícone é um nome de assets/icons/icones.js.",
+  "trilhas": [
+    {
+      "id": "power-apps",
+      "nome": "Power Apps",
+      "icone": "raio",
+      "descricao": "Crie aplicativos low-code para automatizar processos do dia a dia.",
+      "nivel": "Iniciante",
+      "ferramenta": "Power Apps",
+      "disponivel": true,
+      "link": "https://syensqosa.sharepoint.com/:f:/s/shditatibamanutenodocumentosscop1findustrial/IgA0LMeV9IzkSZtTmZzEgZOHAbTyOjbJKczS8-yro-d-a_Q?e=9b6qU8",
+      "duracaoHoras": 4,
+      "aulas": 6,
+      "publico": "Quem preenche formulário, checklist ou planilha no dia a dia e quer virar isso em um aplicativo.",
+      "aprende": [
+        "Montar a primeira tela e conectar a uma lista do SharePoint",
+        "Formulários com validação, anexo de foto e assinatura",
+        "Publicar o app e liberar para a equipe no celular"
+      ],
+      "preRequisitos": [
+        "Conta Microsoft 365 da Syensqo",
+        "Nenhum conhecimento de programação"
+      ]
+    },
+    {
+      "id": "seeq",
+      "nome": "Seeq",
+      "icone": "serie",
+      "descricao": "Análise avançada de dados de séries temporais industriais.",
+      "nivel": "Avançado",
+      "ferramenta": "Seeq",
+      "disponivel": false,
+      "duracaoHoras": 6
+    },
+    {
+      "id": "pi-vision",
+      "nome": "PI Vision",
+      "icone": "monitor",
+      "descricao": "Visualização de dados de processo em tempo real com dashboards.",
+      "nivel": "Intermediário",
+      "ferramenta": "PI Vision",
+      "disponivel": false,
+      "duracaoHoras": 3
+    },
+    {
+      "id": "power-automate",
+      "nome": "Power Automate",
+      "icone": "fluxo",
+      "descricao": "Automatize fluxos de trabalho e integre sistemas sem código.",
+      "nivel": "Iniciante",
+      "ferramenta": "Power Automate",
+      "disponivel": false,
+      "duracaoHoras": 3
+    },
+    {
+      "id": "power-bi",
+      "nome": "Power BI",
+      "icone": "barras",
+      "descricao": "Construa relatórios e dashboards interativos de dados.",
+      "nivel": "Avançado",
+      "ferramenta": "Power BI",
+      "disponivel": false,
+      "duracaoHoras": 5
+    },
+    {
+      "id": "pi-system",
+      "nome": "PI System",
+      "icone": "fabrica",
+      "descricao": "Fundamentos de coleta e historização de dados de processo.",
+      "nivel": "Avançado",
+      "ferramenta": "PI System",
+      "disponivel": false,
+      "duracaoHoras": 4
+    }
+  ],
+  "perfis": [
+    {
+      "id": "operacao",
+      "nome": "Operação",
+      "icone": "fabrica",
+      "descricao": "Está na planta e quer tirar papel e planilha do caminho.",
+      "trilha": "power-apps"
+    },
+    {
+      "id": "engenharia",
+      "nome": "Engenharia",
+      "icone": "serie",
+      "descricao": "Investiga processo e precisa analisar dados de verdade.",
+      "trilha": "seeq"
+    },
+    {
+      "id": "gestao",
+      "nome": "Gestão",
+      "icone": "barras",
+      "descricao": "Acompanha indicadores e quer enxergar o todo num painel.",
+      "trilha": "power-bi"
+    }
+  ]
+}

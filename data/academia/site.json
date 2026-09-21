@@ -1,0 +1,14 @@
+{
+  "_comment": "Textos e links da página da Academia.",
+  "kicker": "Academia Digital · Syensqo Itatiba",
+  "tituloAntes": "Capacite-se nas ferramentas que transformam ",
+  "tituloDestaque": "dados em decisões",
+  "tituloDepois": ".",
+  "apoio": "Trilhas de aprendizado práticas em Power Apps, Seeq, PI Vision e outras ferramentas que aceleram a inovação no dia a dia.",
+  "teams": {
+    "url": "https://teams.microsoft.com/l/chat/0/0?users=murilo.dasilvaferreira@syensqo.com",
+    "titulo": "Não encontrou o que precisa?",
+    "texto": "Fale com o time Digital e diga qual ferramenta você quer aprender.",
+    "rotulo": "Falar com o Digital"
+  }
+}

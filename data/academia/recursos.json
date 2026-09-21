@@ -1,0 +1,35 @@
+{
+  "_comment": "Atalhos da seção Recursos rápidos. Todos abrem em nova aba.",
+  "recursos": [
+    {
+      "titulo": "Vídeos tutoriais",
+      "descricao": "Passo a passo em vídeo",
+      "icone": "video",
+      "url": "https://syensqosa.sharepoint.com/:f:/s/shditatibamanutenodocumentosscop1findustrial/IgBgw-Zi-h5rQ7nd_CQfu75jAdpBO12ZtZJr3cwadH1stl0?e=ZVD4Vm"
+    },
+    {
+      "titulo": "Guias em PDF",
+      "descricao": "Materiais para download",
+      "icone": "documento",
+      "url": "https://syensqosa.sharepoint.com/:f:/s/shditatibamanutenodocumentosscop1findustrial/IgAGoFFrUwP4QIx1EcryXE3FAQtIExTInlaUcHIpByYNpKQ?e=V8qMhr"
+    },
+    {
+      "titulo": "Documentação",
+      "descricao": "Referências oficiais",
+      "icone": "livro",
+      "url": "https://learn.microsoft.com/pt-br/power-apps/"
+    },
+    {
+      "titulo": "Arquivos de suporte",
+      "descricao": "Materiais de apoio",
+      "icone": "pasta",
+      "url": "https://syensqosa.sharepoint.com/:f:/s/shditatibamanutenodocumentosscop1findustrial/IgAwzcIMIdANQY49DGCwqGsqAa575GAaFFsdr1kiEEJbxqU?e=V7nfuL"
+    },
+    {
+      "titulo": "Comunidade",
+      "descricao": "Tire dúvidas com o time",
+      "icone": "chat",
+      "url": "https://teams.microsoft.com/l/chat/0/0?users=murilo.dasilvaferreira@syensqo.com"
+    }
+  ]
+}

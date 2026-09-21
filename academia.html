@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Academia Digital · Syensqo Itatiba</title>
+<meta name="description" content="Trilhas de treinamento em ferramentas digitais: Power Apps, Seeq, PI Vision e mais.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/academia.css">
+</head>
+<body>
+
+<div id="estado-carga" class="academia__estado">
+  <p>Carregando a Academia…</p>
+</div>
+
+<div id="pagina" hidden>
+
+  <!-- Hero --------------------------------------------------------------- -->
+  <header class="hero">
+    <div class="hero__conteudo">
+      <div class="topo hero__topo">
+        <p class="topo__kicker">
+          <span class="topo__fio" aria-hidden="true"></span><span id="hero-kicker"></span>
+        </p>
+        <h1 class="topo__titulo" id="hero-titulo"></h1>
+        <p class="topo__apoio" id="hero-apoio"></p>
+      </div>
+
+      <p class="hero__acoes">
+        <a class="botao botao--primario" href="#trilhas" data-rolar>Explorar trilhas</a>
+      </p>
+
+      <dl class="indicadores" id="indicadores"></dl>
+    </div>
+  </header>
+
+  <main class="academia">
+
+    <!-- Por onde começar -------------------------------------------------- -->
+    <section class="secao" id="comecar" hidden>
+      <div class="secao__cabecalho">
+        <h2 class="secao__titulo">Por onde começar</h2>
+        <p class="secao__apoio">Escolha o perfil mais parecido com o seu dia a dia.</p>
+      </div>
+      <div class="perfis" id="perfis"></div>
+    </section>
+
+    <!-- Trilhas ----------------------------------------------------------- -->
+    <section class="secao" id="trilhas">
+      <div class="secao__cabecalho">
+        <h2 class="secao__titulo">Trilhas de aprendizado</h2>
+        <p class="secao__apoio">Escolha uma ferramenta e evolua no seu ritmo.</p>
+      </div>
+
+      <div class="filtros-academia" role="group" aria-label="Filtros das trilhas">
+        <div class="filtros-academia__grupo" id="filtro-nivel" role="group" aria-label="Filtrar por nível"></div>
+        <div class="filtros-academia__grupo" id="filtro-ferramenta" role="group" aria-label="Filtrar por ferramenta"></div>
+        <div class="filtros-academia__busca">
+          <label class="visualmente-oculto" for="busca">Buscar trilha</label>
+          <input class="campo campo--busca" id="busca" type="search" placeholder="Buscar trilha" autocomplete="off">
+          <button class="botao botao--texto" id="limpar" type="button" hidden>Limpar filtros</button>
+        </div>
+      </div>
+
+      <p class="academia__resumo" id="resumo-trilhas" aria-live="polite"></p>
+
+      <div class="trilhas" id="trilhas-disponiveis"></div>
+
+      <div class="trilhas-embreve" id="bloco-embreve" hidden>
+        <h3 class="trilhas-embreve__titulo">Em breve</h3>
+        <div class="trilhas trilhas--discretas" id="trilhas-embreve"></div>
+      </div>
+
+      <p class="academia__vazio" id="vazio" hidden>
+        Nenhuma trilha corresponde aos filtros.
+        <button class="botao botao--texto" type="button" data-limpar>Limpar filtros</button>
+      </p>
+    </section>
+
+    <!-- Recursos rápidos --------------------------------------------------- -->
+    <section class="secao" id="recursos">
+      <div class="secao__cabecalho">
+        <h2 class="secao__titulo">Recursos rápidos</h2>
+        <p class="secao__apoio">Materiais de apoio e canais de ajuda.</p>
+      </div>
+      <div class="atalhos" id="atalhos"></div>
+    </section>
+
+    <!-- Curiosidade -------------------------------------------------------- -->
+    <section class="secao" id="curiosidade" hidden>
+      <div class="secao__cabecalho">
+        <h2 class="secao__titulo">Curiosidade da semana</h2>
+        <p class="secao__apoio">Um insight simples para expandir seu conhecimento.</p>
+      </div>
+      <article class="curiosidade" id="curiosidade-card"></article>
+    </section>
+
+    <!-- Casos de sucesso ---------------------------------------------------- -->
+    <section class="secao" id="casos">
+      <div class="secao__cabecalho">
+        <h2 class="secao__titulo">Casos de sucesso</h2>
+        <p class="secao__apoio">Histórias reais de como a digitalização gerou impacto na planta.</p>
+      </div>
+      <div class="casos" id="casos-lista"></div>
+    </section>
+
+    <!-- Fechamento ---------------------------------------------------------- -->
+    <section class="faixa" id="faixa-final"></section>
+  </main>
+</div>
+
+<!-- Painel de detalhe da trilha ------------------------------------------- -->
+<dialog class="painel" id="painel-trilha" aria-label="Detalhe da trilha">
+  <button class="painel__fechar" type="button" data-fechar aria-label="Fechar">
+    <span class="visualmente-oculto">Fechar</span>
+  </button>
+  <div class="painel__corpo" id="painel-corpo"></div>
+</dialog>
+
+<script type="module" src="assets/js/academia.js"></script>
+</body>
+</html>

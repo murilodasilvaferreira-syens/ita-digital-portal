@@ -1,0 +1,23 @@
+{
+  "_comment": "Casos de sucesso. 'descricao' é o texto corrido; se preferir estruturar, use desafio, solucao e resultado — quando existirem, aparecem no lugar da descrição. Campos ausentes são omitidos.",
+  "casos": [
+    {
+      "ferramenta": "Data Engineering",
+      "icone": "dados",
+      "titulo": "Pipelines de dados automatizados com ETL",
+      "descricao": "Construção de pipelines de dados com ETL (Extract, Transform, Load) automatizado, integrando diferentes fontes de dados corporativas (como SAP) em um fluxo unificado. Os dados são extraídos, tratados e padronizados automaticamente e alimentam dashboards em Power BI, eliminando processos manuais, garantindo informações confiáveis e atualizadas, e gerando valor direto para a tomada de decisão do negócio."
+    },
+    {
+      "ferramenta": "Power Apps",
+      "icone": "raio",
+      "titulo": "Digitalização de inspeções de campo",
+      "descricao": "Substituição de checklists em papel por um app móvel que registra inspeções, fotos e assinaturas em tempo real, com dados sincronizados automaticamente para dashboards."
+    },
+    {
+      "ferramenta": "Seeq",
+      "icone": "serie",
+      "titulo": "Otimização de coluna de destilação via EDA",
+      "descricao": "Análise exploratória de dados (EDA) sobre séries temporais das variáveis de processo que governam a destilação. Foram identificados padrões e correlações entre variáveis manipuladas e a qualidade de produto, revelando janelas operacionais ótimas e reduzindo a variabilidade do processo para maximizar pureza e eficiência energética."
+    }
+  ]
+}
