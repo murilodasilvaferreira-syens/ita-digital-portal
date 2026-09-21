@@ -1,39 +1,14 @@
 /* ==========================================================================
    Hub (hub.html) — porta de entrada do roadmap digital.
 
-   Usa os mesmos tokens de assets/css/tokens.css das páginas de área: nenhuma
-   cor e nenhuma fonte são redeclaradas aqui. A página cresce com o conteúdo;
-   quem rola é o iframe do SharePoint.
+   Usa tokens.css e base.css: nenhuma cor, fonte ou primitiva é redeclarada.
+   A página cresce com o conteúdo; quem rola é o iframe do SharePoint.
    ========================================================================== */
 
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
-[hidden] { display: none !important; }
-
-html { scrollbar-gutter: stable; }
-
-html,
-body { margin: 0; }
-
-body {
-  background: var(--cor-fundo);
-  color: var(--cor-tinta-2);
-  font-family: var(--fonte-corpo);
-  font-size: var(--texto-corpo);
-  line-height: var(--altura-corpo);
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2 {
-  font-family: var(--fonte-titulo);
-  color: var(--cor-tinta);
-  margin: 0;
-  line-height: 1.2;
-}
-
-p, dl, dd { margin: 0; }
+/* Duas sobrescritas do hub sobre base.css, mantidas como estavam: títulos um
+   pouco mais fechados, e foco escuro — que sobre o card claro tem mais
+   contraste que o laranja padrão. */
+h1, h2 { line-height: 1.2; }
 
 :focus-visible {
   outline: 2px solid var(--cor-tinta);
