@@ -70,6 +70,21 @@ function escreverHash(parcial, { substituir = false } = {}) {
   }
 }
 
+/** '2026-09-17T17:41:14Z' -> '17 set 2026, 14:41'. Só para o cabeçalho. */
+const FMT_CURTO = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+});
+
+function dataHoraCurta(iso) {
+  const data = new Date(iso);
+  if (Number.isNaN(data.getTime())) return '';
+  const partes = Object.fromEntries(
+    FMT_CURTO.formatToParts(data).filter((p) => p.type !== 'literal').map((p) => [p.type, p.value]),
+  );
+  const mes = partes.month.replace('.', '');
+  return `${partes.day} ${mes} ${partes.year}, ${partes.hour}:${partes.minute}`;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Filtro                                                                      */
 /* -------------------------------------------------------------------------- */
@@ -155,10 +170,16 @@ async function iniciar() {
     nodeDescricao.hidden = true;
   }
 
+  // No cabeçalho a data vai na forma curta, para não empurrar os botões para
+  // uma linha própria; o texto por extenso fica no title.
   const atualizacao = formatarDataHora(dataset.atualizadoEm);
   const nodeAtualizacao = $('#atualizacao');
-  if (atualizacao) nodeAtualizacao.textContent = `Dados atualizados em ${atualizacao}`;
-  else nodeAtualizacao.hidden = true;
+  if (atualizacao) {
+    nodeAtualizacao.textContent = `Atualizado ${dataHoraCurta(dataset.atualizadoEm)}`;
+    nodeAtualizacao.title = `Dados atualizados em ${atualizacao}`;
+  } else {
+    nodeAtualizacao.hidden = true;
+  }
 
   const botaoNova = $('#botao-nova');
   botaoNova.href = site.newInitiative?.url ?? '#';

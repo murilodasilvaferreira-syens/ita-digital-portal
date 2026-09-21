@@ -92,59 +92,97 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Esqueleto da aplicação ---------------------------------------------- */
 
-/* --- Cabeçalho: duas faixas compactas -------------------------------------- */
+/* --- Cabeçalho -------------------------------------------------------------
+   Bloco de identidade (kicker + nome da área + linha de apoio) e, separada por
+   uma divisória fina, a faixa de filtros. O laranja aparece uma única vez: no
+   fio que abre o kicker. Todo o resto é a paleta neutra.
+   -------------------------------------------------------------------------- */
 
 .cabecalho {
   background: var(--cor-superficie);
   border-bottom: var(--borda-fina);
-  padding: var(--esp-3) var(--esp-5);
+  padding: 13px var(--esp-5) 11px;
   display: grid;
-  gap: var(--esp-2);
+  gap: 10px;
 }
 
 .cabecalho__topo {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--esp-2) var(--esp-4);
+  gap: var(--esp-2) var(--esp-5);
 }
 
 .cabecalho__identidade {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--esp-1) var(--esp-3);
+  display: grid;
+  /* minmax(0,1fr): sem isso a coluna se dimensiona pelo texto sem quebra da
+     linha de apoio, e os botões são empurrados para uma faixa própria. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3px;
+  /* Base fixa em vez de `auto`: com `auto` a linha de apoio longa define a
+     largura do bloco e joga os botões para uma faixa própria — era a diferença
+     de 50px entre uma área de descrição longa e outra curta. */
+  flex: 1 1 320px;
   min-width: 0;
 }
 
-/* O nome do portal só aparece onde sobra espaço: a área é que manda aqui. */
-.cabecalho__supra {
-  font-family: var(--fonte-titulo);
-  font-size: 10px;
-  font-weight: var(--peso-medio);
-  letter-spacing: var(--tracking-rotulo);
-  text-transform: uppercase;
-  color: var(--cor-quente);
-  flex-basis: 100%;
+/* Nome da área e kicker dividem a mesma linha de base. */
+.cabecalho__linha-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--esp-2) var(--esp-3);
+  min-width: 0;
 }
 
 .cabecalho__titulo {
-  font-size: var(--texto-lg);
+  font-size: clamp(21px, 2.1vw, 26px);
   font-weight: var(--peso-forte);
-  line-height: 1.2;
+  /* Leve negativo: dá ar de display sem apertar a leitura. */
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--cor-tinta);
+  animation: cabecalho-entrada var(--dur-lenta) var(--easing) 70ms backwards;
+}
+
+.cabecalho__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cor-tinta-3);
+  white-space: nowrap;
+  animation: cabecalho-entrada var(--dur-lenta) var(--easing) backwards;
+}
+
+/* O único acento de cor do cabeçalho — e o único movimento próprio dele. */
+.cabecalho__fio {
+  display: block;
+  width: 24px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--cor-laranja);
+  transform-origin: left center;
+  animation: cabecalho-fio 560ms var(--easing) 180ms backwards;
 }
 
 .cabecalho__descricao {
   font-size: var(--texto-sm);
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--cor-tinta-3);
-  max-width: 58ch;
-  /* Uma linha discreta ao lado do nome; o texto inteiro fica no title. */
+  max-width: 88ch;
+  /* Uma linha editorial: o texto inteiro fica no title. */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
-  flex: 1 1 260px;
+  animation: cabecalho-entrada var(--dur-lenta) var(--easing) 140ms backwards;
 }
 
 .cabecalho__acoes {
@@ -157,8 +195,19 @@ button, input, select { font: inherit; color: inherit; }
 /* Data de atualização na mesma linha dos botões, discreta. */
 .cabecalho__atualizacao {
   font-size: var(--texto-xs);
-  color: var(--cor-quente);
+  color: var(--cor-tinta-3);
   white-space: nowrap;
+  margin-right: var(--esp-1);
+}
+
+@keyframes cabecalho-entrada {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes cabecalho-fio {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* --- Botões --------------------------------------------------------------- */
@@ -223,12 +272,30 @@ button, input, select { font: inherit; color: inherit; }
 
 /* --- Filtros -------------------------------------------------------------- */
 
+/* Divisória fina separa a faixa de filtros do bloco de identidade. */
 .filtros {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--esp-3);
+  gap: 10px var(--esp-3);
+  padding-top: 10px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+/* No cabeçalho o laranja é exclusivo do fio do kicker: a ação primária e o
+   chip ativo pesam pelo tom escuro, não pela cor — o que de quebra sobe muito
+   o contraste do texto (branco sobre #3a3a3a em vez de sobre o laranja). */
+.cabecalho .botao--primario {
+  background: var(--cor-tinta-2);
+  color: #fff;
+}
+.cabecalho .botao--primario:hover { background: var(--cor-tinta); }
+
+.cabecalho .chip--ativo {
+  background: var(--cor-tinta-2);
+  border-color: var(--cor-tinta-2);
+  color: #fff;
 }
 
 .filtros__chips,
@@ -1169,18 +1236,28 @@ button, input, select { font: inherit; color: inherit; }
 }
 
 @media (max-width: 720px) {
-  .cabecalho { padding: var(--esp-3) var(--esp-4); }
-  .cabecalho__topo { flex-direction: column; align-items: stretch; gap: var(--esp-2); }
-  .cabecalho__descricao { white-space: normal; flex-basis: auto; }
+  .cabecalho { padding: var(--esp-3) var(--esp-4) 12px; }
+  .cabecalho__topo { flex-direction: column; align-items: stretch; gap: 10px; }
+
+  /* Em coluna, o flex-basis passaria a valer como ALTURA e esticaria as linhas
+     do grid de identidade. Aqui ele volta a ser dimensionado pelo conteúdo. */
+  .cabecalho__identidade { flex: 0 0 auto; }
+
+  /* A data curta cabe ao lado dos botões: só quebra sozinha quando não couber,
+     em vez de reservar uma linha inteira para si. */
   .cabecalho__acoes { width: 100%; }
-  .cabecalho__atualizacao { flex-basis: 100%; }
-  .botao { flex: 1; }
+  .botao { flex: 1 1 auto; }
   .filtros { gap: var(--esp-2); }
   .filtros__controles { width: 100%; }
   .campo { flex: 1; min-width: 0; }
 }
 
 @media (max-width: 480px) {
+  /* No celular a data não cabe ao lado: ganha a própria linha, e os dois
+     botões dividem a largura em partes iguais. */
+  .cabecalho__atualizacao { flex-basis: 100%; margin-right: 0; }
+  .botao { flex: 1 1 0; }
+
   /* Seletor espremido vira "Todos…": em coluna única cada um ganha a linha. */
   .filtros__controles { display: grid; grid-template-columns: 1fr 1fr; }
   .campo--busca { grid-column: 1 / -1; }
