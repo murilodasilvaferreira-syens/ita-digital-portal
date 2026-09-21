@@ -5,70 +5,70 @@
       "slug": "digital",
       "name": "Digital",
       "description": "Plataforma de dados, IA e Digital Batchsheet — a base técnica que as demais áreas consomem.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "confiabilidade",
       "name": "Confiabilidade",
       "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Reliabilty-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "automacao",
       "name": "Automação",
       "description": "PI System, alarmes do DCS, acionamentos SIS e receitas de batelada.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Automation-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "sgi",
       "name": "SGI",
       "description": "Gestão documental, 5S, reclamações de clientes e o portal do Sistema de Gestão Integrado.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/SGI-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "laboratorio",
       "name": "Laboratório",
       "description": "Central de Amostras: controle, follow-up e rastreabilidade das análises.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/DCA-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "producao",
       "name": "Produção",
       "description": "Aplicativos de produção, inspeções de turno e analytics do processo produtivo.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Production-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "processos",
       "name": "Processos",
       "description": "Analytics de bateladas, OEE e capacitação em análise de dados de processo.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Process-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "manutencao",
       "name": "Manutenção",
       "description": "Custos, planejamento e indicadores de manutenção em analytics.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Maintenance-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "hse",
       "name": "HSE",
       "description": "Aplicativos de segurança, saúde e meio ambiente.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/HSE-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     },
     {
       "slug": "logistica",
       "name": "Logística",
       "description": "Aplicativos de logística, inspeções e relatórios de expedição.",
-      "pageUrl": "",
+      "pageUrl": "https://syensqosa.sharepoint.com/sites/GBUPC-DIGITAL-LATAM/SitePages/Logistic-Digital-Roadmap.aspx",
       "ocultarEstatisticas": false
     }
   ]
