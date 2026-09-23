@@ -109,10 +109,10 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 26px;
   font-size: 11.5px;
   font-weight: var(--peso-forte);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--cor-quente);
 }
@@ -143,7 +143,7 @@
 .hero__destaque { color: var(--cor-laranja); }
 
 .hero__apoio {
-  margin-top: 24px;
+  margin-top: 26px;
   max-width: 460px;
   font-size: 17px;
   line-height: 1.6;
@@ -153,7 +153,7 @@
 /* Barra de busca */
 .busca {
   position: relative;
-  margin-top: 32px;
+  margin-top: 34px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -243,8 +243,6 @@
 .hero__cta:hover { background: var(--cor-laranja-forte); box-shadow: var(--sombra-cta-forte); transform: translateY(-1px); }
 .hero .botao--secundario { font-size: 15px; padding: 14px 24px; border-radius: var(--raio-lg); }
 
-.hero__cta-seta, .link-seta__icone, .hero__cta-seta { }
-
 /* Arte do hero */
 .hero__arte { position: relative; }
 .hero__img {
@@ -307,7 +305,7 @@
 .secao__kicker {
   font-size: 11.5px;
   font-weight: var(--peso-forte);
-  letter-spacing: 0.22em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--cor-quente);
   margin-bottom: 12px;
@@ -507,7 +505,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 360px;
+  min-height: 400px;
   border-radius: var(--raio-2xl);
   overflow: hidden;
   text-decoration: none;
@@ -606,6 +604,7 @@
   box-shadow: 0 20px 50px rgba(58, 58, 58, 0.06);
 }
 .fechamento__glow { position: absolute; inset: 0; background: radial-gradient(700px circle at 88% 50%, rgba(232, 117, 42, 0.1), transparent 62%); pointer-events: none; }
+.fechamento__rede { position: absolute; top: 0; right: 0; height: 100%; max-width: 55%; color: var(--cor-laranja); pointer-events: none; }
 .fechamento__conteudo { position: relative; max-width: 640px; }
 .fechamento__titulo { font-size: clamp(30px, 4.4vw, 44px); line-height: 1.05; font-weight: var(--peso-forte); letter-spacing: -0.03em; color: var(--cor-tinta); }
 .fechamento__apoio { margin-top: 18px; font-size: 16px; line-height: 1.6; color: var(--cor-tinta-2); max-width: 520px; }

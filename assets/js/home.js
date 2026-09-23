@@ -11,11 +11,31 @@
  */
 
 import {
-  criar, linkExterno, normalizar, debounce,
-  animarContagem, ligarSpotlight, ligarRolagemSuave, movimentoReduzido, plural,
+  criar, normalizar, debounce,
+  animarContagem, ligarSpotlight, ligarRolagemSuave, plural,
 } from './ui.js';
 import { criarDataset, FASE, formatarData } from './data.js';
 import { icone } from '../icons/icones.js';
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/** Cria um nó SVG com atributos, sem innerHTML (mesma técnica de icones.js). */
+function svgEl(tag, atributos) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [chave, valor] of Object.entries(atributos)) node.setAttribute(chave, String(valor));
+  return node;
+}
+
+/** Rede de nós decorativa do card de destaque (aria-hidden, puro enfeite). */
+function criarRedeDestaque() {
+  const svg = svgEl('svg', { class: 'novo-destaque__rede', viewBox: '0 0 300 300', 'aria-hidden': 'true', focusable: 'false' });
+  const linhas = svgEl('g', { stroke: 'currentColor', 'stroke-width': '1', opacity: '0.5', fill: 'none' });
+  linhas.appendChild(svgEl('path', { d: 'M40 60 L120 90 L200 40 L260 110 M120 90 L150 180 L90 230 M200 40 L230 130 L150 180 M230 130 L280 200' }));
+  svg.appendChild(linhas);
+  const nos = [[40, 60, 3.5], [120, 90, 4.5], [200, 40, 3], [150, 180, 5], [90, 230, 3], [230, 130, 3.5], [280, 200, 3], [260, 110, 2.5]];
+  for (const [cx, cy, r] of nos) svg.appendChild(svgEl('circle', { cx, cy, r, fill: 'currentColor' }));
+  return svg;
+}
 
 /* -------------------------------------------------------------------------- */
 /* Carga                                                                       */
@@ -288,6 +308,7 @@ function criarDestaque(item) {
   const ehArtigo = item.tipo === 'artigo';
   const card = criar('a', 'novo-destaque');
   card.href = item.href;
+  card.appendChild(criarRedeDestaque());
 
   const tags = criar('div', 'novo-destaque__tags');
   tags.appendChild(criar('span', 'novo-destaque__tag novo-destaque__tag--acento', 'Destaque'));
@@ -414,6 +435,7 @@ function montarBusca(itens, trilhas, artigos) {
   function fechar() {
     caixa.hidden = true;
     input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
     selecionavel = [];
     indiceSel = -1;
   }
@@ -421,8 +443,12 @@ function montarBusca(itens, trilhas, artigos) {
   function marcarSelecao() {
     selecionavel.forEach((el, i) => {
       el.setAttribute('aria-selected', String(i === indiceSel));
-      if (i === indiceSel) el.scrollIntoView({ block: 'nearest' });
+      if (i === indiceSel) {
+        el.scrollIntoView({ block: 'nearest' });
+        input.setAttribute('aria-activedescendant', el.id);
+      }
     });
+    if (indiceSel < 0) input.removeAttribute('aria-activedescendant');
   }
 
   function render(consulta) {
@@ -430,6 +456,7 @@ function montarBusca(itens, trilhas, artigos) {
     caixa.textContent = '';
     selecionavel = [];
     indiceSel = -1;
+    input.removeAttribute('aria-activedescendant');
 
     if (!q) { fechar(); return; }
 
@@ -441,13 +468,17 @@ function montarBusca(itens, trilhas, artigos) {
       return;
     }
 
+    let ordem = 0;
     for (const frente of ORDEM) {
       const doGrupo = achados.filter((e) => e.frente === frente).slice(0, 4);
       if (!doGrupo.length) continue;
       const grupo = criar('div', 'busca__grupo');
+      grupo.setAttribute('role', 'group');
+      grupo.setAttribute('aria-label', frente);
       grupo.appendChild(criar('div', 'busca__grupo-rotulo', frente));
       for (const e of doGrupo) {
         const item = criar('a', 'busca__item');
+        item.id = `busca-op-${ordem++}`;
         item.href = e.href;
         item.setAttribute('role', 'option');
         item.setAttribute('aria-selected', 'false');
