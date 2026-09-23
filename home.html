@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Transformação Digital · Syensqo Itatiba</title>
+<meta name="description" content="A porta de entrada da Transformação Digital de Itatiba: roadmaps, capacitação e novidades num só lugar.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/home.css">
+</head>
+<body class="home">
+
+<div id="estado-carga" class="home__estado">
+  <p>Carregando o portal…</p>
+</div>
+
+<div id="pagina" class="home__pagina" hidden>
+
+  <!-- Cabeçalho ---------------------------------------------------------- -->
+  <header class="home-nav">
+    <a class="home-nav__marca" href="home.html" aria-label="Transformação Digital · Itatiba — início">
+      <span class="home-nav__logo" aria-hidden="true"></span>
+      <span class="home-nav__marca-texto">
+        <span class="home-nav__marca-titulo">Transformação Digital</span>
+        <span class="home-nav__marca-sub">Itatiba</span>
+      </span>
+    </a>
+    <nav class="home-nav__links" aria-label="Seções do portal">
+      <a class="home-nav__link" href="hub.html">Roadmaps</a>
+      <a class="home-nav__link" href="academia.html">Academia</a>
+      <a class="home-nav__link" href="noticias.html">Notícias</a>
+      <a class="home-nav__teams" id="nav-teams" target="_blank" rel="noopener">
+        <span class="home-nav__teams-icone" aria-hidden="true"></span>Teams
+      </a>
+    </nav>
+  </header>
+
+  <!-- Hero --------------------------------------------------------------- -->
+  <section class="hero" aria-labelledby="hero-titulo">
+    <div class="hero__texto">
+      <p class="hero__kicker">
+        <span class="hero__ponto" aria-hidden="true"></span>Transformação Digital · Itatiba
+      </p>
+      <h1 class="hero__titulo" id="hero-titulo">Uma planta<br>que <span class="hero__destaque">pensa.</span></h1>
+      <p class="hero__apoio">O ponto de entrada da Transformação Digital de Itatiba. Uma central de inteligência que conecta roadmaps, capacitação e novidades — num só lugar.</p>
+
+      <form class="busca" id="busca-form" role="search" autocomplete="off">
+        <span class="busca__icone" aria-hidden="true"></span>
+        <label class="visualmente-oculto" for="busca-input">Buscar iniciativas, trilhas ou artigos</label>
+        <input class="busca__campo" id="busca-input" type="search" placeholder="Buscar iniciativas, trilhas ou artigos"
+               role="combobox" aria-expanded="false" aria-controls="busca-resultados" aria-autocomplete="list">
+        <button class="busca__botao" type="submit">Buscar</button>
+        <div class="busca__resultados" id="busca-resultados" role="listbox" aria-label="Resultados da busca" hidden></div>
+      </form>
+
+      <div class="hero__acoes">
+        <a class="botao botao--primario hero__cta" href="#destinos" data-rolar>
+          Explorar o portal<span class="hero__cta-seta" aria-hidden="true"></span>
+        </a>
+        <a class="botao botao--secundario" id="hero-teams" target="_blank" rel="noopener">Falar com o time</a>
+      </div>
+    </div>
+
+    <div class="hero__arte">
+      <picture>
+        <source type="image/webp" srcset="assets/img/hero-landing-800.webp 800w, assets/img/hero-landing-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 46vw">
+        <img class="hero__img" src="assets/img/hero-landing-800.jpg"
+             srcset="assets/img/hero-landing-800.jpg 800w, assets/img/hero-landing-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 46vw"
+             width="1600" height="900" loading="eager" decoding="async"
+             alt="Ilustração isométrica da planta de Itatiba conectada a um cérebro de inteligência artificial por fios luminosos laranja.">
+      </picture>
+      <span class="hero__no hero__no--1" aria-hidden="true"></span>
+      <span class="hero__no hero__no--2" aria-hidden="true"></span>
+      <span class="hero__no hero__no--3" aria-hidden="true"></span>
+      <div class="hero__flutuante" id="hero-flutuante" hidden>
+        <div class="hero__flutuante-topo">
+          <span class="hero__flutuante-ponto" aria-hidden="true"></span>
+          <span class="hero__flutuante-rotulo">Sistema ativo</span>
+        </div>
+        <div class="hero__flutuante-valor" id="hero-flutuante-valor"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Três destinos ------------------------------------------------------ -->
+  <section class="secao secao--destinos" id="destinos" aria-labelledby="destinos-titulo">
+    <div class="secao__topo">
+      <div class="secao__intro">
+        <p class="secao__kicker">Três destinos</p>
+        <h2 class="secao__titulo-grande" id="destinos-titulo">Por onde você quer começar?</h2>
+      </div>
+      <p class="secao__nota">Três frentes conectadas pela mesma central de inteligência.</p>
+    </div>
+    <div class="destinos" id="destinos-grade"></div>
+  </section>
+
+  <!-- Academia: trilhas -------------------------------------------------- -->
+  <section class="secao secao--academia" id="academia" aria-labelledby="academia-titulo" hidden>
+    <div class="secao__topo">
+      <div class="secao__intro">
+        <p class="secao__kicker">Academia Digital</p>
+        <h2 class="secao__titulo-grande" id="academia-titulo">Trilhas para se capacitar</h2>
+      </div>
+      <div class="secao__acoes-topo">
+        <span class="legenda">
+          <span class="legenda__ponto legenda__ponto--cheio" aria-hidden="true"></span>Disponíveis
+        </span>
+        <span class="legenda legenda--fraca">
+          <span class="legenda__ponto legenda__ponto--vazio" aria-hidden="true"></span>Em breve
+        </span>
+        <a class="link-seta" href="academia.html">Ver academia<span class="link-seta__icone" aria-hidden="true"></span></a>
+      </div>
+    </div>
+    <div class="trilhas-home" id="trilhas-grade"></div>
+  </section>
+
+  <!-- O que há de novo --------------------------------------------------- -->
+  <section class="secao secao--novo" id="novo" aria-labelledby="novo-titulo" hidden>
+    <div class="secao__topo">
+      <div class="secao__intro">
+        <p class="secao__kicker">O que há de novo</p>
+        <h2 class="secao__titulo-grande" id="novo-titulo">Movimento recente</h2>
+      </div>
+      <a class="link-seta" href="noticias.html">Ver tudo<span class="link-seta__icone" aria-hidden="true"></span></a>
+    </div>
+    <div class="novo" id="novo-grade"></div>
+  </section>
+
+  <!-- Números ------------------------------------------------------------ -->
+  <section class="secao secao--numeros" aria-labelledby="numeros-titulo">
+    <h2 class="visualmente-oculto" id="numeros-titulo">Números do site</h2>
+    <div class="numeros" id="numeros-grade"></div>
+  </section>
+
+  <!-- Fechamento --------------------------------------------------------- -->
+  <section class="secao secao--fechamento" aria-labelledby="fechamento-titulo">
+    <div class="fechamento">
+      <span class="fechamento__glow" aria-hidden="true"></span>
+      <div class="fechamento__conteudo">
+        <p class="secao__kicker secao__kicker--acento">Sua área, no mapa</p>
+        <h2 class="fechamento__titulo" id="fechamento-titulo">Tem uma ideia para a sua área?</h2>
+        <p class="fechamento__apoio">Toda transformação começa com uma iniciativa. Registre a sua e conecte-a à central de inteligência da planta.</p>
+        <div class="fechamento__acoes">
+          <a class="botao botao--primario fechamento__cta" id="fechamento-nova" target="_blank" rel="noopener">
+            <span class="fechamento__mais" aria-hidden="true"></span><span id="fechamento-nova-rotulo">Registrar nova iniciativa</span>
+          </a>
+          <a class="link-teams" id="fechamento-teams" target="_blank" rel="noopener">
+            <span class="link-teams__icone" aria-hidden="true"></span>Falar com o time pelo Teams
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rodapé ------------------------------------------------------------- -->
+  <footer class="home-rodape">
+    <div class="home-rodape__marca">
+      <div class="home-rodape__marca-topo">
+        <span class="home-nav__logo home-nav__logo--pequeno" aria-hidden="true"></span>
+        <span class="home-rodape__marca-titulo">Transformação Digital · Itatiba</span>
+      </div>
+      <p class="home-rodape__texto">Central de inteligência da planta. Roadmaps, capacitação e novidades da jornada digital.</p>
+    </div>
+    <div class="home-rodape__colunas">
+      <div class="home-rodape__coluna">
+        <span class="home-rodape__rotulo">Portal</span>
+        <a class="home-rodape__link" href="hub.html">Roadmaps</a>
+        <a class="home-rodape__link" href="academia.html">Academia Digital</a>
+        <a class="home-rodape__link" href="noticias.html">Notícias</a>
+      </div>
+      <div class="home-rodape__coluna">
+        <span class="home-rodape__rotulo">Contato</span>
+        <a class="home-rodape__link" id="rodape-nova" target="_blank" rel="noopener">Nova iniciativa</a>
+        <a class="home-rodape__link" id="rodape-teams" target="_blank" rel="noopener">Canal no Teams</a>
+      </div>
+    </div>
+  </footer>
+
+  <p class="home__copy">© 2026 Transformação Digital — Planta Itatiba. Portal interno.</p>
+</div>
+
+<script type="module" src="assets/js/home.js"></script>
+</body>
+</html>
