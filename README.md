@@ -5,6 +5,7 @@ no GitHub Pages e incorporadas em páginas do SharePoint por iframe:
 
 | Página | O que é |
 | --- | --- |
+| `home.html` | Porta de entrada: liga as três frentes e mostra o que há de novo entre elas, com dados reais |
 | `index.html?area=<slug>` | Roadmap de uma área: árvore de dependências e painel de gestão |
 | `hub.html` | Portal central, com um card por área e o resumo de cada uma |
 | `academia.html` | Academia Digital: trilhas de treinamento, recursos e casos |
@@ -34,6 +35,38 @@ GitHub Pages  ──▶  iframe na página da área  ──▶  index.html?area=
 
 ---
 
+## A porta de entrada (`home.html`)
+
+É a home do site: liga as três frentes (Roadmaps, Academia, Notícias) e mostra o
+que há de novo entre elas. Não tem conteúdo próprio — todos os números e textos
+saem, ao vivo, dos mesmos arquivos que as outras páginas já leem. `assets/js/home.js`
+carrega quatro fontes em paralelo, cada `fetch` com `cache: 'no-store'`:
+`data/initiatives.json` (pela mesma camada `data.js`, então a fase é derivada igual
+ao resto do site), `data/academia/trilhas.json`, `content/noticias/index.json` e
+`config/site.json` (links de Teams e de nova iniciativa). Se uma fonte falhar, só a
+seção dela some — as outras continuam.
+
+O que cada bloco cruza:
+
+| Bloco | De onde vem o dado |
+| --- | --- |
+| **Três destinos** | Roadmaps: nº de iniciativas `Implantada` com `updatedAt` no mês corrente. Academia: nº de trilhas `disponivel: true`. Notícias: título do artigo mais recente por `data`. |
+| **Trilhas para se capacitar** | Todas as trilhas de `trilhas.json`, disponíveis primeiro e "em breve" discretas, sem link. |
+| **O que há de novo** | Artigos mais recentes de `index.json` (o 1º vira o destaque grande) + iniciativas `Implantada` nos últimos 7 dias, rotuladas "Entregue". Tudo ordenado por data, no máximo 4 itens. Trilhas só entrariam aqui se o JSON tivesse um campo de novidade — como não tem, a fonte é ignorada. |
+| **Números** | Iniciativas em fase Execução (todas as áreas) · trilhas disponíveis · artigos no índice · áreas distintas nos dados. Contam de 0 ao entrar na tela, como nas outras páginas. |
+| **Busca do hero** | Um índice em memória com título de iniciativa, nome de trilha e título de artigo; o resultado vai agrupado por frente e leva à página e ao item (`noticias.html#/<slug>`, `index.html#i=<id>`, `academia.html`). |
+
+Sem dado suficiente, cada seção encolhe em vez de deixar buraco: a Academia e o
+feed somem inteiros se não houver trilha nem novidade, e um destino sem número
+mostra um texto de apoio em vez de "0".
+
+A imagem da hero fica em `assets/img/hero-landing-*.{webp,jpg}`, servida por um
+`<picture>` com WebP e fallback JPEG em dois tamanhos (800 e 1200px) — a original
+pesada não vai para o repositório. Para regerar a partir de um novo arquivo, use
+qualquer otimizador de imagem local (o site continua estático, sem build).
+
+---
+
 ## Rodar localmente
 
 O `fetch` dos JSON não funciona abrindo o `index.html` pelo duplo clique
@@ -51,6 +84,7 @@ E abra:
 
 | URL | O que mostra |
 | --- | --- |
+| `http://localhost:8000/home.html` | Porta de entrada: destinos, feed cruzado, números e busca única |
 | `http://localhost:8000/hub.html` | Portal central: um card por área, com o resumo vivo |
 | `http://localhost:8000/academia.html` | Academia Digital: trilhas, recursos e casos |
 | `http://localhost:8000/noticias.html` | Portal de notícias |
@@ -71,6 +105,7 @@ Estado da interface vai na hash, então esses endereços também funcionam:
 ## Arquitetura
 
 ```
+home.html                 porta de entrada: hero com busca, destinos, feed cruzado, números
 index.html                roadmap de uma área: cabeçalho, filtros, árvore, gestão e detalhe
 hub.html                  portal central: um card por área, com acesso e resumo vivo
 academia.html             Academia Digital: trilhas, recursos, curiosidade e casos
@@ -86,6 +121,8 @@ assets/css/app.css        o que é só do roadmap
 assets/css/hub.css        o que é só do portal central
 assets/css/academia.css   o que é só da Academia
 assets/css/noticias.css   o que é só das Notícias
+assets/css/home.css       o que é só da porta de entrada
+assets/img/hero-landing-*.{webp,jpg}  imagem da hero, otimizada em dois tamanhos
 assets/fonts/             Poppins 400/500/600 (latin e latin-ext) + licença OFL
 assets/img/favicon.svg    ícone do portal
 assets/js/data.js         carga, saneamento, derivações e índices do grafo
@@ -94,6 +131,7 @@ assets/js/panels.js       painel de gestão e painel de detalhe/resumo
 assets/js/app.js          estado, filtros, hash e orquestração
 assets/js/hub.js          monta o índice de areas.html
 assets/js/portal.js       monta os cards do hub.html, com o resumo por área
+assets/js/home.js         monta a porta de entrada: cruza iniciativas, trilhas e notícias
 assets/js/ui.js           utilitários comuns: DOM, hash, foco, spotlight, contagem
 assets/js/academia.js     monta a Academia a partir de data/academia/
 assets/js/noticias.js     listagem, roteamento por hash e leitura do artigo

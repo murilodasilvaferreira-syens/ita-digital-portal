@@ -127,11 +127,19 @@
   --raio-sm: 4px;
   --raio-md: 8px;
   --raio-lg: 12px;
+  /* Cartões e painéis da landing (home.html) usam raios maiores que o resto
+     do site; ficam aqui para não virarem números soltos no home.css. */
+  --raio-xl: 18px;
+  --raio-2xl: 24px;
   --raio-pill: 999px;
 
   --borda-fina: 1px solid var(--cor-borda);
   --sombra-hover: 0 2px 10px rgba(17, 17, 17, 0.08);
   --sombra-painel: -12px 0 32px rgba(17, 17, 17, 0.12);
+  /* Brilho laranja dos CTAs e elevação dos cartões da landing. */
+  --sombra-cta: 0 8px 24px rgba(232, 117, 42, 0.28);
+  --sombra-cta-forte: 0 12px 30px rgba(232, 117, 42, 0.36);
+  --sombra-cartao-hover: 0 22px 46px rgba(232, 117, 42, 0.15), 0 6px 14px rgba(17, 17, 17, 0.05);
 
   /* --- Movimento -------------------------------------------------------- */
   --dur-rapida: 120ms;
