@@ -7,68 +7,91 @@
 <title>Notícias · Digital Itatiba</title>
 <meta name="description" content="Novidades sobre IA, Microsoft 365, dados e transformação digital na planta de Itatiba.">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/css/legado/tokens.css">
-<link rel="stylesheet" href="assets/css/legado/base.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/noticias.css">
 </head>
-<body>
+<body class="noticias">
 
-<!-- Progresso de leitura: só aparece dentro do artigo. -->
-<div class="progresso" id="progresso" hidden><span class="progresso__barra" id="progresso-barra"></span></div>
+<div class="fundo-topo nt-fundo" aria-hidden="true"></div>
 
-<div id="estado-carga" class="noticias__estado">
-  <p>Carregando notícias…</p>
-</div>
+<p class="estado-carga" id="estado-carga">Carregando notícias…</p>
+<div class="erro-carga" id="erro" hidden><h1>Não foi possível carregar as notícias</h1><p id="erro-texto"></p></div>
 
-<!-- Listagem ------------------------------------------------------------- -->
-<main class="noticias" id="lista" hidden>
-  <header class="topo noticias__topo">
-    <p class="topo__kicker">
-      <span class="topo__fio" aria-hidden="true"></span>Notícias · Digital Itatiba
-    </p>
-    <h1 class="topo__titulo">O que está acontecendo <span class="topo__destaque">no digital</span></h1>
-    <p class="topo__apoio">Novidades sobre IA, Microsoft 365, dados e as ferramentas que estamos trazendo para a planta.</p>
-  </header>
-
-  <div class="filtros-noticias" role="group" aria-label="Filtros das notícias">
-    <div class="filtros-noticias__chips" id="filtro-categoria" role="group" aria-label="Filtrar por categoria"></div>
-    <div class="filtros-noticias__busca">
-      <label class="visualmente-oculto" for="busca">Buscar notícia</label>
-      <input class="campo campo--busca" id="busca" type="search" placeholder="Buscar notícia" autocomplete="off">
-      <button class="botao botao--texto" id="limpar" type="button" hidden>Limpar filtros</button>
+<!-- Listagem ---------------------------------------------------------------- -->
+<main class="pagina nt" id="lista" hidden>
+  <section class="nt-topo">
+    <div class="nt-topo__grade">
+      <div>
+        <p class="kicker kicker--fio">Notícias · Digital Itatiba</p>
+        <h1 class="display nt-topo__titulo">O que está acontecendo <em>no digital</em></h1>
+        <p class="apoio nt-topo__apoio">Novidades sobre IA, Microsoft 365, dados e as ferramentas que estamos trazendo para a planta.</p>
+      </div>
+      <div class="nt-numeros">
+        <p class="nt-numeros__total"><span class="numero" id="total"></span><span id="total-rotulo"></span></p>
+        <p class="nt-numeros__ultima" id="ultima" hidden><span class="ponto-vivo" aria-hidden="true"></span><span id="ultima-texto"></span></p>
+      </div>
     </div>
+
+    <div class="nt-filtros">
+      <div class="nt-categorias" id="categorias" role="group" aria-label="Filtrar por categoria"></div>
+      <div class="campo nt-busca">
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <label class="visualmente-oculto" for="busca">Buscar notícia</label>
+        <input id="busca" type="search" placeholder="Buscar notícia" autocomplete="off">
+      </div>
+    </div>
+    <p class="nt-resultado" id="resultado" aria-live="polite"></p>
+  </section>
+
+  <section class="nt-manchete-secao" id="manchete" hidden></section>
+  <section class="nt-secundarias" id="secundarias" hidden></section>
+
+  <section class="nt-feed-secao" id="feed-secao" hidden>
+    <div class="nt-feed__topo">
+      <h2 class="display nt-feed__titulo">Todas as <em class="quente">notícias</em></h2>
+      <span id="feed-resumo"></span>
+    </div>
+    <div class="nt-feed" id="feed"></div>
+  </section>
+
+  <div class="nt-vazio" id="vazio" hidden>
+    <p class="nt-vazio__titulo">Nada por aqui</p>
+    <p>Nenhuma notícia corresponde aos filtros.</p>
+    <button class="botao botao--contorno" type="button" data-limpar>Limpar filtros</button>
   </div>
 
-  <p class="noticias__resumo" id="resumo" aria-live="polite"></p>
-
-  <article class="manchete" id="manchete" hidden></article>
-
-  <div class="secundarios" id="secundarios" hidden></div>
-
-  <div class="feed" id="feed"></div>
-
-  <p class="noticias__vazio" id="vazio" hidden>
-    Nenhuma notícia corresponde aos filtros.
-    <button class="botao botao--texto" type="button" data-limpar>Limpar filtros</button>
-  </p>
+  <section class="nt-convite-secao" id="convite" hidden>
+    <div class="vidro nt-convite">
+      <div>
+        <h2 class="display nt-convite__titulo">Acompanhe o digital <em>de perto</em></h2>
+        <p>Receba as novidades de IA, dados e ferramentas direto no seu canal do time.</p>
+      </div>
+      <a class="botao botao--primario" id="convite-teams" target="_blank" rel="noopener">Seguir no Teams <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
 </main>
 
-<!-- Artigo ---------------------------------------------------------------- -->
-<main class="artigo" id="artigo" hidden>
-  <a class="artigo__voltar" href="#" id="voltar-topo" data-voltar>
-    <span>Voltar para notícias</span>
-  </a>
-
-  <header class="artigo__cabecalho" id="artigo-cabecalho"></header>
-  <div class="artigo__corpo" id="artigo-corpo"></div>
-  <footer class="artigo__rodape" id="artigo-rodape"></footer>
+<!-- Leitura do artigo ------------------------------------------------------------ -->
+<main class="pagina nt-artigo" id="artigo" hidden>
+  <a class="nt-voltar" href="noticias.html" data-voltar><span aria-hidden="true">←</span> Voltar para notícias</a>
+  <article class="nt-leitura">
+    <header class="nt-leitura__cabecalho" id="artigo-cabecalho"></header>
+    <div class="nt-leitura__corpo" id="artigo-corpo"></div>
+    <footer class="nt-leitura__rodape" id="artigo-rodape"></footer>
+  </article>
+  <section class="nt-relacionados" id="relacionados" hidden>
+    <h2 class="display nt-relacionados__titulo">Continue <em class="quente">lendo</em></h2>
+    <div class="nt-feed" id="relacionados-lista"></div>
+  </section>
 </main>
 
-<!-- Artigo inexistente ----------------------------------------------------- -->
-<main class="noticias__estado" id="nao-encontrado" hidden>
-  <h1 class="nao-encontrado__titulo">Artigo não encontrado</h1>
-  <p class="nao-encontrado__texto" id="nao-encontrado-texto"></p>
-  <p><a class="botao botao--secundario" href="#" data-voltar>Voltar para notícias</a></p>
+<!-- Artigo inexistente ------------------------------------------------------------- -->
+<main class="pagina nt-nao-encontrado" id="nao-encontrado" hidden>
+  <p class="kicker kicker--fio">Notícias</p>
+  <h1 class="display">Artigo não <em>encontrado</em></h1>
+  <p class="apoio" id="nao-encontrado-texto"></p>
+  <a class="botao botao--contorno" href="noticias.html" data-voltar>Voltar para notícias</a>
 </main>
 
 <script src="assets/vendor/marked.min.js"></script>

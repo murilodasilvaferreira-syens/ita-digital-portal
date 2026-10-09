@@ -114,6 +114,10 @@
   --vidro-borda: rgba(255, 255, 255, 0.75);
   --desfoque: blur(22px) saturate(1.3);
 
+  /* Fundo de mídia sem imagem (capas de notícia): areia aquecida. */
+  --midia-fundo: linear-gradient(150deg, var(--laranja-fraco), #ead9c4 55%, #e4d3bb);
+  --midia-fundo-suave: linear-gradient(150deg, #f3e7da, #ede2d2 60%, #e7dbc9);
+
   /* --- Cor: status das iniciativas (uma paleta só para o site todo) ---- */
   --st-implantada: var(--laranja);
   --st-desenvolvimento: var(--laranja-medio);
