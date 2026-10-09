@@ -26,6 +26,8 @@ const FASE_POR_STATUS = {
   'Em análise': FASE.PLANEJAMENTO,
   'Aprovada': FASE.PLANEJAMENTO,
   'Backlog': FASE.PLANEJAMENTO,
+  // Esperando outra etapa terminar: ainda não começou, então é planejamento.
+  'Dependente': FASE.PLANEJAMENTO,
   'Em desenvolvimento': FASE.EXECUCAO,
   'Em testes': FASE.EXECUCAO,
   'Implantada': FASE.ENTREGUE,
@@ -34,6 +36,16 @@ const FASE_POR_STATUS = {
 };
 
 export const FASES_ORDEM = [FASE.EXECUCAO, FASE.PLANEJAMENTO, FASE.ENTREGUE, FASE.INTERROMPIDA];
+
+const CLASSE_FASE = {
+  [FASE.EXECUCAO]: 'execucao',
+  [FASE.PLANEJAMENTO]: 'planejamento',
+  [FASE.ENTREGUE]: 'entregue',
+  [FASE.INTERROMPIDA]: 'interrompida',
+};
+
+/** 'Execução' -> 'execucao', para compor nomes de classe. */
+export const classeFase = (fase) => CLASSE_FASE[fase] || 'planejamento';
 
 export const PESO_PRIORIDADE = { 'Alta': 0, 'Média': 1, 'Baixa': 2 };
 
@@ -195,12 +207,17 @@ function normalizarIniciativa(bruta) {
   const id = Number(bruta && bruta.id);
   if (!Number.isInteger(id)) return null;
 
-  const status = limparTexto(bruta.status) || 'Ideia';
+  // Linha em branco na Microsoft List (sem título e sem status) não é etapa.
+  const tituloBruto = limparTexto(bruta.title);
+  const statusBruto = limparTexto(bruta.status);
+  if (!tituloBruto && !statusBruto) return null;
+
+  const status = statusBruto || 'Ideia';
   const fase = FASE_POR_STATUS[status] || FASE.PLANEJAMENTO;
 
   return {
     id,
-    title: limparTexto(bruta.title) || `Iniciativa ${id}`,
+    title: tituloBruto || `Iniciativa ${id}`,
     area: limparTexto(bruta.area) || 'Sem área',
     project: limparTexto(bruta.project) || 'Sem projeto',
     description: limparTexto(bruta.description),

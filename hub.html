@@ -5,30 +5,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Roadmap Digital · Syensqo Itatiba</title>
+<meta name="description" content="Visão consolidada das iniciativas digitais de Itatiba, organizada por área.">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/hub.css">
+<link rel="stylesheet" href="assets/css/roadmaps.css">
 </head>
-<body class="portal">
+<body class="roadmaps">
 
-<div id="estado-carga" class="portal__estado">
-  <p>Carregando áreas…</p>
-</div>
+<div class="fundo-topo" aria-hidden="true"></div>
 
-<main class="portal__conteudo" id="portal" hidden>
-  <header class="portal__cabecalho">
-    <p class="portal__kicker">
-      <span class="portal__fio" aria-hidden="true"></span>Itatiba · Transformação Digital
-    </p>
-    <h1 class="portal__titulo">Roadmap Digital</h1>
-    <p class="portal__apoio" id="portal-apoio"></p>
-    <p class="portal__atualizacao" id="portal-atualizacao"></p>
-  </header>
+<main id="pagina" class="pagina roadmaps__pagina">
 
-  <div class="portal__grade" id="portal-grade"></div>
+  <!-- Cabeçalho -------------------------------------------------------------- -->
+  <section class="rm-topo" aria-labelledby="rm-titulo">
+    <div class="rm-topo__texto">
+      <p class="kicker kicker--fio">Itatiba · Transformação Digital</p>
+      <h1 class="display display--pagina rm-topo__titulo" id="rm-titulo">Roadmap <em>Digital</em></h1>
+      <p class="apoio rm-topo__apoio">Visão consolidada das iniciativas digitais do site, organizada por área. Cada roadmap reúne os projetos, as etapas e o avanço real de cada frente.</p>
+
+      <dl class="rm-totais" id="rm-totais">
+        <div><dt>Etapas</dt><dd class="numero" id="total-etapas">—</dd></div>
+        <div><dt>Projetos</dt><dd class="numero" id="total-projetos">—</dd></div>
+        <div><dt>Áreas</dt><dd class="numero" id="total-areas">—</dd></div>
+        <div><dt>Implantadas</dt><dd class="numero rm-totais__acento" id="total-implantadas">—</dd></div>
+      </dl>
+
+      <p class="rm-atualizado" id="rm-atualizado" hidden>
+        <span class="ponto-vivo" aria-hidden="true"></span>
+        <span id="rm-atualizado-texto"></span>
+      </p>
+      <p class="rm-acesso">
+        <a class="link-seta" href="index.html">Ver todas as áreas num só roadmap
+          <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </p>
+    </div>
+
+    <figure class="vidro pulso" id="pulso" hidden>
+      <figcaption>
+        <span class="pulso__titulo">Pulso das áreas</span>
+        <span class="pulso__sub" id="pulso-sub"></span>
+      </figcaption>
+      <div class="pulso__rede">
+        <svg viewBox="0 0 440 310" id="pulso-svg" role="group" aria-label="Rede das áreas: tamanho é o volume de etapas, cor é o avanço">
+          <defs>
+            <radialGradient id="pulso-brilho"><stop offset="0" class="pulso__luz-forte"/><stop offset="1" class="pulso__luz-fim"/></radialGradient>
+            <radialGradient id="pulso-brilho-suave"><stop offset="0" class="pulso__luz-suave"/><stop offset="1" class="pulso__luz-suave-fim"/></radialGradient>
+          </defs>
+        </svg>
+        <span class="pulso__nucleo" id="pulso-nucleo" aria-hidden="true"></span>
+        <div class="pulso__rotulos" id="pulso-rotulos" aria-hidden="true"></div>
+      </div>
+      <div class="pulso__legenda">
+        <span class="pulso__contagem"><span class="numero" id="pulso-n">—</span><span>Áreas</span></span>
+        <span class="pulso__divisor" aria-hidden="true"></span>
+        <span class="pulso__chave"><span class="pulso__bola" aria-hidden="true"></span>Tamanho = volume<br>de etapas</span>
+        <span class="pulso__chave pulso__chave--fim"><span class="pulso__rampa" aria-hidden="true"><span></span><span></span><span></span><span></span></span>Cor = avanço<br>da área</span>
+      </div>
+    </figure>
+  </section>
+
+  <!-- Áreas ------------------------------------------------------------------- -->
+  <section class="rm-areas" aria-labelledby="areas-titulo">
+    <div class="cabecalho-secao" data-revelar="titulo">
+      <div>
+        <p class="kicker">Roadmaps por área</p>
+        <h2 class="display display--secao-2" id="areas-titulo">Escolha uma <em class="quente">frente</em></h2>
+      </div>
+      <div class="segmentos" role="group" aria-label="Ordenar áreas">
+        <button type="button" data-ordem="volume" aria-pressed="true">Por volume</button>
+        <button type="button" data-ordem="avanco" aria-pressed="false">Por avanço</button>
+      </div>
+    </div>
+    <div class="rm-grade" id="rm-grade" aria-live="polite"></div>
+  </section>
+
+  <div class="erro-carga" id="erro" hidden>
+    <h1>Não foi possível carregar os roadmaps</h1>
+    <p id="erro-texto"></p>
+  </div>
 </main>
 
-<script type="module" src="assets/js/portal.js"></script>
+<script type="module" src="assets/js/roadmaps.js"></script>
 </body>
 </html>

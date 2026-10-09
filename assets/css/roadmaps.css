@@ -1,0 +1,240 @@
+/* ==========================================================================
+   Roadmaps (hub.html) — um card por área, com o pulso da rede no topo.
+   Só o que é próprio desta página; o resto vem de tokens.css e base.css.
+   ========================================================================== */
+
+.roadmaps__pagina { z-index: 1; }
+
+/* --- Cabeçalho ------------------------------------------------------------- */
+
+.rm-topo {
+  position: relative;
+  z-index: 3;
+  padding-top: clamp(32px, 4.5vw, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 500px);
+  gap: 40px 56px;
+  align-items: start;
+}
+.rm-topo .kicker { margin-bottom: 26px; letter-spacing: 0.2em; }
+.rm-topo__apoio { margin-top: 24px; max-width: 500px; }
+
+.rm-totais {
+  margin-top: 38px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px 30px;
+}
+.rm-totais > div { display: flex; flex-direction: column-reverse; }
+.rm-totais > div + div { padding-left: 30px; border-left: 1px solid var(--linha-2); }
+.rm-totais dd { font-size: 38px; letter-spacing: -0.035em; }
+.rm-totais dt { margin-top: 7px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--quente); }
+.rm-totais__acento { color: var(--laranja); }
+
+.rm-atualizado {
+  margin-top: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--quente-2);
+}
+.rm-atualizado .ponto-vivo { width: 6px; height: 6px; }
+.rm-acesso { margin-top: 18px; }
+
+/* --- Pulso das áreas -------------------------------------------------------- */
+
+.pulso { margin: 62px 0 0; padding: 28px 28px 22px; border-radius: 24px; }
+.pulso figcaption { display: flex; flex-direction: column; gap: 7px; font-family: var(--mono); font-size: 11px; }
+.pulso__titulo { letter-spacing: 0.2em; text-transform: uppercase; color: var(--tinta-4); }
+.pulso__sub { color: var(--quente-2); }
+
+.pulso__rede { position: relative; margin-top: 8px; }
+.pulso__rede svg { width: 100%; height: auto; overflow: visible; }
+.pulso__luz-forte { stop-color: var(--laranja); stop-opacity: 0.32; }
+.pulso__luz-fim { stop-color: var(--laranja); stop-opacity: 0; }
+.pulso__luz-suave { stop-color: var(--laranja-suave); stop-opacity: 0.35; }
+.pulso__luz-suave-fim { stop-color: var(--laranja-suave); stop-opacity: 0; }
+
+.pulso__orbita { fill: none; stroke: rgba(17, 17, 17, 0.05); stroke-dasharray: 2 5; }
+.pulso__poeira { fill: rgba(154, 145, 134, 0.28); }
+.pulso__poeira--acento { fill: rgba(232, 117, 42, 0.4); }
+.pulso__aresta { stroke: rgba(154, 145, 134, 0.2); stroke-width: 0.8; transition: stroke var(--dur-media) var(--ease), stroke-width var(--dur-media) var(--ease); }
+.pulso__aresta--projeto { stroke: rgba(154, 145, 134, 0.3); stroke-dasharray: 3 3; }
+.pulso__aresta.ativa { stroke: rgba(232, 117, 42, 0.55); stroke-width: 1.2; }
+.pulso__no { cursor: default; outline: none; }
+.pulso__no circle:last-child { stroke-width: 1; transition: r 0.3s var(--ease); }
+.pulso__no:focus-visible circle:last-child { stroke: var(--laranja); stroke-width: 2; }
+
+.pulso__nucleo,
+.pulso__nucleo::after {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--branco);
+  pointer-events: none;
+}
+.pulso__nucleo::after { content: ''; left: 0; top: 0; margin: 0; animation: base-pulso 2.6s ease-out infinite; }
+
+.pulso__rotulos { position: absolute; inset: 0; pointer-events: none; }
+.pulso__rotulo {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 6px 10px 6px 8px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(58, 58, 58, 0.06);
+  white-space: nowrap;
+}
+.pulso__rotulo::before { content: ''; width: 6px; height: 6px; margin-top: 5px; border-radius: 50%; background: var(--cor); flex: none; }
+.pulso__rotulo b { display: block; font-size: 12px; font-weight: 500; line-height: 1.3; }
+.pulso__rotulo small { display: block; font-family: var(--mono); font-size: 11px; line-height: 1.3; color: var(--tinta-3); }
+
+.pulso__legenda {
+  margin-top: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--linha);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+}
+.pulso__contagem { display: flex; align-items: baseline; gap: 9px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--quente); }
+.pulso__contagem .numero { font-family: var(--sans); font-size: 30px; letter-spacing: -0.03em; color: var(--laranja); }
+.pulso__divisor { width: 1px; height: 30px; background: var(--linha-2); }
+.pulso__chave { display: flex; align-items: center; gap: 9px; font-family: var(--mono); font-size: 9.5px; line-height: 1.4; color: var(--quente); }
+.pulso__chave--fim { margin-left: auto; }
+.pulso__bola { width: 20px; height: 20px; border-radius: 50%; background: var(--areia-2); flex: none; }
+.pulso__rampa { display: flex; gap: 4px; }
+.pulso__rampa span { width: 11px; height: 11px; border-radius: 50%; }
+.pulso__rampa span:nth-child(1) { background: var(--laranja-palido); border: 1px solid rgba(207, 95, 24, 0.18); }
+.pulso__rampa span:nth-child(2) { background: var(--laranja-suave); }
+.pulso__rampa span:nth-child(3) { background: var(--laranja); }
+.pulso__rampa span:nth-child(4) { background: var(--laranja-forte); }
+
+/* --- Áreas -------------------------------------------------------------------- */
+
+.rm-areas { padding-top: clamp(64px, 6vw, 86px); }
+.rm-grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+
+.area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 26px 22px;
+  border-radius: var(--r-card);
+  border: 1px solid var(--linha);
+  background: var(--vidro);
+  -webkit-backdrop-filter: var(--desfoque);
+  backdrop-filter: var(--desfoque);
+  box-shadow: var(--sombra-leve);
+  overflow: hidden;
+  transition: transform 0.34s var(--ease), box-shadow 0.34s var(--ease), border-color 0.34s var(--ease);
+}
+.area::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--laranja), transparent);
+  opacity: 0;
+  transition: opacity 0.34s var(--ease);
+}
+a.area:hover,
+a.area:focus-visible { transform: translateY(-6px); border-color: var(--laranja); box-shadow: 0 26px 56px rgba(232, 117, 42, 0.14); }
+a.area:hover::before,
+a.area:focus-visible::before { opacity: 1; }
+
+.area__topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.area__nome { font-size: 24px; font-weight: 500; letter-spacing: -0.02em; }
+.area__meta { margin-top: 8px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--quente-2); }
+.area__seta {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(17, 17, 17, 0.05);
+  color: var(--laranja);
+  transition: background var(--dur-media) var(--ease), color var(--dur-media) var(--ease);
+}
+.area__seta .icone { width: 15px; height: 15px; stroke-width: 2.2; }
+a.area:hover .area__seta,
+a.area:focus-visible .area__seta { background: var(--laranja); color: var(--branco); }
+
+.area__projetos { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 52px; align-content: flex-start; }
+.area__projetos li {
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--tinta-3);
+  background: var(--veu);
+  border: 1px solid rgba(17, 17, 17, 0.05);
+  padding: 5px 9px;
+  border-radius: var(--r-xs);
+}
+
+.area__resumo { margin-top: 22px; display: flex; align-items: center; gap: 16px; }
+.anel { position: relative; width: 58px; height: 58px; flex: none; }
+.anel svg { width: 58px; height: 58px; transform: rotate(-90deg); }
+.anel__trilha { fill: none; stroke: rgba(17, 17, 17, 0.07); stroke-width: 4; }
+.anel__valor {
+  fill: none;
+  stroke: var(--laranja);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0 999;
+  transition: stroke-dasharray 0.9s var(--ease);
+}
+.em-cena .anel__valor { stroke-dasharray: var(--arco) 999; }
+.anel__pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 14px; font-weight: 500; letter-spacing: -0.02em; }
+
+.area__status { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.area__status li { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--tinta-3); }
+.area__status li::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--cor); flex: none; }
+.area__status span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.area__status b { font-family: var(--mono); font-weight: 500; color: var(--tinta); }
+
+.area__alerta {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(17, 17, 17, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--alerta);
+}
+.area__alerta::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--alerta); flex: none; }
+
+.area__vazio { margin-top: 22px; font-size: 13px; color: var(--quente); }
+.area--sem-link { cursor: default; }
+
+/* --- Responsivo -------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .rm-topo { grid-template-columns: minmax(0, 1fr); }
+  .pulso { margin-top: 0; max-width: 560px; }
+  .rm-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .rm-grade { grid-template-columns: minmax(0, 1fr); }
+  .rm-totais { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: 20px 28px; }
+  .rm-totais > div + div { padding-left: 0; border-left: 0; }
+  .rm-totais dd { font-size: 32px; }
+  .pulso { padding: 22px 18px 18px; }
+  .pulso__chave--fim { margin-left: 0; }
+  .area { padding: 22px 20px 20px; }
+}

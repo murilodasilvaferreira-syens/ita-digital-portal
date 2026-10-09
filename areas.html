@@ -7,32 +7,29 @@
 <title>Áreas · Iniciativas Digitais · Syensqo Itatiba</title>
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/tokens.css">
-<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/areas.css">
 </head>
-<body class="pagina-hub">
+<body>
 
-<div id="estado-carga" class="estado">
-  <p>Carregando áreas…</p>
-</div>
+<div class="fundo-topo" aria-hidden="true"></div>
 
-<div class="hub" id="hub" hidden>
-  <header class="hub__cabecalho">
-    <p class="cabecalho__supra" id="portal-nome"></p>
-    <h1 class="hub__titulo">Áreas</h1>
-    <p class="hub__descricao">
-      Cada área tem seu próprio painel. Abra para visualizar, ou use o endereço
-      de incorporação na página do SharePoint da área.
-    </p>
-    <p class="cabecalho__atualizacao" id="atualizacao"></p>
+<main id="pagina" class="pagina tecnico">
+  <header class="tecnico__topo">
+    <p class="kicker kicker--fio">Índice técnico</p>
+    <h1 class="display display--pagina-2">Endereços de <em>incorporação</em></h1>
+    <p class="apoio tecnico__apoio">Cada área tem seu próprio painel. Abra para visualizar, ou copie o endereço para o web part de iframe na página do SharePoint da área.</p>
+    <p class="tecnico__atualizado" id="atualizacao" hidden></p>
   </header>
 
-  <div class="hub__grade" id="hub-grade"></div>
+  <p class="tecnico__alerta" id="alerta" hidden></p>
+  <div class="tecnico__grade" id="grade" aria-live="polite"></div>
 
-  <footer class="hub__rodape">
-    <a class="botao botao--secundario" href="index.html">Ver todas as áreas num painel só</a>
-  </footer>
-</div>
+  <p class="tecnico__rodape">
+    <a class="botao botao--contorno" href="index.html">Ver todas as áreas num painel só</a>
+  </p>
+</main>
 
-<script type="module" src="assets/js/hub.js"></script>
+<script type="module" src="assets/js/areas.js"></script>
 </body>
 </html>

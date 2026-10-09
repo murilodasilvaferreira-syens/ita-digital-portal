@@ -1,0 +1,66 @@
+/* ==========================================================================
+   Índice técnico (areas.html) — endereços de incorporação por área.
+   ========================================================================== */
+
+.tecnico { z-index: 1; }
+.tecnico__topo { position: relative; padding-top: clamp(32px, 4.5vw, 64px); max-width: 760px; }
+.tecnico__topo .kicker { margin-bottom: 22px; }
+.tecnico__apoio { margin-top: 18px; max-width: 600px; }
+.tecnico__atualizado { margin-top: 18px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--quente-2); }
+
+.tecnico__alerta {
+  margin-top: 28px;
+  padding: 12px 16px;
+  border-radius: var(--r-md);
+  background: rgba(247, 228, 214, 0.6);
+  font-size: 13.5px;
+  color: var(--alerta);
+}
+
+.tecnico__grade { margin-top: 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 18px; }
+.tecnico__area { display: flex; flex-direction: column; gap: 14px; padding: 24px; border-radius: var(--r-card); }
+.tecnico__nome { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+.tecnico__nome a:hover { color: var(--laranja-forte); }
+.tecnico__texto { font-size: 13.5px; line-height: 1.55; color: var(--tinta-3); }
+.tecnico__vazio { font-size: 13px; color: var(--quente); }
+
+.tecnico__barra { display: flex; gap: 2px; }
+.tecnico__barra .seg { height: 5px; }
+
+.tecnico__numeros { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.tecnico__numeros div { display: flex; align-items: baseline; gap: 6px; font-size: 12.5px; color: var(--tinta-3); }
+.tecnico__numeros dd { font-family: var(--mono); font-weight: 500; color: var(--tinta); }
+.tecnico__numeros .alerta,
+.tecnico__numeros .alerta dd { color: var(--alerta); }
+
+.tecnico__embed {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--linha);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  align-items: center;
+}
+.tecnico__rotulo { grid-column: 1 / -1; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--quente-2); }
+.tecnico__embed code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: var(--veu);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--tinta-2);
+}
+.tecnico__copiar {
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--linha-3);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 12.5px;
+  color: var(--tinta-2);
+}
+.tecnico__copiar:hover { border-color: var(--laranja); color: var(--laranja-forte); }
+
+.tecnico__rodape { margin-top: 36px; }

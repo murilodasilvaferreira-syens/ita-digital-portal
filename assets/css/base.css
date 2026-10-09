@@ -1,56 +1,50 @@
 /* ==========================================================================
-   Base compartilhada pelas quatro páginas do site: roadmap (index.html), hub
-   (hub.html), Academia (academia.html) e Notícias (noticias.html).
+   Base compartilhada por todas as páginas (v2).
 
-   Aqui vive só o que é comum a todas: reset, tipografia, botões, chips,
-   campos, selos, o cabeçalho premium e o cartão com spotlight. As cores e as
-   fontes vêm inteiras de tokens.css — nada é redeclarado.
+   Reset, tipografia, casca (navegação em pílula e rodapé), superfícies de
+   vidro, botões, campos, selos e o efeito de revelação ao rolar. Cores,
+   fontes e medidas vêm de tokens.css — nada é redeclarado aqui.
 
-   Carregue sempre depois de tokens.css e antes do CSS da página.
+   Ordem de carga: tokens.css → base.css → CSS da página.
    ========================================================================== */
 
 *,
 *::before,
 *::after { box-sizing: border-box; }
 
-/* Qualquer `display` declarado depois venceria o atributo hidden do
-   navegador, e elementos ocultos voltariam a aparecer. */
+/* Um `display` declarado depois venceria o hidden do navegador. */
 [hidden] { display: none !important; }
 
-html {
-  /* Reserva a calha da barra de rolagem: sem isso a largura salta ~15px
-     quando um modal bloqueia a rolagem do documento, e a página sai do lugar. */
-  scrollbar-gutter: stable;
-}
+html { scrollbar-gutter: stable; -webkit-text-size-adjust: 100%; }
 
 html,
 body { margin: 0; }
 
 /* A página cresce com o conteúdo: quem rola é o iframe do SharePoint. */
 body {
-  background: var(--cor-fundo);
-  color: var(--cor-tinta-2);
-  font-family: var(--fonte-corpo);
-  font-size: var(--texto-corpo);
-  line-height: var(--altura-corpo);
+  background: var(--fundo);
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: var(--t-corpo);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-h1, h2, h3 {
-  font-family: var(--fonte-titulo);
-  color: var(--cor-tinta);
-  margin: 0;
-  line-height: 1.25;
-}
+h1, h2, h3, h4 { margin: 0; font-weight: 500; color: var(--tinta); }
+p, dl, dd, figure, blockquote, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
 
-p, dl, dd, figure, blockquote { margin: 0; }
-
-button, input, select { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+input::placeholder { color: var(--quente-2); }
 
 :focus-visible {
-  outline: 2px solid var(--cor-laranja);
-  outline-offset: 2px;
-  border-radius: var(--raio-sm);
+  outline: 2px solid var(--laranja);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .visualmente-oculto {
@@ -63,277 +57,538 @@ button, input, select { font: inherit; color: inherit; }
   border: 0;
 }
 
-/* --- Botões --------------------------------------------------------------- */
+/* --- Página ---------------------------------------------------------------- */
+
+.pagina {
+  position: relative;
+  max-width: var(--pagina-max);
+  margin: 0 auto;
+  padding-inline: var(--pagina-pad);
+}
+.pagina--densa { padding-inline: var(--pagina-pad-denso); }
+
+/* Camada decorativa de fundo no topo da página (brilho + grade de pontos). */
+.fundo-topo {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 620px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.fundo-topo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(900px 340px at var(--brilho-x, 50%) 120px, rgba(232, 117, 42, 0.1), transparent 72%);
+}
+.fundo-topo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(700px 300px at var(--brilho-x, 50%) 180px, #000, transparent 76%);
+  mask-image: radial-gradient(700px 300px at var(--brilho-x, 50%) 180px, #000, transparent 76%);
+}
+
+.estado-carga {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: var(--t-kicker);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--quente-2);
+}
+
+.erro-carga {
+  max-width: 560px;
+  margin: 18vh auto;
+  padding: 0 var(--pagina-pad);
+  text-align: center;
+  color: var(--tinta-3);
+}
+.erro-carga h1 { font-family: var(--serif); font-weight: 400; font-size: 40px; margin-bottom: 12px; }
+
+/* --- Navegação em pílula ---------------------------------------------------- */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding: 16px var(--pagina-pad-denso);
+  pointer-events: none;
+}
+
+.nav__pilula {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 6px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--vidro-borda);
+  background: rgba(255, 255, 255, 0.42);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+  backdrop-filter: blur(22px) saturate(1.4);
+  box-shadow: var(--sombra-nav);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav__pilula::-webkit-scrollbar { display: none; }
+
+/* Reflexo de vidro na metade de cima da pílula. */
+.nav__pilula::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 48%;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent);
+  pointer-events: none;
+}
+
+.nav__link {
+  position: relative;
+  flex: none;
+  font-size: 13px;
+  color: var(--tinta-3);
+  padding: 9px 18px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  transition: color var(--dur-rapida) var(--ease), background-color var(--dur-rapida) var(--ease);
+}
+.nav__link:hover { color: var(--tinta); }
+
+.nav__link[aria-current='page'] {
+  color: var(--tinta);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 10px rgba(58, 58, 58, 0.1);
+}
+
+.nav__link--cta {
+  margin-left: 2px;
+  font-weight: 500;
+  color: var(--fundo);
+  background: var(--tinta);
+}
+.nav__link--cta:hover { color: var(--fundo); background: #2b2b2b; }
+
+/* Fio de progresso de leitura no topo (criado por shell.js). */
+.fio-progresso {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 2px;
+  z-index: 200;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(232, 117, 42, 0), var(--laranja) 40%, var(--laranja-forte));
+  box-shadow: 0 0 10px rgba(232, 117, 42, 0.45);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* --- Tipografia de display --------------------------------------------------- */
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  font-family: var(--mono);
+  font-size: var(--t-kicker);
+  letter-spacing: var(--tracking-kicker);
+  text-transform: uppercase;
+  color: var(--quente);
+}
+.kicker--acento { color: var(--laranja); }
+.kicker--fio::before {
+  content: '';
+  width: 30px;
+  height: 1px;
+  flex: none;
+  background: var(--laranja);
+}
+
+.display {
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: var(--tracking-display);
+  color: var(--tinta);
+  text-wrap: balance;
+}
+.display em { font-style: italic; color: var(--laranja); }
+.display em.quente { color: var(--quente); }
+
+.display--hero { font-size: var(--t-hero); letter-spacing: -0.02em; }
+.display--pagina { font-size: var(--t-pagina); letter-spacing: -0.02em; }
+.display--pagina-2 { font-size: var(--t-pagina-2); letter-spacing: -0.022em; }
+.display--secao { font-size: var(--t-secao); line-height: 1; letter-spacing: -0.015em; }
+.display--secao-2 { font-size: var(--t-secao-2); line-height: 1; letter-spacing: -0.015em; }
+
+.apoio {
+  font-size: var(--t-apoio);
+  line-height: 1.6;
+  font-weight: 300;
+  color: var(--tinta-3);
+}
+
+.numero {
+  font-weight: 500;
+  letter-spacing: var(--tracking-numero);
+  line-height: 1;
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cabeçalho de seção: kicker + título à esquerda, ação à direita. */
+.cabecalho-secao {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.cabecalho-secao .kicker { margin-bottom: 14px; }
+.cabecalho-secao__nota { font-size: 13px; color: var(--quente); }
+
+/* --- Superfícies ------------------------------------------------------------- */
+
+.vidro {
+  position: relative;
+  border-radius: var(--r-painel);
+  border: 1px solid var(--linha);
+  background: var(--vidro);
+  -webkit-backdrop-filter: var(--desfoque);
+  backdrop-filter: var(--desfoque);
+  box-shadow: var(--sombra-card);
+}
+
+/* Cartão clicável: sobe e ganha sombra; o brilho segue o ponteiro (--mx/--my). */
+.cartao {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--r-card);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.34)) padding-box,
+    rgba(17, 17, 17, 0.09) border-box;
+  -webkit-backdrop-filter: var(--desfoque);
+  backdrop-filter: var(--desfoque);
+  transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
+}
+.cartao::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(232, 117, 42, 0.1), transparent 70%);
+  transition: opacity var(--dur-media) var(--ease);
+}
+
+@media (hover: hover) {
+  a.cartao:hover,
+  button.cartao:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-card-hover);
+  }
+  a.cartao:hover::after,
+  button.cartao:hover::after { opacity: 1; }
+}
+
+/* --- Botões e links ------------------------------------------------------------ */
 
 .botao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--esp-2);
-  padding: 9px 16px;
-  border-radius: var(--raio-pill);
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--r-pill);
   border: 1px solid transparent;
-  font-family: var(--fonte-titulo);
-  font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background-color var(--dur-rapida) var(--easing),
-              border-color var(--dur-rapida) var(--easing),
-              color var(--dur-rapida) var(--easing);
+  transition: background-color var(--dur-rapida) var(--ease), border-color var(--dur-rapida) var(--ease),
+              color var(--dur-rapida) var(--ease), box-shadow var(--dur-rapida) var(--ease),
+              transform var(--dur-rapida) var(--ease);
 }
+.botao .icone { width: 14px; height: 14px; }
 
-.botao--primario {
-  background: var(--cor-laranja);
-  color: #fff;
-}
-.botao--primario:hover { background: var(--cor-laranja-forte); }
+.botao--primario { background: var(--laranja); color: var(--branco); box-shadow: var(--sombra-cta); }
+.botao--primario:hover { background: var(--laranja-forte); color: var(--branco); }
 
-.botao--secundario {
-  background: var(--cor-superficie);
-  border-color: var(--cor-borda-forte);
-  color: var(--cor-tinta);
+.botao--escuro { background: var(--tinta); color: var(--fundo); box-shadow: 0 6px 20px rgba(17, 17, 17, 0.22); }
+.botao--escuro:hover { background: #2b2b2b; color: var(--fundo); }
+
+.botao--contorno {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: var(--linha-3);
+  color: var(--tinta);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
-.botao--secundario:hover { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
+.botao--contorno:hover { border-color: var(--laranja); color: var(--laranja-forte); }
 
 .botao--texto {
+  padding: 8px 6px;
   background: none;
   border: none;
-  color: var(--cor-tinta-3);
-  padding: 6px 10px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--laranja-forte);
+  font-size: 12.5px;
 }
-.botao--texto:hover { color: var(--cor-laranja-forte); }
+.botao--texto:hover { color: var(--tinta); }
 
-.botao-icone {
-  width: 28px;
-  height: 28px;
+/* Link com seta laranja: "Explorar academia →". */
+.link-seta {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: 1px solid var(--cor-borda-forte);
-  background: var(--cor-superficie);
-  border-radius: var(--raio-sm);
-  font-size: 15px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--cor-tinta-2);
+  gap: 8px;
+  font-size: 14px;
+  color: var(--tinta-2);
+  transition: color var(--dur-rapida) var(--ease);
 }
-.botao-icone:hover:not(:disabled) { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
-.botao-icone:disabled { opacity: 0.4; cursor: default; }
+.link-seta .icone { width: 14px; height: 14px; color: var(--laranja); stroke-width: 2.2; transition: transform var(--dur-rapida) var(--ease); }
+.link-seta:hover { color: var(--tinta); }
+.link-seta:hover .icone { transform: translateX(3px); }
 
-/* --- Chips e campos -------------------------------------------------------- */
+/* --- Campos, chips e selos ------------------------------------------------------ */
+
+.campo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 9px 13px;
+  border-radius: 12px;
+  border: 1px solid var(--linha-2);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  color: var(--tinta-2);
+  transition: border-color var(--dur-rapida) var(--ease);
+}
+.campo:focus-within { border-color: var(--laranja); }
+.campo .icone { width: 14px; height: 14px; flex: none; color: var(--quente); }
+.campo input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--tinta);
+}
+.campo input::-webkit-search-cancel-button { cursor: pointer; }
+
+/* Select nativo estilizado: o chevron é um fundo, o texto continua do sistema. */
+.seletor {
+  -webkit-appearance: none;
+  appearance: none;
+  max-width: 100%;
+  padding: 9px 32px 9px 13px;
+  border-radius: 12px;
+  border: 1px solid var(--linha-2);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%239A9186' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      right 12px center / 10px 6px no-repeat,
+    rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  color: var(--tinta-2);
+  cursor: pointer;
+  text-overflow: ellipsis;
+  transition: border-color var(--dur-rapida) var(--ease);
+}
+.seletor:hover { border-color: var(--linha-3); }
+.seletor.ativo { border-color: var(--laranja); }
+
+/* Grupo segmentado: "Por volume | Por avanço", "Tudo | Este mês". */
+.segmentos {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--linha);
+  background: var(--vidro);
+  -webkit-backdrop-filter: var(--desfoque);
+  backdrop-filter: var(--desfoque);
+}
+.segmentos button {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--quente);
+  transition: color var(--dur-media) var(--ease), background-color var(--dur-media) var(--ease);
+}
+.segmentos button:hover { color: var(--tinta); }
+.segmentos button[aria-pressed='true'] { background: var(--tinta); color: var(--fundo); }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: var(--raio-pill);
-  border: 1px solid var(--cor-borda);
-  background: var(--cor-superficie-2);
-  font-family: var(--fonte-titulo);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-medio);
-  color: var(--cor-tinta-2);
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--linha-2);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  color: var(--tinta-2);
+  transition: all var(--dur-media) var(--ease);
 }
+.chip:hover { border-color: var(--linha-3); color: var(--tinta); }
+.chip[aria-pressed='true'] { background: var(--tinta); border-color: var(--tinta); color: var(--fundo); }
 
-.chip--acao { cursor: pointer; transition: all var(--dur-rapida) var(--easing); }
-.chip--acao:hover { border-color: var(--cor-borda-forte); }
-
-.chip__contagem {
-  font-variant-numeric: tabular-nums;
-  color: var(--cor-quente);
-  font-size: 10px;
-}
-
-.chip--ativo {
-  background: var(--cor-laranja);
-  border-color: var(--cor-laranja);
-  color: #fff;
-}
-.chip--ativo .chip__contagem { color: rgba(255, 255, 255, 0.85); }
-
-.campo {
-  padding: 6px 9px;
-  border: 1px solid var(--cor-borda-forte);
-  border-radius: var(--raio-sm);
-  background: var(--cor-superficie);
-  font-size: var(--texto-sm);
-  color: var(--cor-tinta-2);
-  max-width: 100%;
-}
-.campo:hover { border-color: var(--cor-quente); }
-.campo--select { cursor: pointer; }
-.campo--busca { min-width: 180px; }
-
-/* --- Selos ----------------------------------------------------------------- */
-
+/* Selo em monoespaçada: DISPONÍVEL, EM BREVE, ENTREGUE, ALTA. */
 .selo {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--raio-pill);
-  font-family: var(--fonte-titulo);
-  font-size: 10px;
-  font-weight: var(--peso-medio);
-  letter-spacing: 0.02em;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--linha-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   white-space: nowrap;
-  border: 1px solid transparent;
+  color: var(--quente);
+}
+.selo--acento { color: var(--laranja); border-color: var(--laranja-borda); background: var(--laranja-vidro); }
+.selo--cheio { color: var(--branco); border-color: var(--laranja); background: var(--laranja); }
+.selo--escuro { color: var(--fundo); border-color: var(--tinta); background: var(--tinta); }
+.selo--suave { color: var(--laranja-forte); border-color: transparent; background: var(--laranja-fraco); }
+.selo--quadrado { border-radius: 6px; }
+
+/* Ponto vivo com pulso — status "ativo", "atualizado". */
+.ponto-vivo {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--laranja);
+}
+.ponto-vivo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: base-pulso 2.6s ease-out infinite;
 }
 
-.selo--neutro { background: var(--cor-superficie-2); border-color: var(--cor-borda); color: var(--cor-tinta-3); }
-.selo--contorno { border-color: var(--cor-borda-forte); color: var(--cor-tinta-3); }
-.selo--acento { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
-.selo--escuro { background: var(--cor-tinta-2); border-color: var(--cor-tinta-2); color: #fff; }
+/* Barra segmentada: um segmento por etapa, colorido pela fase. */
+.seg { flex: 1; height: 4px; border-radius: var(--r-pill); background: rgba(17, 17, 17, 0.14); }
+.seg--execucao { background: var(--fase-execucao); }
+.seg--entregue { background: var(--fase-entregue); }
+.seg--interrompida { background: var(--fase-interrompida); }
 
-/* --- Ícones ---------------------------------------------------------------- */
+/* --- Ícones ------------------------------------------------------------------- */
 
-/* Um único conjunto, com traço consistente (ver assets/icons/icones.js). */
+/* Um único conjunto, com traço consistente (assets/icons/icones.js). */
 .icone {
   width: 1em;
   height: 1em;
   flex: none;
   stroke: currentColor;
-  stroke-width: 1.6;
+  stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none;
 }
 
-.icone--grande { width: 20px; height: 20px; }
-.icone--titulo { width: 22px; height: 22px; stroke-width: 1.5; }
+/* --- Rodapé --------------------------------------------------------------------- */
 
-/* --- Cabeçalho premium ------------------------------------------------------
-   Kicker em caixa alta espaçada aberto por um fio laranja, título display com
-   letter-spacing negativo leve e linha de apoio. Mesmo idioma do cabeçalho das
-   páginas de roadmap, agora numa só definição.
-   -------------------------------------------------------------------------- */
-
-.topo {
-  display: grid;
-  gap: var(--esp-2);
-  max-width: 64ch;
-}
-
-.topo__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--fonte-titulo);
-  font-size: 10px;
-  font-weight: var(--peso-medio);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--cor-tinta-3);
-  animation: base-entrada var(--dur-lenta) var(--easing) backwards;
-}
-
-/* Único acento de cor do cabeçalho, e seu único movimento próprio. */
-.topo__fio {
-  display: block;
-  width: 24px;
-  height: 2px;
-  flex: none;
-  border-radius: 1px;
-  background: var(--cor-laranja);
-  transform-origin: left center;
-  animation: base-fio 560ms var(--easing) 180ms backwards;
-}
-
-.topo__titulo {
-  font-size: clamp(28px, 3.4vw, 40px);
-  font-weight: var(--peso-forte);
-  letter-spacing: -0.025em;
-  line-height: 1.12;
-  animation: base-entrada var(--dur-lenta) var(--easing) 70ms backwards;
-}
-
-/* O acento no título entra por aqui, nunca preenchendo o bloco inteiro. */
-.topo__destaque { color: var(--cor-laranja-forte); }
-
-.topo__apoio {
-  font-size: var(--texto-md);
-  color: var(--cor-tinta-3);
-  animation: base-entrada var(--dur-lenta) var(--easing) 140ms backwards;
-}
-
-/* --- Cartão com spotlight ---------------------------------------------------
-   O gesto principal do site: elevação leve, borda assumindo o acento e um
-   brilho que acompanha o ponteiro. Só onde existe ponteiro de verdade.
-   -------------------------------------------------------------------------- */
-
-.cartao-base {
+.rodape {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--cor-superficie);
-  border: var(--borda-fina);
-  border-radius: var(--raio-lg);
-  color: inherit;
-  text-decoration: none;
-  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.03);
-  transition: transform var(--dur-media) var(--easing),
-              border-color var(--dur-media) var(--easing),
-              box-shadow var(--dur-media) var(--easing);
+  z-index: 2;
+  margin-top: var(--secao-espaco);
+  border-top: 1px solid var(--linha);
+}
+.rodape__conteudo {
+  max-width: var(--pagina-max);
+  margin: 0 auto;
+  padding: 44px var(--pagina-pad) 38px;
 }
 
-@media (hover: hover) {
-  .cartao-base::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    opacity: 0;
-    background: radial-gradient(
-      340px circle at var(--mx, 50%) var(--my, 0%),
-      var(--cor-laranja-vidro),
-      transparent 68%
-    );
-    transition: opacity var(--dur-media) var(--easing);
-  }
+.rodape--simples .rodape__conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+}
+.rodape__marca { font-size: 13.5px; color: var(--quente); }
+.rodape__copy { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--quente-2); }
 
-  .cartao-base--ativo:hover {
-    transform: translateY(-3px);
-    border-color: var(--cor-laranja);
-    box-shadow: 0 10px 26px rgba(17, 17, 17, 0.09);
-  }
+.rodape__grade {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 36px 56px;
+  flex-wrap: wrap;
+}
+.rodape__titulo { font-size: 14px; font-weight: 500; }
+.rodape__texto { margin-top: 14px; font-size: 13px; line-height: 1.6; color: var(--quente); max-width: 320px; }
+.rodape__colunas { display: flex; gap: 56px; align-items: stretch; flex-wrap: wrap; }
+.rodape__colunas > span { width: 1px; background: rgba(17, 17, 17, 0.08); }
+.rodape__coluna { display: flex; flex-direction: column; gap: 11px; }
+.rodape__rotulo { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; color: var(--quente-2); }
+.rodape__link { font-size: 13.5px; color: var(--tinta-2); transition: color var(--dur-rapida) var(--ease); }
+.rodape__link:hover { color: var(--laranja); }
+.rodape--completo .rodape__copy { display: block; margin-top: 44px; }
 
-  .cartao-base--ativo:hover::before { opacity: 1; }
+/* --- Revelação ao rolar ------------------------------------------------------------
+   Só é aplicada quando shell.js marca <html class="fx">: sem JS, sem
+   IntersectionObserver ou com movimento reduzido, tudo aparece de imediato.
+   ------------------------------------------------------------------------------- */
+
+.fx [data-revelar] {
+  opacity: 0;
+  translate: 0 46px;
+  scale: 0.965;
+  filter: blur(6px);
+}
+.fx [data-revelar='titulo'] { translate: 0 18px; scale: 1; filter: none; }
+
+.fx [data-revelar].revelado {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  filter: none;
+  transition:
+    opacity 1.05s var(--ease-saida) var(--atraso, 0s),
+    translate 1.05s var(--ease-saida) var(--atraso, 0s),
+    scale 1.05s var(--ease-saida) var(--atraso, 0s),
+    filter 0.84s var(--ease-saida) var(--atraso, 0s);
+}
+.fx [data-revelar='titulo'].revelado { transition-duration: 0.8s; }
+/* Ao terminar, shell.js remove o atributo: o elemento volta ao próprio CSS. */
+
+/* --- Movimento ------------------------------------------------------------------- */
+
+@keyframes base-pulso {
+  0% { transform: scale(1); opacity: 0.8; }
+  80% { transform: scale(2.8); opacity: 0; }
+  100% { opacity: 0; }
 }
 
-/* --- Seções ----------------------------------------------------------------- */
-
-.secao__cabecalho {
-  display: grid;
-  gap: 6px;
-  margin-bottom: var(--esp-4);
-  max-width: 60ch;
-}
-
-.secao__titulo {
-  font-size: var(--texto-xl);
-  font-weight: var(--peso-forte);
-  letter-spacing: -0.02em;
-}
-
-.secao__apoio {
-  font-size: var(--texto-sm);
-  color: var(--cor-tinta-3);
-}
-
-/* --- Movimento --------------------------------------------------------------- */
-
-@keyframes base-entrada {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
-}
-
-@keyframes base-fio {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
+@keyframes base-letreiro { to { transform: translateX(-50%); } }
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -344,6 +599,14 @@ button, input, select { font: inherit; color: inherit; }
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .ponto-vivo::after { display: none; }
+}
 
-  .cartao-base--ativo:hover { transform: none; }
+/* --- Responsivo ---------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .nav { padding: 10px 8px; }
+  .nav__link { padding: 8px 13px; font-size: 12.5px; }
+  .rodape__colunas { gap: 32px; }
+  .rodape__colunas > span { display: none; }
 }

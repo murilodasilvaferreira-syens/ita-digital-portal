@@ -5,194 +5,296 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Transformação Digital · Syensqo Itatiba</title>
-<meta name="description" content="A porta de entrada da Transformação Digital de Itatiba: roadmaps, capacitação e novidades num só lugar.">
+<meta name="description" content="Porta de entrada da Transformação Digital de Itatiba: roadmaps, indicadores, capacitação e novidades num só lugar.">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/instrument-serif-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/geist-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/home.css">
 </head>
-<body class="home">
+<body class="inicio">
 
-<div id="estado-carga" class="home__estado">
-  <p>Carregando o portal…</p>
-</div>
+<div class="inicio__fundo" aria-hidden="true"></div>
 
-<div id="pagina" class="home__pagina" hidden>
+<main id="pagina" class="pagina inicio__pagina">
 
-  <!-- Cabeçalho ---------------------------------------------------------- -->
-  <header class="home-nav">
-    <a class="home-nav__marca" href="home.html" aria-label="Transformação Digital · Itatiba — início">
-      <span class="home-nav__logo" aria-hidden="true"></span>
-      <span class="home-nav__marca-texto">
-        <span class="home-nav__marca-titulo">Transformação Digital</span>
-        <span class="home-nav__marca-sub">Itatiba</span>
-      </span>
-    </a>
-    <nav class="home-nav__links" aria-label="Seções do portal">
-      <a class="home-nav__link" href="hub.html">Roadmaps</a>
-      <a class="home-nav__link" href="academia.html">Academia</a>
-      <a class="home-nav__link" href="noticias.html">Notícias</a>
-      <a class="home-nav__teams" id="nav-teams" target="_blank" rel="noopener">
-        <span class="home-nav__teams-icone" aria-hidden="true"></span>Teams
-      </a>
-    </nav>
-  </header>
-
-  <!-- Hero --------------------------------------------------------------- -->
+  <!-- Hero ---------------------------------------------------------------- -->
   <section class="hero" aria-labelledby="hero-titulo">
-    <div class="hero__texto">
-      <p class="hero__kicker">
-        <span class="hero__ponto" aria-hidden="true"></span>Transformação Digital · Itatiba
-      </p>
-      <h1 class="hero__titulo" id="hero-titulo">Uma planta<br>que <span class="hero__destaque">pensa.</span></h1>
-      <p class="hero__apoio">O ponto de entrada da Transformação Digital de Itatiba. Uma central de inteligência que conecta roadmaps, capacitação e novidades — num só lugar.</p>
+    <p class="hero__selo">
+      <span class="ponto-vivo" aria-hidden="true"></span>
+      <span>Transformação Digital · Itatiba</span>
+    </p>
+    <h1 class="display display--hero hero__titulo" id="hero-titulo">Transformar é <em>deslocar</em><br>o equilíbrio.</h1>
+    <p class="apoio hero__apoio">De decisões baseadas principalmente em percepção para uma cultura que combina experiência com dados reais.</p>
 
-      <form class="busca" id="busca-form" role="search" autocomplete="off">
-        <span class="busca__icone" aria-hidden="true"></span>
-        <label class="visualmente-oculto" for="busca-input">Buscar iniciativas, trilhas ou artigos</label>
-        <input class="busca__campo" id="busca-input" type="search" placeholder="Buscar iniciativas, trilhas ou artigos"
-               role="combobox" aria-expanded="false" aria-controls="busca-resultados" aria-autocomplete="list">
-        <button class="busca__botao" type="submit">Buscar</button>
-        <div class="busca__resultados" id="busca-resultados" role="listbox" aria-label="Resultados da busca" hidden></div>
-      </form>
+    <form class="busca" id="busca" role="search" autocomplete="off">
+      <div class="busca__vidro">
+        <div class="busca__linha">
+          <svg class="icone busca__lupa" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <label class="visualmente-oculto" for="busca-campo">Buscar iniciativas, trilhas ou artigos</label>
+          <input class="busca__campo" id="busca-campo" type="search" placeholder="Buscar iniciativas, trilhas ou artigos"
+                 role="combobox" aria-expanded="false" aria-controls="busca-resultados" aria-autocomplete="list">
+          <kbd class="busca__atalho" aria-hidden="true">Ctrl K</kbd>
+        </div>
+        <div class="busca__rodape">
+          <div class="busca__escopos" role="group" aria-label="Onde buscar">
+            <button type="button" class="busca__escopo" data-escopo="Roadmaps" aria-pressed="true">Roadmaps</button>
+            <button type="button" class="busca__escopo" data-escopo="Academia" aria-pressed="true">Trilhas</button>
+            <button type="button" class="busca__escopo" data-escopo="Notícias" aria-pressed="true">Artigos</button>
+          </div>
+          <button type="submit" class="botao botao--escuro busca__botao">
+            Buscar
+            <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="busca__resultados" id="busca-resultados" role="listbox" aria-label="Resultados da busca" hidden></div>
+    </form>
+  </section>
 
-      <div class="hero__acoes">
-        <a class="botao botao--primario hero__cta" href="#destinos" data-rolar>
-          Explorar o portal<span class="hero__cta-seta" aria-hidden="true"></span>
+  <!-- Três frentes ----------------------------------------------------------- -->
+  <section class="frentes" aria-labelledby="frentes-titulo">
+    <div class="letreiro" data-revelar="titulo">
+      <span class="letreiro__rotulo">Áreas conectadas à central</span>
+      <div class="letreiro__janela">
+        <div class="letreiro__faixa" id="letreiro-areas"></div>
+      </div>
+    </div>
+
+    <div class="frentes__titulo" data-revelar="titulo">
+      <h2 class="display display--secao" id="frentes-titulo">Três frentes, <em class="quente">uma central</em></h2>
+      <p class="frentes__apoio">Escolha por onde começar.</p>
+    </div>
+
+    <div class="bento">
+      <a class="cartao bento__roadmaps" href="hub.html" data-revelar>
+        <div class="bento__brilho" aria-hidden="true"></div>
+        <div class="bento__topo">
+          <span class="kicker kicker--acento">01 · Roadmaps</span>
+          <h3 class="bento__titulo">Acompanhe o que está em execução em cada área</h3>
+        </div>
+        <div class="diagrama" aria-hidden="true">
+          <svg viewBox="0 0 560 340" fill="none">
+            <circle cx="280" cy="170" r="58" stroke="rgba(17,17,17,.06)"/>
+            <circle cx="280" cy="170" r="46" stroke="rgba(17,17,17,.04)" stroke-dasharray="2 5"/>
+            <g class="diagrama__fios">
+              <path id="dg1" d="M136 80 H196 Q204 80 204 88 V162 Q204 170 212 170 H225"/>
+              <path id="dg2" d="M136 170 H225"/>
+              <path id="dg3" d="M136 260 H196 Q204 260 204 252 V178 Q204 170 212 170 H225"/>
+              <path id="dg4" d="M424 80 H364 Q356 80 356 88 V162 Q356 170 348 170 H335"/>
+              <path id="dg5" d="M424 170 H335"/>
+              <path id="dg6" d="M424 260 H364 Q356 260 356 252 V178 Q356 170 348 170 H335"/>
+            </g>
+            <g class="diagrama__fluxo">
+              <circle r="2.6" opacity="0"><animateMotion dur="3.4s" repeatCount="indefinite"><mpath href="#dg1"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="3.4s" repeatCount="indefinite"/></circle>
+              <circle r="2.6" opacity="0"><animateMotion dur="2.8s" begin=".7s" repeatCount="indefinite"><mpath href="#dg2"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="2.8s" begin=".7s" repeatCount="indefinite"/></circle>
+              <circle r="2.6" opacity="0"><animateMotion dur="3.8s" begin="1.4s" repeatCount="indefinite"><mpath href="#dg3"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="3.8s" begin="1.4s" repeatCount="indefinite"/></circle>
+              <circle r="2.6" opacity="0"><animateMotion dur="3.2s" begin=".35s" repeatCount="indefinite"><mpath href="#dg4"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="3.2s" begin=".35s" repeatCount="indefinite"/></circle>
+              <circle r="2.6" opacity="0"><animateMotion dur="2.6s" begin="1.9s" repeatCount="indefinite"><mpath href="#dg5"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="2.6s" begin="1.9s" repeatCount="indefinite"/></circle>
+              <circle r="2.6" opacity="0"><animateMotion dur="4s" begin="1.1s" repeatCount="indefinite"><mpath href="#dg6"/></animateMotion><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.12;.88;1" dur="4s" begin="1.1s" repeatCount="indefinite"/></circle>
+            </g>
+            <g class="diagrama__juncoes"><circle cx="225" cy="170" r="3.2"/><circle cx="335" cy="170" r="3.2"/></g>
+            <g class="diagrama__nos">
+              <circle cx="110" cy="80" r="25"/><circle cx="110" cy="170" r="25"/><circle cx="110" cy="260" r="25"/>
+              <circle cx="450" cy="80" r="25"/><circle cx="450" cy="170" r="25"/><circle cx="450" cy="260" r="25" class="diagrama__no-acento"/>
+            </g>
+            <g class="diagrama__icones">
+              <g transform="translate(101,71) scale(.75)"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></g>
+              <g transform="translate(101,161) scale(.75)"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></g>
+              <g transform="translate(101,251) scale(.75)"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></g>
+              <g transform="translate(441,71) scale(.75)"><path d="M12.89 1.45l8 4A2 2 0 0122 7.24v9.53a2 2 0 01-1.11 1.79l-8 4a2 2 0 01-1.78 0l-8-4a2 2 0 01-1.11-1.79V7.24a2 2 0 011.11-1.79l8-4a2 2 0 011.78 0z"/><path d="M2.32 6.16L12 11l9.68-4.84M12 22.08V11"/></g>
+              <g transform="translate(441,161) scale(.75)"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></g>
+              <g transform="translate(441,251) scale(.75)" class="diagrama__icone-acento"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></g>
+            </g>
+            <circle cx="280" cy="170" r="40" fill="rgba(232,117,42,.12)"/>
+            <circle cx="280" cy="170" r="26" class="diagrama__nucleo"/>
+            <path d="M280 152 C282.5 165 285 167.5 298 170 C285 172.5 282.5 175 280 188 C277.5 175 275 172.5 262 170 C275 167.5 277.5 165 280 152 Z" fill="#fff" opacity=".96"/>
+          </svg>
+          <span class="diagrama__onda"></span>
+        </div>
+        <div class="bento__rodape">
+          <span class="bento__vivo"><span class="bento__ponto" aria-hidden="true"></span><span id="frente-roadmaps-vivo">Roadmaps de todas as áreas</span></span>
+          <span class="bento__acao">Abrir roadmaps
+            <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a class="cartao bento__academia" href="academia.html" data-revelar>
+        <span class="kicker kicker--acento">02 · Academia Digital</span>
+        <h3 class="bento__titulo bento__titulo--menor">Capacite-se nas ferramentas digitais</h3>
+        <ul class="bento__lista" id="frente-trilhas"></ul>
+        <div class="bento__rodape bento__rodape--solto">
+          <span class="bento__texto" id="frente-academia-vivo">Trilhas da Academia</span>
+          <svg class="icone bento__seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+
+      <a class="cartao bento__noticias" href="noticias.html" id="frente-noticias" data-revelar>
+        <span class="kicker kicker--acento">03 · Notícias</span>
+        <h3 class="bento__titulo bento__titulo--menor">Novidades do mundo digital e da IA</h3>
+        <div class="bento__artigo" id="frente-artigo" hidden>
+          <div class="bento__artigo-meta">
+            <span class="selo selo--cheio selo--quadrado" id="frente-artigo-novo" hidden>Novo</span>
+            <span id="frente-artigo-data"></span>
+          </div>
+          <div class="bento__artigo-titulo" id="frente-artigo-titulo"></div>
+        </div>
+        <div class="bento__rodape bento__rodape--solto">
+          <span class="bento__texto" id="frente-noticias-vivo">Portal de notícias</span>
+          <svg class="icone bento__seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- A planta em números -------------------------------------------------- -->
+  <section class="numeros" aria-labelledby="numeros-titulo" id="numeros">
+    <div class="cabecalho-secao" data-revelar="titulo">
+      <div>
+        <p class="kicker" id="numeros-kicker">Indicadores</p>
+        <h2 class="display display--secao" id="numeros-titulo">A planta em <em>números</em></h2>
+      </div>
+      <a class="link-seta" href="indicadores.html">Ver todos os indicadores
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <div class="numeros__linha numeros__linha--1">
+      <article class="vidro viz viz--portfolio" id="viz-portfolio" data-revelar>
+        <div class="viz__topo">
+          <div>
+            <p class="viz__rotulo">Projetos digitais</p>
+            <p class="numero viz__grande" id="portfolio-projetos">—</p>
+          </div>
+          <span class="selo selo--suave" id="portfolio-parcela"></span>
+        </div>
+        <div class="portfolio__campo">
+          <svg viewBox="0 0 252 252" class="portfolio__pontos" id="portfolio-pontos" aria-hidden="true"></svg>
+          <div class="portfolio__centro">
+            <span class="numero portfolio__etapas" id="portfolio-etapas">—</span>
+            <span class="viz__rotulo">Etapas</span>
+          </div>
+        </div>
+        <ul class="portfolio__legenda" id="portfolio-legenda"></ul>
+      </article>
+
+      <article class="vidro viz viz--evolucao" id="viz-evolucao" data-revelar>
+        <div class="viz__topo">
+          <div>
+            <h3 class="viz__titulo">Evolução das etapas implantadas</h3>
+            <p class="viz__sub" id="evolucao-sub"></p>
+          </div>
+          <span class="selo selo--suave" id="evolucao-crescimento" hidden></span>
+        </div>
+        <div class="evolucao__trilho" id="evolucao-pontos"></div>
+        <div class="evolucao__meses" id="evolucao-meses" aria-hidden="true"></div>
+      </article>
+
+      <article class="vidro viz viz--matriz" id="viz-matriz" data-revelar>
+        <div class="viz__topo">
+          <div>
+            <h3 class="viz__titulo">Portfólio estratégico</h3>
+            <p class="viz__sub">Prioridade × Complexidade</p>
+          </div>
+          <div class="matriz__foco">
+            <span class="numero matriz__foco-n" id="matriz-foco">—</span>
+            <span class="matriz__foco-texto">etapas em alta prioridade + alta complexidade</span>
+          </div>
+        </div>
+        <div class="matriz__plano" id="matriz-plano"></div>
+        <div class="viz__rodape">
+          <span class="viz__rotulo">Prioridade ↑ · Complexidade →</span>
+          <span class="matriz__dica" id="matriz-dica" aria-live="polite"></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="numeros__linha numeros__linha--2">
+      <article class="vidro viz viz--ritmo" id="viz-ritmo" data-revelar>
+        <h3 class="viz__titulo">Ritmo por área</h3>
+        <p class="viz__sub" id="ritmo-sub"></p>
+        <div class="ritmo__grade" id="ritmo-grade"></div>
+        <div class="ritmo__escala">
+          <span>Menor atividade</span>
+          <span class="ritmo__degraus" id="ritmo-escala" aria-hidden="true"></span>
+          <span>Maior atividade</span>
+        </div>
+        <span class="viz__dica" id="ritmo-dica" aria-live="polite" hidden></span>
+      </article>
+
+      <article class="vidro viz viz--leituras" data-revelar>
+        <h3 class="viz__titulo">Principais leituras</h3>
+        <p class="viz__sub">O que os números mostram hoje</p>
+        <div class="leituras">
+          <div class="leitura">
+            <span class="numero leitura__n" id="leitura-dependem">—</span>
+            <span class="leitura__texto">etapas dependem de outra frente para avançar.</span>
+          </div>
+          <div class="leitura">
+            <span class="numero leitura__n" id="leitura-zero">—</span>
+            <span class="leitura__texto">etapas ainda estão em 0% de progresso.</span>
+          </div>
+          <div class="leitura leitura--ganho" id="leitura-ganho" hidden>
+            <span class="leitura__ganho" id="leitura-ganho-nome"></span>
+            <span class="leitura__texto" id="leitura-ganho-texto"></span>
+          </div>
+        </div>
+      </article>
+
+      <article class="vidro viz viz--vetores" id="viz-vetores" data-revelar>
+        <h3 class="viz__titulo">Vetores de valor</h3>
+        <p class="viz__sub">Contribuição relativa por tema</p>
+        <ul class="vetores" id="vetores"></ul>
+        <div class="vetores__eixo" aria-hidden="true"><span></span><span class="vetores__marcas"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></span><span></span></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Academia --------------------------------------------------------------- -->
+  <section class="trilhas" aria-labelledby="trilhas-titulo" id="trilhas" hidden>
+    <div class="cabecalho-secao" data-revelar="titulo">
+      <div>
+        <p class="kicker">Academia Digital</p>
+        <h2 class="display display--secao" id="trilhas-titulo">Trilhas para <em>evoluir</em></h2>
+      </div>
+      <a class="link-seta" href="academia.html">Explorar academia
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="trilhas__grade" id="trilhas-grade"></div>
+  </section>
+
+  <!-- Movimento recente ---------------------------------------------------- -->
+  <section class="novidades" aria-labelledby="novidades-titulo" id="novidades" hidden>
+    <div class="cabecalho-secao" data-revelar="titulo">
+      <div>
+        <p class="kicker">O que há de novo</p>
+        <h2 class="display display--secao" id="novidades-titulo">Movimento <em class="quente">recente</em></h2>
+      </div>
+      <a class="link-seta" href="noticias.html">Ver tudo
+        <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="novidades__grade" id="novidades-grade"></div>
+  </section>
+
+  <!-- Convite ---------------------------------------------------------------- -->
+  <section class="convite" aria-labelledby="convite-titulo">
+    <div class="convite__fundo" aria-hidden="true"></div>
+    <div class="convite__cartao" data-revelar>
+      <p class="kicker kicker--acento">Iniciativas e projetos</p>
+      <h2 class="display convite__titulo" id="convite-titulo">A transformação acontece <em>molécula por molécula.</em></h2>
+      <p class="apoio convite__texto">Área por área, processo por processo, estamos criando uma maneira mais conectada de aprender e decidir.</p>
+      <div class="convite__acao">
+        <a class="link-seta" id="convite-nova" href="#" target="_blank" rel="noopener">Registrar nova iniciativa
+          <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a class="botao botao--secundario" id="hero-teams" target="_blank" rel="noopener">Falar com o time</a>
-      </div>
-    </div>
-
-    <div class="hero__arte">
-      <picture>
-        <source type="image/webp" srcset="assets/img/hero-landing-800.webp 800w, assets/img/hero-landing-1200.webp 1200w" sizes="(max-width: 900px) 100vw, 46vw">
-        <img class="hero__img" src="assets/img/hero-landing-800.jpg"
-             srcset="assets/img/hero-landing-800.jpg 800w, assets/img/hero-landing-1200.jpg 1200w" sizes="(max-width: 900px) 100vw, 46vw"
-             width="1600" height="900" loading="eager" decoding="async"
-             alt="Ilustração isométrica da planta de Itatiba conectada a um cérebro de inteligência artificial por fios luminosos laranja.">
-      </picture>
-      <span class="hero__no hero__no--1" aria-hidden="true"></span>
-      <span class="hero__no hero__no--2" aria-hidden="true"></span>
-      <span class="hero__no hero__no--3" aria-hidden="true"></span>
-      <div class="hero__flutuante" id="hero-flutuante" hidden>
-        <div class="hero__flutuante-topo">
-          <span class="hero__flutuante-ponto" aria-hidden="true"></span>
-          <span class="hero__flutuante-rotulo">Sistema ativo</span>
-        </div>
-        <div class="hero__flutuante-valor" id="hero-flutuante-valor"></div>
       </div>
     </div>
   </section>
-
-  <!-- Três destinos ------------------------------------------------------ -->
-  <section class="secao secao--destinos" id="destinos" aria-labelledby="destinos-titulo">
-    <div class="secao__topo">
-      <div class="secao__intro">
-        <p class="secao__kicker">Três destinos</p>
-        <h2 class="secao__titulo-grande" id="destinos-titulo">Por onde você quer começar?</h2>
-      </div>
-      <p class="secao__nota">Três frentes conectadas pela mesma central de inteligência.</p>
-    </div>
-    <div class="destinos" id="destinos-grade"></div>
-  </section>
-
-  <!-- Academia: trilhas -------------------------------------------------- -->
-  <section class="secao secao--academia" id="academia" aria-labelledby="academia-titulo" hidden>
-    <div class="secao__topo">
-      <div class="secao__intro">
-        <p class="secao__kicker">Academia Digital</p>
-        <h2 class="secao__titulo-grande" id="academia-titulo">Trilhas para se capacitar</h2>
-      </div>
-      <div class="secao__acoes-topo">
-        <span class="legenda">
-          <span class="legenda__ponto legenda__ponto--cheio" aria-hidden="true"></span>Disponíveis
-        </span>
-        <span class="legenda legenda--fraca">
-          <span class="legenda__ponto legenda__ponto--vazio" aria-hidden="true"></span>Em breve
-        </span>
-        <a class="link-seta" href="academia.html">Ver academia<span class="link-seta__icone" aria-hidden="true"></span></a>
-      </div>
-    </div>
-    <div class="trilhas-home" id="trilhas-grade"></div>
-  </section>
-
-  <!-- O que há de novo --------------------------------------------------- -->
-  <section class="secao secao--novo" id="novo" aria-labelledby="novo-titulo" hidden>
-    <div class="secao__topo">
-      <div class="secao__intro">
-        <p class="secao__kicker">O que há de novo</p>
-        <h2 class="secao__titulo-grande" id="novo-titulo">Movimento recente</h2>
-      </div>
-      <a class="link-seta" href="noticias.html">Ver tudo<span class="link-seta__icone" aria-hidden="true"></span></a>
-    </div>
-    <div class="novo" id="novo-grade"></div>
-  </section>
-
-  <!-- Números ------------------------------------------------------------ -->
-  <section class="secao secao--numeros" aria-labelledby="numeros-titulo">
-    <h2 class="visualmente-oculto" id="numeros-titulo">Números do site</h2>
-    <div class="numeros" id="numeros-grade"></div>
-  </section>
-
-  <!-- Fechamento --------------------------------------------------------- -->
-  <section class="secao secao--fechamento" aria-labelledby="fechamento-titulo">
-    <div class="fechamento">
-      <span class="fechamento__glow" aria-hidden="true"></span>
-      <svg class="fechamento__rede" viewBox="0 0 520 340" fill="none" aria-hidden="true" focusable="false">
-        <g stroke="currentColor" stroke-width="1" opacity="0.5">
-          <path d="M520 40 L400 90 L300 50 M400 90 L360 190 L440 250 M300 50 L250 150 L360 190 M250 150 L160 120 M360 190 L470 300"/>
-        </g>
-        <circle cx="400" cy="90" r="4" fill="currentColor"/>
-        <circle cx="300" cy="50" r="3" fill="currentColor"/>
-        <circle cx="360" cy="190" r="5" fill="currentColor"/>
-        <circle cx="250" cy="150" r="3.5" fill="currentColor"/>
-        <circle cx="440" cy="250" r="3" fill="#c9bfae"/>
-        <circle cx="160" cy="120" r="2.5" fill="#c9bfae"/>
-        <circle cx="470" cy="300" r="3" fill="#c9bfae"/>
-      </svg>
-      <div class="fechamento__conteudo">
-        <p class="secao__kicker secao__kicker--acento">Sua área, no mapa</p>
-        <h2 class="fechamento__titulo" id="fechamento-titulo">Tem uma ideia para a sua área?</h2>
-        <p class="fechamento__apoio">Toda transformação começa com uma iniciativa. Registre a sua e conecte-a à central de inteligência da planta.</p>
-        <div class="fechamento__acoes">
-          <a class="botao botao--primario fechamento__cta" id="fechamento-nova" target="_blank" rel="noopener">
-            <span class="fechamento__mais" aria-hidden="true"></span><span id="fechamento-nova-rotulo">Registrar nova iniciativa</span>
-          </a>
-          <a class="link-teams" id="fechamento-teams" target="_blank" rel="noopener">
-            <span class="link-teams__icone" aria-hidden="true"></span>Falar com o time pelo Teams
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Rodapé ------------------------------------------------------------- -->
-  <footer class="home-rodape">
-    <div class="home-rodape__marca">
-      <div class="home-rodape__marca-topo">
-        <span class="home-nav__logo home-nav__logo--pequeno" aria-hidden="true"></span>
-        <span class="home-rodape__marca-titulo">Transformação Digital · Itatiba</span>
-      </div>
-      <p class="home-rodape__texto">Central de inteligência da planta. Roadmaps, capacitação e novidades da jornada digital.</p>
-    </div>
-    <div class="home-rodape__colunas">
-      <div class="home-rodape__coluna">
-        <span class="home-rodape__rotulo">Portal</span>
-        <a class="home-rodape__link" href="hub.html">Roadmaps</a>
-        <a class="home-rodape__link" href="academia.html">Academia Digital</a>
-        <a class="home-rodape__link" href="noticias.html">Notícias</a>
-      </div>
-      <div class="home-rodape__coluna">
-        <span class="home-rodape__rotulo">Contato</span>
-        <a class="home-rodape__link" id="rodape-nova" target="_blank" rel="noopener">Nova iniciativa</a>
-        <a class="home-rodape__link" id="rodape-teams" target="_blank" rel="noopener">Canal no Teams</a>
-      </div>
-    </div>
-  </footer>
-
-  <p class="home__copy">© 2026 Transformação Digital — Planta Itatiba. Portal interno.</p>
-</div>
+</main>
 
 <script type="module" src="assets/js/home.js"></script>
 </body>

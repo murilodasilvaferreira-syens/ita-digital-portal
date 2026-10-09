@@ -4,92 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>Iniciativas Digitais · Syensqo Itatiba</title>
+<title>Roadmap · Iniciativas Digitais · Syensqo Itatiba</title>
 <!-- Sem favicon o navegador pede /favicon.ico e toma 404. -->
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/tokens.css">
 <link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/roadmap.css">
 </head>
-<body>
+<body class="roadmap">
 
-<div id="estado-carga" class="estado">
-  <p>Carregando iniciativas…</p>
-</div>
+<div class="fundo-topo rd-fundo" aria-hidden="true"></div>
 
-<div id="app" class="app" hidden>
+<p class="estado-carga" id="estado-carga">Carregando roadmap…</p>
 
-  <header class="cabecalho">
-    <div class="cabecalho__topo">
-      <div class="cabecalho__identidade">
-        <div class="cabecalho__linha-titulo">
-          <h1 class="cabecalho__titulo" id="area-nome"></h1>
-          <p class="cabecalho__kicker">
-            <span class="cabecalho__fio" aria-hidden="true"></span>Digital Roadmap
-          </p>
-        </div>
-        <p class="cabecalho__descricao" id="area-descricao"></p>
-      </div>
+<main id="pagina" class="pagina pagina--densa rd" hidden>
 
-      <div class="cabecalho__acoes">
-        <p class="cabecalho__atualizacao" id="atualizacao"></p>
-        <a class="botao botao--primario" id="botao-nova" target="_blank" rel="noopener">Nova iniciativa</a>
-        <a class="botao botao--secundario" id="botao-teams" target="_blank" rel="noopener">Falar com o Digital</a>
+  <!-- Cabeçalho ----------------------------------------------------------- -->
+  <section class="rd-topo">
+    <div class="rd-topo__texto">
+      <nav class="rd-trilha" aria-label="Você está em">
+        <a class="rd-trilha__raiz" href="hub.html">Roadmap Digital</a>
+        <span class="rd-trilha__sep" aria-hidden="true">/</span>
+        <label class="visualmente-oculto" for="seletor-area">Trocar de área</label>
+        <select class="rd-trilha__area" id="seletor-area"></select>
+      </nav>
+      <h1 class="display display--pagina-2" id="area-nome"></h1>
+      <p class="apoio rd-topo__apoio" id="area-descricao"></p>
+    </div>
+    <div class="rd-topo__acoes">
+      <p class="rd-atualizado" id="atualizacao" hidden>
+        <span class="ponto-vivo" aria-hidden="true"></span>
+        <span id="atualizacao-texto"></span>
+      </p>
+      <div class="rd-topo__botoes">
+        <a class="botao botao--contorno" id="botao-teams" href="#" target="_blank" rel="noopener">Falar com o Digital</a>
+        <a class="botao botao--primario" id="botao-nova" href="#" target="_blank" rel="noopener"><span class="rd-mais" aria-hidden="true">+</span><span id="botao-nova-rotulo">Nova iniciativa</span></a>
       </div>
     </div>
+  </section>
 
-    <div class="filtros">
-      <div class="filtros__chips" id="filtro-fases" role="group" aria-label="Filtrar por fase"></div>
+  <!-- Filtros -------------------------------------------------------------- -->
+  <div class="rd-filtros" role="group" aria-label="Filtros do roadmap">
+    <div class="rd-fases" id="filtro-fases" role="group" aria-label="Filtrar por fase"></div>
+    <span class="rd-filtros__divisor" aria-hidden="true"></span>
+    <label class="visualmente-oculto" for="filtro-projeto">Projeto</label>
+    <select class="seletor rd-filtros__projeto" id="filtro-projeto"></select>
+    <label class="visualmente-oculto" for="filtro-tech">Tecnologia</label>
+    <select class="seletor" id="filtro-tech"></select>
+    <label class="campo rd-busca">
+      <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="visualmente-oculto">Buscar iniciativa</span>
+      <input id="filtro-busca" type="search" placeholder="Buscar iniciativa, pessoa ou tecnologia" autocomplete="off">
+    </label>
+    <button class="botao botao--texto" id="limpar-filtros" type="button" hidden>Limpar filtros</button>
+    <span class="rd-filtros__resumo" id="resumo-filtro" aria-live="polite"></span>
+  </div>
 
-      <div class="filtros__controles">
-        <label class="visualmente-oculto" for="filtro-projeto">Projeto</label>
-        <select class="campo campo--select" id="filtro-projeto"></select>
-
-        <label class="visualmente-oculto" for="filtro-tech">Tecnologia</label>
-        <select class="campo campo--select" id="filtro-tech"></select>
-
-        <label class="visualmente-oculto" for="filtro-busca">Buscar iniciativa</label>
-        <input class="campo campo--busca" id="filtro-busca" type="search" placeholder="Buscar iniciativa" autocomplete="off">
-
-        <button class="botao botao--texto" id="limpar-filtros" type="button" hidden>Limpar filtros</button>
+  <!-- Quadro de dependências -------------------------------------------------- -->
+  <section class="quadro" id="quadro" aria-labelledby="quadro-titulo">
+    <div class="quadro__barra">
+      <div class="quadro__info">
+        <h2 class="quadro__titulo" id="quadro-titulo">Dependências <span class="quadro__resumo" id="resumo-arvore"></span></h2>
+        <ul class="quadro__legenda" aria-label="Legenda">
+          <li><span class="fase-ic fase-ic--execucao" aria-hidden="true">●</span>Execução</li>
+          <li><span class="fase-ic fase-ic--planejamento" aria-hidden="true"></span>Planejamento</li>
+          <li><span class="fase-ic fase-ic--entregue" aria-hidden="true">✓</span>Entregue</li>
+        </ul>
+      </div>
+      <div class="quadro__controles" role="group" aria-label="Controles do quadro">
+        <span class="quadro__dica" id="quadro-dica"></span>
+        <div class="quadro__zoom">
+          <button type="button" data-acao="menos" aria-label="Diminuir zoom">−</button>
+          <span id="zoom-valor" aria-live="polite">100%</span>
+          <button type="button" data-acao="mais" aria-label="Aumentar zoom">+</button>
+        </div>
+        <button class="quadro__botao" type="button" data-acao="centralizar">Centralizar</button>
+        <button class="quadro__botao" type="button" data-acao="ampliar" aria-pressed="false">
+          <svg class="icone" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+          <span>Ampliar</span>
+        </button>
       </div>
     </div>
-  </header>
+    <div class="quadro__palco" id="palco"></div>
+    <div class="quadro__vazio" id="quadro-vazio" hidden>
+      <p class="quadro__vazio-titulo">Nenhuma iniciativa</p>
+      <p>Nenhuma etapa corresponde aos filtros atuais.</p>
+      <button class="botao botao--contorno" type="button" data-limpar>Limpar filtros</button>
+    </div>
+  </section>
 
-  <main class="conteudo">
+  <!-- O que pede atenção ---------------------------------------------------------- -->
+  <section class="atencao" aria-labelledby="atencao-titulo">
+    <div class="cabecalho-secao">
+      <div>
+        <p class="kicker">Acompanhamento</p>
+        <h2 class="display display--secao-2" id="atencao-titulo">O que pede <em>atenção</em></h2>
+      </div>
+      <p class="cabecalho-secao__nota">Passe o mouse para localizar a etapa no roadmap</p>
+    </div>
+    <div class="atencao__grade" id="atencao"></div>
+  </section>
+</main>
 
-    <section class="painel painel--arvore" aria-labelledby="titulo-arvore">
-      <header class="painel__topo">
-        <div class="painel__titulo-area">
-          <h2 class="painel__titulo" id="titulo-arvore">Dependências</h2>
-          <p class="painel__resumo" id="resumo-filtro" aria-live="polite"></p>
-        </div>
-
-        <div class="arvore__controles" role="group" aria-label="Controles da árvore">
-          <button class="botao-icone" type="button" data-acao="menos" aria-label="Diminuir zoom">−</button>
-          <span class="arvore__zoom-valor" aria-hidden="true">100%</span>
-          <button class="botao-icone" type="button" data-acao="mais" aria-label="Aumentar zoom">+</button>
-          <button class="botao botao--texto" type="button" data-acao="centralizar">Centralizar</button>
-          <button class="botao botao--texto" type="button" data-acao="ampliar" aria-pressed="false">Ampliar</button>
-        </div>
-      </header>
-
-      <div class="arvore__container" id="arvore"></div>
-      <p class="painel__vazio" id="arvore-vazia" hidden>Nenhuma iniciativa corresponde aos filtros.</p>
-    </section>
-
-    <aside class="painel painel--gestao" aria-labelledby="titulo-gestao">
-      <header class="painel__topo">
-        <h2 class="painel__titulo" id="titulo-gestao">Gestão</h2>
-      </header>
-      <div class="gestao" id="gestao"></div>
-    </aside>
-
-  </main>
+<!-- Área inexistente: falha visível, para ninguém rodar meses com o embed errado. -->
+<div class="erro-carga rd-invalida" id="area-invalida" hidden>
+  <h1>Área não encontrada</h1>
+  <p id="area-invalida-texto"></p>
+  <p class="rd-invalida__rotulo">Áreas válidas:</p>
+  <ul class="rd-invalida__lista" id="area-invalida-lista"></ul>
 </div>
 
-<dialog class="detalhe" id="detalhe" aria-label="Detalhe da iniciativa"></dialog>
+<!-- Painel lateral: detalhe da etapa ou resumo do projeto -------------------------- -->
+<aside class="gaveta" id="gaveta" role="dialog" aria-modal="false" aria-label="Detalhe" hidden>
+  <div class="gaveta__topo">
+    <button class="gaveta__voltar" type="button" data-gaveta="voltar" hidden></button>
+    <button class="gaveta__fechar" type="button" data-gaveta="fechar" aria-label="Fechar painel">×</button>
+  </div>
+  <div class="gaveta__corpo" data-gaveta="corpo"></div>
+  <div class="gaveta__rodape" data-gaveta="rodape" hidden></div>
+</aside>
 
-<script type="module" src="assets/js/app.js"></script>
+<script type="module" src="assets/js/roadmap.js"></script>
 </body>
 </html>

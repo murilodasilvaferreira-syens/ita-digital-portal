@@ -1,535 +1,745 @@
 /**
- * Landing (home.html) — a porta de entrada do portal.
+ * Início (home.html) — a porta de entrada do portal.
  *
- * Cruza as três frentes já existentes lendo os mesmos arquivos que o resto do
- * site: as iniciativas do Power Automate, as trilhas da Academia e o índice de
- * notícias. Nenhum número é digitado aqui; tudo é derivado dos dados reais.
+ * Cruza as três frentes lendo os mesmos arquivos que as outras páginas:
+ * iniciativas (Power Automate), trilhas da Academia e índice de notícias.
+ * Nenhum número é digitado aqui: tudo sai de metricas.js e conteudo.js.
  *
- * Cada fonte é carregada de forma independente: se uma falhar, a sua seção
- * some sem derrubar as outras. Todo texto entra por textContent (via `criar`),
- * nunca por innerHTML.
+ * Cada fonte carrega de forma independente — se uma falhar, só a sua parte
+ * some. Todo texto entra por textContent.
  */
 
-import {
-  criar, normalizar, debounce,
-  animarContagem, ligarSpotlight, ligarRolagemSuave, plural,
-} from './ui.js';
-import { criarDataset, FASE, formatarData } from './data.js';
+import { criar, linkExterno, normalizar, debounce, animarContagem, plural, movimentoReduzido } from './ui.js';
+import { carregarPortal } from './data.js';
+import { montarCasca, revelar, entrarEmCena, urlTeams, urlNovaIniciativa } from './shell.js';
+import { carregarArtigos, carregarTrilhas, minutosDoArtigo, escolherManchete, dataCurta, diasDesde } from './conteudo.js';
+import * as M from './metricas.js';
 import { icone } from '../icons/icones.js';
 
-const SVG_NS = 'http://www.w3.org/2000/svg';
+const $ = (sel) => document.querySelector(sel);
+const SVG = 'http://www.w3.org/2000/svg';
 
-/** Cria um nó SVG com atributos, sem innerHTML (mesma técnica de icones.js). */
-function svgEl(tag, atributos) {
-  const node = document.createElementNS(SVG_NS, tag);
-  for (const [chave, valor] of Object.entries(atributos)) node.setAttribute(chave, String(valor));
-  return node;
+function svg(tag, atributos = {}) {
+  const no = document.createElementNS(SVG, tag);
+  for (const [k, v] of Object.entries(atributos)) no.setAttribute(k, String(v));
+  return no;
 }
 
-/** Rede de nós decorativa do card de destaque (aria-hidden, puro enfeite). */
-function criarRedeDestaque() {
-  const svg = svgEl('svg', { class: 'novo-destaque__rede', viewBox: '0 0 300 300', 'aria-hidden': 'true', focusable: 'false' });
-  const linhas = svgEl('g', { stroke: 'currentColor', 'stroke-width': '1', opacity: '0.5', fill: 'none' });
-  linhas.appendChild(svgEl('path', { d: 'M40 60 L120 90 L200 40 L260 110 M120 90 L150 180 L90 230 M200 40 L230 130 L150 180 M230 130 L280 200' }));
-  svg.appendChild(linhas);
-  const nos = [[40, 60, 3.5], [120, 90, 4.5], [200, 40, 3], [150, 180, 5], [90, 230, 3], [230, 130, 3.5], [280, 200, 3], [260, 110, 2.5]];
-  for (const [cx, cy, r] of nos) svg.appendChild(svgEl('circle', { cx, cy, r, fill: 'currentColor' }));
-  return svg;
+/** Texto com um trecho em negrito: ("12 entregas", " neste mês"). */
+function textoComDestaque(alvo, forte, resto) {
+  alvo.textContent = '';
+  alvo.append(criar('b', null, forte), document.createTextNode(resto));
 }
 
-/* -------------------------------------------------------------------------- */
-/* Carga                                                                       */
-/* -------------------------------------------------------------------------- */
-
-/** Lê um JSON local sem cache. Devolve null (com aviso) em vez de estourar. */
-async function carregar(url) {
+async function tentar(promessa, rotulo) {
   try {
-    const resposta = await fetch(url, { cache: 'no-store' });
-    if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
-    return await resposta.json();
+    return await promessa;
   } catch (erro) {
-    console.warn(`[home] Não foi possível ler ${url}: ${erro.message}`);
+    console.warn(`[início] ${rotulo}: ${erro.message}`);
     return null;
   }
 }
 
-const $ = (sel) => document.querySelector(sel);
-
 /* -------------------------------------------------------------------------- */
-/* Datas                                                                       */
-/* -------------------------------------------------------------------------- */
-
-const AGORA = new Date();
-const ANO_MES = `${AGORA.getFullYear()}-${String(AGORA.getMonth() + 1).padStart(2, '0')}`;
-const HA_SETE_DIAS = new Date(AGORA.getTime() - 7 * 86400000);
-
-/** Timestamp comparável de um item do feed (artigo por data, entrega por updatedAt). */
-function quando(item) {
-  const iso = item.tipo === 'artigo' ? `${item.data}T12:00:00` : item.updatedAt;
-  const t = new Date(iso).getTime();
-  return Number.isNaN(t) ? 0 : t;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Início                                                                      */
+/* Início                                                                     */
 /* -------------------------------------------------------------------------- */
 
 iniciar();
 
 async function iniciar() {
-  const [site, dadosInic, dadosTrilhas, indiceNoticias] = await Promise.all([
-    carregar('config/site.json'),
-    carregar('data/initiatives.json'),
-    carregar('data/academia/trilhas.json'),
-    carregar('content/noticias/index.json'),
+  const [site, portal, academia, artigos] = await Promise.all([
+    montarCasca({ ativa: 'inicio', rodape: 'completo' }),
+    tentar(carregarPortal(), 'iniciativas'),
+    tentar(carregarTrilhas(), 'trilhas'),
+    tentar(carregarArtigos(), 'notícias'),
   ]);
 
-  // Iniciativas: mesma camada de derivação do resto do site (status -> fase).
-  let itens = [];
-  if (dadosInic && Array.isArray(dadosInic.initiatives)) {
-    try {
-      itens = criarDataset(dadosInic.initiatives, { staleDays: site?.staleDays ?? 30 }).itens;
-    } catch (erro) {
-      console.warn(`[home] Falha ao derivar iniciativas: ${erro.message}`);
+  const itens = portal?.dataset.itens ?? [];
+  const areas = portal?.areas ?? [];
+  const trilhas = academia?.trilhas ?? [];
+  const lista = artigos ?? [];
+  const slugsDeArea = new Set(areas.map((a) => a.slug));
+  const urlEtapa = (item) => (slugsDeArea.has(item.slugArea)
+    ? `index.html?area=${item.slugArea}#i=${item.id}`
+    : `index.html#i=${item.id}`);
+
+  $('#convite-nova').href = urlNovaIniciativa(site);
+
+  montarLetreiro(areas, itens);
+  montarFrentes(itens, trilhas, lista);
+  if (itens.length) montarNumeros(itens);
+  else $('#numeros').hidden = true;
+  montarTrilhas(trilhas, site);
+  montarNovidades(itens, lista, urlEtapa);
+  montarBusca(itens, trilhas, lista, urlEtapa);
+
+  revelar();
+}
+
+/* -------------------------------------------------------------------------- */
+/* Letreiro de áreas                                                          */
+/* -------------------------------------------------------------------------- */
+
+function montarLetreiro(areas, itens) {
+  const faixa = $('#letreiro-areas');
+  const nomes = areas.length
+    ? areas.map((a) => a.name)
+    : [...new Set(itens.map((i) => i.area).filter((a) => a !== 'Sem área'))];
+  if (!nomes.length) {
+    faixa.closest('.letreiro').hidden = true;
+    return;
+  }
+
+  // O laço infinito anda meia faixa: a lista vai duas vezes. Parado, uma só.
+  const voltas = movimentoReduzido() ? 1 : 2;
+  for (let v = 0; v < voltas; v++) {
+    nomes.forEach((nome) => {
+      const area = criar('span', 'letreiro__area', nome);
+      if (v > 0) area.setAttribute('aria-hidden', 'true');
+      const sep = criar('span', 'letreiro__sep');
+      sep.setAttribute('aria-hidden', 'true');
+      faixa.append(area, sep);
+    });
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Três frentes                                                               */
+/* -------------------------------------------------------------------------- */
+
+function montarFrentes(itens, trilhas, artigos) {
+  // Roadmaps: entregas (conclusão) do mês; sem nenhuma, o último mês com entrega.
+  const vivo = $('#frente-roadmaps-vivo');
+  if (itens.length) {
+    const mes = M.mesAtual();
+    const doMes = M.implantadasNoMes(itens, mes);
+    if (doMes > 0) {
+      textoComDestaque(vivo, `${doMes} ${plural(doMes, 'entrega', 'entregas')}`, ' neste mês');
+    } else {
+      const meses = Object.keys(M.porMes(itens.filter((i) => i.status === 'Implantada'), 'doneDate')).sort();
+      const ultimo = meses[meses.length - 1];
+      if (ultimo) {
+        const n = M.implantadasNoMes(itens, ultimo);
+        textoComDestaque(vivo, `${n} ${plural(n, 'entrega', 'entregas')}`, ` em ${M.nomeMesLongo(ultimo)}`);
+      } else {
+        textoComDestaque(vivo, `${itens.length} etapas`, ' no roadmap');
+      }
     }
   }
 
-  const trilhas = Array.isArray(dadosTrilhas?.trilhas) ? dadosTrilhas.trilhas : [];
-  const artigos = (Array.isArray(indiceNoticias?.artigos) ? indiceNoticias.artigos : [])
-    .filter((a) => a && a.slug && a.titulo)
-    .slice()
-    .sort((a, b) => String(b.data ?? '').localeCompare(String(a.data ?? '')));
-
-  configurarLinks(site);
-  montarDestinos(itens, trilhas, artigos);
-  montarAcademia(trilhas);
-  montarNovo(itens, artigos);
-  montarNumeros(itens, trilhas, artigos);
-  montarBusca(itens, trilhas, artigos);
-
-  // Revela a página e liga os gestos compartilhados.
-  $('#estado-carga').hidden = true;
-  $('#pagina').hidden = false;
-  ligarRolagemSuave(document);
-  ligarSpotlight($('#pagina'), '.destino, .trilha-card, .novo-item');
-}
-
-/* -------------------------------------------------------------------------- */
-/* Links de ação (Teams e nova iniciativa)                                     */
-/* -------------------------------------------------------------------------- */
-
-function urlTeams(site, mensagem) {
-  const email = site?.teams?.email ?? '';
-  const texto = mensagem ?? site?.teams?.message ?? '';
-  return `https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(email)}&message=${encodeURIComponent(texto)}`;
-}
-
-function configurarLinks(site) {
-  const linkTeams = urlTeams(site, (site?.teams?.message ?? '').trim());
-  const linkNova = site?.newInitiative?.url ?? '#';
-
-  ['#nav-teams', '#hero-teams', '#fechamento-teams', '#rodape-teams'].forEach((sel) => {
-    const el = $(sel);
-    if (el) el.href = linkTeams;
+  // Academia: duas trilhas (disponíveis primeiro) e a contagem real.
+  const listaTrilhas = $('#frente-trilhas');
+  const ordenadas = [...trilhas].sort((a, b) => Number(b.disponivel === true) - Number(a.disponivel === true));
+  ordenadas.slice(0, 2).forEach((t) => {
+    const li = criar('li', 'bento__item');
+    li.appendChild(criar('span', null, [t.nome, t.nivel].filter(Boolean).join(' · ')));
+    if (t.disponivel === true) {
+      const seta = icone('seta');
+      if (seta) li.appendChild(seta);
+    } else {
+      li.appendChild(criar('small', null, 'em breve'));
+    }
+    listaTrilhas.appendChild(li);
   });
-  ['#fechamento-nova', '#rodape-nova'].forEach((sel) => {
-    const el = $(sel);
-    if (el) el.href = linkNova;
-  });
-}
+  if (trilhas.length) {
+    const disp = trilhas.filter((t) => t.disponivel === true).length;
+    const vivoAcademia = $('#frente-academia-vivo');
+    if (disp) textoComDestaque(vivoAcademia, `${disp} ${plural(disp, 'trilha', 'trilhas')}`, ` ${plural(disp, 'disponível', 'disponíveis')} de ${trilhas.length}`);
+    else textoComDestaque(vivoAcademia, `${trilhas.length} trilhas`, ' em preparação');
+  }
 
-/* -------------------------------------------------------------------------- */
-/* Três destinos                                                               */
-/* -------------------------------------------------------------------------- */
-
-function montarDestinos(itens, trilhas, artigos) {
-  const grade = $('#destinos-grade');
-  if (!grade) return;
-
-  const entregasMes = itens.filter(
-    (i) => i.status === 'Implantada' && i.updatedAt && i.updatedAt.slice(0, 7) === ANO_MES,
-  ).length;
-  const disponiveis = trilhas.filter((t) => t.disponivel === true).length;
-  const artigoRecente = artigos[0]?.titulo ?? null;
-
-  const destinos = [
-    {
-      num: '01', icon: 'fabrica', nome: 'Roadmaps', href: 'hub.html',
-      proposito: 'Acompanhe o que está em execução em cada área da planta.',
-      vivo: entregasMes > 0
-        ? `${entregasMes} ${plural(entregasMes, 'entrega', 'entregas')} neste mês`
-        : 'Roadmaps de todas as áreas',
-    },
-    {
-      num: '02', icon: 'livro', nome: 'Academia Digital', href: 'academia.html',
-      proposito: 'Capacite-se nas ferramentas digitais e de IA.',
-      vivo: disponiveis > 0
-        ? `${disponiveis} ${plural(disponiveis, 'trilha disponível', 'trilhas disponíveis')}`
-        : 'Trilhas em preparação',
-    },
-    {
-      num: '03', icon: 'documento', nome: 'Notícias', href: 'noticias.html',
-      proposito: 'Novidades do mundo digital e da inteligência artificial.',
-      vivo: artigoRecente ?? 'Novidades em breve',
-    },
-  ];
-
-  grade.textContent = '';
-  for (const d of destinos) {
-    const card = criar('a', 'destino');
-    card.href = d.href;
-
-    const topo = criar('div', 'destino__topo');
-    const marca = criar('div', 'destino__marca');
-    const ic = icone(d.icon);
-    if (ic) marca.appendChild(ic);
-    topo.appendChild(marca);
-    topo.appendChild(criar('span', 'destino__num', d.num));
-    card.appendChild(topo);
-
-    card.appendChild(criar('h3', 'destino__nome', d.nome));
-    card.appendChild(criar('p', 'destino__proposito', d.proposito));
-
-    const rodape = criar('div', 'destino__rodape');
-    const vivo = criar('span', 'destino__vivo');
-    vivo.appendChild(criar('span', 'destino__vivo-ponto'));
-    vivo.appendChild(criar('span', 'destino__vivo-texto', d.vivo));
-    rodape.appendChild(vivo);
-    const seta = criar('span', 'destino__seta');
-    seta.appendChild(criar('span', 'destino__seta-icone'));
-    rodape.appendChild(seta);
-    card.appendChild(rodape);
-
-    grade.appendChild(card);
+  // Notícias: o artigo mais recente, com tempo de leitura do próprio texto.
+  const recente = artigos[0];
+  if (recente) {
+    $('#frente-noticias').href = `noticias.html#/${recente.slug}`;
+    $('#frente-artigo').hidden = false;
+    $('#frente-artigo-titulo').textContent = recente.titulo;
+    $('#frente-artigo-novo').hidden = (diasDesde(recente.data) ?? 99) > 14;
+    const data = dataCurta(recente.data, { ano: false });
+    $('#frente-artigo-data').textContent = data;
+    $('#frente-noticias-vivo').textContent = 'Artigo mais recente';
+    minutosDoArtigo(recente.slug).then((min) => {
+      if (min) $('#frente-artigo-data').textContent = `${data} · ${min} min`;
+    });
   }
 }
 
 /* -------------------------------------------------------------------------- */
-/* Academia — grid de trilhas                                                  */
+/* A planta em números                                                        */
 /* -------------------------------------------------------------------------- */
 
-function montarAcademia(trilhas) {
-  const secao = $('#academia');
+function montarNumeros(itens) {
+  const projetos = M.projetosDistintos(itens);
+  $('#numeros-kicker').textContent = `Indicadores · ${itens.length} etapas · ${projetos} projetos`;
+
+  montarPortfolio(itens, projetos);
+  montarEvolucao(itens);
+  montarMatriz(itens);
+  montarRitmo(itens);
+  montarLeituras(itens);
+  montarVetores(itens);
+
+  document.querySelectorAll('#numeros .viz').forEach(entrarEmCena);
+}
+
+/** Campo radial de pontos: cada ponto é uma fatia do portfólio por status. */
+function montarPortfolio(itens, projetos) {
+  const status = M.contarPorStatus(itens);
+  const implantadas = status.get('Implantada') || 0;
+
+  animarContagem($('#portfolio-projetos'), projetos);
+  animarContagem($('#portfolio-etapas'), itens.length);
+  $('#portfolio-parcela').textContent = `${Math.round((implantadas / itens.length) * 100)}% implantado`;
+
+  const fatias = ['Implantada', 'Em desenvolvimento', 'Dependente'];
+  const aneis = [{ r: 56, c: 22 }, { r: 74, c: 28 }, { r: 92, c: 34 }, { r: 110, c: 40 }];
+  const total = aneis.reduce((s, a) => s + a.c, 0);
+  const sementes = [];
+  fatias.forEach((st) => {
+    const q = Math.round(((status.get(st) || 0) / itens.length) * total);
+    for (let i = 0; i < q; i++) sementes.push(st);
+  });
+
+  const campo = $('#portfolio-pontos');
+  let k = 0;
+  aneis.forEach((anel, a) => {
+    for (let i = 0; i < anel.c; i++) {
+      const st = sementes[k++] || 'resto';
+      const ang = (i / anel.c) * Math.PI * 2 - Math.PI / 2 + a * 0.12;
+      const ponto = svg('circle', {
+        cx: (126 + Math.cos(ang) * anel.r).toFixed(1),
+        cy: (126 + Math.sin(ang) * anel.r).toFixed(1),
+        r: (2.2 + a * 0.5).toFixed(1),
+        opacity: (0.45 + a * 0.18).toFixed(2),
+      });
+      ponto.style.fill = st === 'resto' ? 'var(--areia-3)' : M.corStatus(st);
+      ponto.dataset.st = st;
+      campo.appendChild(ponto);
+    }
+  });
+
+  const legenda = $('#portfolio-legenda');
+  fatias.forEach((st) => {
+    const li = criar('li');
+    li.style.setProperty('--cor', M.corStatus(st));
+    li.tabIndex = 0;
+    const n = criar('div', 'portfolio__legenda-n');
+    li.append(n, criar('div', 'portfolio__legenda-rotulo', M.rotuloStatus(st)));
+    animarContagem(n, status.get(st) || 0);
+    const entrar = () => {
+      legenda.classList.add('tem-destaque');
+      li.classList.add('ativo');
+      campo.querySelectorAll('circle').forEach((c) => c.classList.toggle('fora', c.dataset.st !== st));
+    };
+    const sair = () => {
+      legenda.classList.remove('tem-destaque');
+      li.classList.remove('ativo');
+      campo.querySelectorAll('circle.fora').forEach((c) => c.classList.remove('fora'));
+    };
+    li.addEventListener('mouseenter', entrar);
+    li.addEventListener('mouseleave', sair);
+    li.addEventListener('focus', entrar);
+    li.addEventListener('blur', sair);
+    legenda.appendChild(li);
+  });
+}
+
+/** Pirulitos: a altura de cada um codifica o total acumulado no mês. */
+function montarEvolucao(itens) {
+  const { pontos, semData } = M.implantadasAcumuladas(itens, 6);
+  const card = $('#viz-evolucao');
+  if (!pontos.length) {
+    card.hidden = true;
+    return;
+  }
+
+  const sub = [`Total acumulado nos últimos ${pontos.length} ${plural(pontos.length, 'mês', 'meses')}`];
+  if (semData) sub.push(`${semData} sem data de conclusão`);
+  $('#evolucao-sub').textContent = sub.join(' · ');
+
+  const ultimo = pontos[pontos.length - 1];
+  const anterior = pontos[pontos.length - 2];
+  if (anterior && anterior.valor) {
+    const pct = Math.round(((ultimo.valor - anterior.valor) / anterior.valor) * 100);
+    const selo = $('#evolucao-crescimento');
+    selo.textContent = `${pct >= 0 ? '↗ +' : '↘ '}${pct}% vs. ${anterior.rotulo}`;
+    selo.hidden = false;
+  }
+
+  const trilho = $('#evolucao-pontos');
+  const meses = $('#evolucao-meses');
+  const maximo = Math.max(...pontos.map((p) => p.valor)) || 1;
+  pontos.forEach((p) => {
+    const col = criar('div', 'evolucao__ponto');
+    col.style.setProperty('--pos', `${(4 + (p.valor / maximo) * 70).toFixed(2)}%`);
+    col.tabIndex = 0;
+    col.setAttribute('aria-label', `${p.rotulo}: ${p.valor} ${plural(p.valor, 'etapa implantada', 'etapas implantadas')} no acumulado`);
+    col.append(criar('span', 'evolucao__haste'), criar('span', 'evolucao__capsula'), criar('span', 'evolucao__valor', p.valor));
+    const rotulo = criar('span', null, p.rotulo.toUpperCase());
+    const entrar = () => { trilho.classList.add('tem-destaque'); col.classList.add('ativo'); rotulo.classList.add('ativo'); };
+    const sair = () => { trilho.classList.remove('tem-destaque'); col.classList.remove('ativo'); rotulo.classList.remove('ativo'); };
+    col.addEventListener('mouseenter', entrar);
+    col.addEventListener('mouseleave', sair);
+    col.addEventListener('focus', entrar);
+    col.addEventListener('blur', sair);
+    trilho.appendChild(col);
+    meses.appendChild(rotulo);
+  });
+}
+
+/** Matriz prioridade × complexidade em bolhas proporcionais. */
+function montarMatriz(itens) {
+  const { celulas } = M.matrizPrioridade(itens);
+  const plano = $('#matriz-plano');
+  const dica = $('#matriz-dica');
+  const foco = celulas.find((c) => c.prioridade === 'Alta' && c.complexidade === 'Alta');
+  animarContagem($('#matriz-foco'), foco ? foco.n : 0);
+
+  const grade = criar('div', 'matriz__grade');
+  for (const pos of ['33.333%', '66.666%']) {
+    const h = criar('span');
+    Object.assign(h.style, { left: '0', right: '0', top: pos, height: '1px' });
+    const v = criar('span');
+    Object.assign(v.style, { top: '0', bottom: '0', left: pos, width: '1px' });
+    grade.append(h, v);
+  }
+  plano.appendChild(grade);
+
+  M.PRIORIDADES.forEach((p, i) => {
+    const r = criar('span', 'matriz__rotulo-l', p);
+    r.style.top = `${16.666 + i * 33.333}%`;
+    plano.appendChild(r);
+  });
+  M.COMPLEXIDADES.forEach((c, i) => {
+    const r = criar('span', 'matriz__rotulo-c', c);
+    r.style.left = `${16.666 + i * 33.333}%`;
+    plano.appendChild(r);
+  });
+
+  // Poeira decorativa, em posições fixas (nada aleatório entre recargas).
+  for (let i = 0; i < 22; i++) {
+    const d = criar('span', 'matriz__poeira');
+    d.setAttribute('aria-hidden', 'true');
+    d.style.left = `${6 + ((i * 41) % 88)}%`;
+    d.style.top = `${7 + ((i * 67) % 86)}%`;
+    plano.appendChild(d);
+  }
+
+  const maximo = Math.max(1, ...celulas.map((c) => c.n));
+  // As bolhas encolhem junto com o card no celular.
+  const escala = Math.min(1, Math.max(0.6, (plano.clientWidth || 320) / 320));
+  celulas.filter((c) => c.n > 0).forEach((c) => {
+    const ehFoco = c === foco;
+    const tamanho = (24 + (c.n / maximo) * 44) * escala;
+    const left = `${16.666 + M.COMPLEXIDADES.indexOf(c.complexidade) * 33.333}%`;
+    const top = `${16.666 + M.PRIORIDADES.indexOf(c.prioridade) * 33.333}%`;
+
+    const halo = criar('span', `matriz__halo${ehFoco ? ' matriz__halo--foco' : ''}`);
+    Object.assign(halo.style, { left, top, width: `${tamanho * 1.75}px`, height: `${tamanho * 1.75}px` });
+    halo.setAttribute('aria-hidden', 'true');
+
+    let classe = 'matriz__bolha';
+    if (ehFoco) classe += ' matriz__bolha--foco';
+    else if (c.n >= 15) classe += ' matriz__bolha--forte';
+    const bolha = criar('span', classe, c.n);
+    Object.assign(bolha.style, { left, top, width: `${tamanho}px`, height: `${tamanho}px` });
+    if (tamanho > 46) bolha.style.fontSize = '15px';
+    const texto = `${c.n} ${plural(c.n, 'etapa', 'etapas')} · prioridade ${c.prioridade.toLowerCase()} · complexidade ${c.complexidade.toLowerCase()}`;
+    bolha.tabIndex = 0;
+    bolha.setAttribute('aria-label', texto);
+    const entrar = () => { dica.textContent = texto; };
+    const sair = () => { dica.textContent = ''; };
+    bolha.addEventListener('mouseenter', entrar);
+    bolha.addEventListener('mouseleave', sair);
+    bolha.addEventListener('focus', entrar);
+    bolha.addEventListener('blur', sair);
+    plano.append(halo, bolha);
+  });
+}
+
+/** Mapa de calor área × mês. */
+function montarRitmo(itens) {
+  const { meses, linhas, maximo } = M.ritmoPorArea(itens, 6);
+  const card = $('#viz-ritmo');
+  if (!linhas.length) {
+    card.hidden = true;
+    return;
+  }
+  const rotulos = meses.map(M.nomeMes);
+  const ano = meses[meses.length - 1].slice(0, 4);
+  $('#ritmo-sub').textContent = `Etapas movimentadas por mês · ${rotulos[0]}–${rotulos[rotulos.length - 1]} ${ano}`;
+
+  const grade = $('#ritmo-grade');
+  grade.style.setProperty('--colunas', String(meses.length));
+  const dica = $('#ritmo-dica');
+
+  grade.appendChild(criar('span'));
+  const cabec = criar('div', 'ritmo__meses');
+  cabec.setAttribute('aria-hidden', 'true');
+  rotulos.forEach((r) => cabec.appendChild(criar('span', null, r)));
+  grade.appendChild(cabec);
+
+  const celulas = [];
+  linhas.forEach((linha, li) => {
+    grade.appendChild(criar('span', 'ritmo__area', linha.area));
+    const fila = criar('div', 'ritmo__celulas');
+    linha.valores.forEach((n, ci) => {
+      const cel = criar('span', 'ritmo__celula');
+      cel.style.setProperty('--cor', M.corCalor(M.nivelCalor(n, maximo)));
+      cel.dataset.l = li;
+      cel.dataset.c = ci;
+      const texto = `${linha.area} · ${rotulos[ci]}: ${n} ${plural(n, 'etapa', 'etapas')}`;
+      cel.setAttribute('aria-label', texto);
+      cel.setAttribute('role', 'img');
+      cel.addEventListener('mouseenter', () => {
+        grade.classList.add('tem-destaque');
+        celulas.forEach((x) => {
+          x.classList.toggle('na-cruz', x.dataset.l === cel.dataset.l || x.dataset.c === cel.dataset.c);
+          x.classList.toggle('ativa', x === cel);
+        });
+        dica.textContent = texto;
+        dica.hidden = false;
+      });
+      cel.addEventListener('mouseleave', () => {
+        grade.classList.remove('tem-destaque');
+        celulas.forEach((x) => x.classList.remove('na-cruz', 'ativa'));
+        dica.hidden = true;
+      });
+      celulas.push(cel);
+      fila.appendChild(cel);
+    });
+    grade.appendChild(fila);
+  });
+
+  const escala = $('#ritmo-escala');
+  for (let n = 1; n <= 6; n++) {
+    const d = criar('span');
+    d.style.setProperty('--cor', M.corCalor(n));
+    escala.appendChild(d);
+  }
+}
+
+function montarLeituras(itens) {
+  const l = M.leituras(itens);
+  animarContagem($('#leitura-dependem'), l.dependem);
+  animarContagem($('#leitura-zero'), l.semProgresso);
+  if (l.ganhoPrincipal) {
+    $('#leitura-ganho').hidden = false;
+    $('#leitura-ganho-nome').textContent = l.ganhoPrincipal.rotulo;
+    $('#leitura-ganho-texto').textContent = `é o principal vetor de valor da transformação, citado em ${l.ganhoPrincipal.n} ${plural(l.ganhoPrincipal.n, 'etapa', 'etapas')}.`;
+  }
+}
+
+function montarVetores(itens) {
+  const ganhos = M.rankingGanhos(itens).slice(0, 7);
+  const lista = $('#vetores');
+  if (!ganhos.length) {
+    $('#viz-vetores').hidden = true;
+    return;
+  }
+  const maximo = ganhos[0][1];
+  ganhos.forEach(([rotulo, n]) => {
+    const li = criar('li');
+    li.style.setProperty('--pct', `${((n / maximo) * 100).toFixed(1)}%`);
+    li.tabIndex = 0;
+    li.setAttribute('aria-label', `${rotulo}: citado em ${n} ${plural(n, 'etapa', 'etapas')}`);
+    const trilho = criar('span', 'vetor__trilho');
+    trilho.append(criar('span', 'vetor__barra'), criar('span', 'vetor__ponta'));
+    li.append(criar('span', 'vetor__nome', rotulo), trilho, criar('span', 'vetor__valor', n));
+    const entrar = () => { lista.classList.add('tem-destaque'); li.classList.add('ativo'); };
+    const sair = () => { lista.classList.remove('tem-destaque'); li.classList.remove('ativo'); };
+    li.addEventListener('mouseenter', entrar);
+    li.addEventListener('mouseleave', sair);
+    li.addEventListener('focus', entrar);
+    li.addEventListener('blur', sair);
+    lista.appendChild(li);
+  });
+}
+
+/* -------------------------------------------------------------------------- */
+/* Trilhas                                                                    */
+/* -------------------------------------------------------------------------- */
+
+function montarTrilhas(trilhas, site) {
+  if (!trilhas.length) return;
   const grade = $('#trilhas-grade');
-  if (!secao || !grade) return;
-  if (!trilhas.length) { secao.hidden = true; return; }
+  const ordenadas = [...trilhas].sort((a, b) => Number(b.disponivel === true) - Number(a.disponivel === true)).slice(0, 3);
 
-  // Disponíveis primeiro; dentro de cada grupo, a ordem do arquivo.
-  const ordenadas = trilhas
-    .slice()
-    .sort((a, b) => Number(b.disponivel === true) - Number(a.disponivel === true));
-
-  grade.textContent = '';
-  for (const t of ordenadas) {
+  ordenadas.forEach((t) => {
     const disponivel = t.disponivel === true;
-    const card = criar(disponivel && t.link ? 'a' : 'div', `trilha-card${disponivel ? '' : ' trilha-card--breve'}`);
-    if (disponivel && t.link) {
-      card.href = t.link;
-      card.target = '_blank';
-      card.rel = 'noopener';
+    const meta = [t.duracaoHoras ? `${t.duracaoHoras}h` : null, t.nivel].filter(Boolean).join(' · ');
+    let card;
+
+    if (disponivel) {
+      card = t.link ? linkExterno(t.link, 'cartao trilha') : criar('a', 'cartao trilha');
+      if (!t.link) card.href = `academia.html#trilha=${encodeURIComponent(t.id)}`;
+      const topo = criar('div', 'trilha__topo');
+      const selo = criar('span', 'selo selo--acento');
+      selo.append(criar('span', 'ponto-vivo'), document.createTextNode('Disponível'));
+      topo.append(criar('span', 'trilha__cat', t.nome), selo);
+      const acao = criar('span', 'trilha__acao', 'Começar');
+      const seta = icone('seta');
+      if (seta) acao.appendChild(seta);
+      const rodape = criar('div', 'trilha__rodape');
+      rodape.append(criar('span', 'trilha__meta', meta), acao);
+      card.append(topo, criar('h3', 'trilha__titulo', t.descricao || t.nome), criar('div', 'trilha__titulo-espaco'), rodape);
+    } else {
+      card = criar('div', 'trilha trilha--breve');
+      const topo = criar('div', 'trilha__topo');
+      topo.append(criar('span', 'trilha__cat', t.nome), criar('span', 'selo', 'Em breve'));
+      // "Avise-me" abre o Teams com o pedido pronto: interesse real, não botão morto.
+      const avise = linkExterno(urlTeams(site, `Olá! Quero ser avisado quando a trilha ${t.nome} da Academia Digital abrir.`), 'trilha__avise');
+      avise.textContent = 'Avise-me';
+      avise.setAttribute('aria-label', `Avise-me quando a trilha ${t.nome} abrir`);
+      const rodape = criar('div', 'trilha__rodape');
+      rodape.append(criar('span', 'trilha__meta', meta), avise);
+      card.append(topo, criar('h3', 'trilha__titulo', t.descricao || t.nome), criar('div', 'trilha__titulo-espaco'), rodape);
     }
-
-    const topo = criar('div', 'trilha-card__topo');
-    const marca = criar('div', 'trilha-card__marca');
-    const ic = icone(t.icone ?? 'livro');
-    if (ic) marca.appendChild(ic);
-    topo.appendChild(marca);
-    topo.appendChild(criar(
-      'span',
-      `trilha-card__pilula trilha-card__pilula--${disponivel ? 'disponivel' : 'breve'}`,
-      disponivel ? 'Disponível' : 'Em breve',
-    ));
-    card.appendChild(topo);
-
-    if (t.nivel) card.appendChild(criar('div', 'trilha-card__cat', t.nivel));
-    card.appendChild(criar('h3', 'trilha-card__titulo', t.nome ?? 'Trilha'));
-    card.appendChild(criar('div', 'trilha-card__espaco'));
-
-    const rodape = criar('div', 'trilha-card__rodape');
-    const partes = [];
-    if (t.duracaoHoras) partes.push(`${t.duracaoHoras}h`);
-    if (t.aulas) partes.push(`${t.aulas} ${plural(t.aulas, 'aula', 'aulas')}`);
-    rodape.appendChild(criar('span', 'trilha-card__meta', partes.join(' · ')));
-    const act = criar('span', 'trilha-card__act');
-    const marcaAct = icone(disponivel ? 'seta' : 'relogio');
-    if (marcaAct) act.appendChild(marcaAct);
-    rodape.appendChild(act);
-    card.appendChild(rodape);
-
+    card.setAttribute('data-revelar', '');
     grade.appendChild(card);
-  }
-  secao.hidden = false;
+  });
+  $('#trilhas').hidden = false;
 }
 
 /* -------------------------------------------------------------------------- */
-/* O que há de novo — feed misto                                               */
+/* Movimento recente                                                          */
 /* -------------------------------------------------------------------------- */
 
-function montarNovo(itens, artigos) {
-  const secao = $('#novo');
-  const grade = $('#novo-grade');
-  if (!secao || !grade) return;
-
-  const doArtigo = (a) => ({
-    tipo: 'artigo', data: a.data, titulo: a.titulo, categoria: a.categoria,
-    href: `noticias.html#/${a.slug}`,
-  });
+function montarNovidades(itens, artigos, urlEtapa) {
   const entregas = itens
-    .filter((i) => i.status === 'Implantada' && i.updatedAt && new Date(i.updatedAt) >= HA_SETE_DIAS)
-    .map((i) => ({
-      tipo: 'entregue', updatedAt: i.updatedAt, titulo: i.title, area: i.area,
-      href: `index.html#i=${i.id}`,
-    }));
+    .filter((i) => i.status === 'Implantada' && i.doneDate)
+    .sort((a, b) => b.doneDate.localeCompare(a.doneDate) || a.id - b.id)
+    .map((i) => ({ tipo: 'entregue', data: i.doneDate, titulo: i.title, fonte: `Roadmap · ${i.area}`, href: urlEtapa(i) }));
+  const doArtigo = (a) => ({
+    tipo: 'artigo', data: a.data, titulo: a.titulo, slug: a.slug, capa: a.capa,
+    fonte: ['Notícias', a.categoria].filter(Boolean).join(' · '), href: `noticias.html#/${a.slug}`,
+  });
 
-  const feedArtigos = artigos.map(doArtigo);
-  // O item mais recente (artigo de preferência) vira o destaque grande.
-  let destaque = feedArtigos[0] ?? null;
-  let resto = feedArtigos.slice(1).concat(entregas);
-  if (!destaque && entregas.length) {
-    resto = entregas.slice(1);
-    destaque = entregas[0];
-  }
-  resto.sort((a, b) => quando(b) - quando(a));
-  resto = resto.slice(0, 3); // destaque + até 3 = no máximo 4 itens
+  const manchete = escolherManchete(artigos);
+  const destaque = manchete ? doArtigo(manchete) : entregas[0] ?? null;
+  const resto = [
+    ...artigos.filter((a) => a !== manchete).map(doArtigo),
+    ...entregas.filter((e) => e !== destaque),
+  ].sort((a, b) => String(b.data).localeCompare(String(a.data))).slice(0, 3);
 
-  if (!destaque && !resto.length) { secao.hidden = true; return; }
-
-  grade.textContent = '';
-  if (destaque) grade.appendChild(criarDestaque(destaque));
+  if (!destaque) return;
+  const grade = $('#novidades-grade');
+  grade.appendChild(criarDestaque(destaque));
   if (resto.length) {
-    const pilha = criar('div', 'novo__pilha');
-    for (const item of resto) pilha.appendChild(criarItemNovo(item));
+    const pilha = criar('div', 'novidades__pilha');
+    resto.forEach((n) => pilha.appendChild(criarNovidade(n)));
     grade.appendChild(pilha);
+  } else {
+    grade.style.gridTemplateColumns = 'minmax(0, 1fr)';
   }
-  secao.hidden = false;
+  $('#novidades').hidden = false;
+}
+
+function metaLeitura(alvo, item) {
+  const data = dataCurta(item.data).toUpperCase();
+  alvo.textContent = data;
+  if (item.tipo !== 'artigo') return;
+  minutosDoArtigo(item.slug).then((min) => {
+    if (min) alvo.textContent = `${data} · ${min} MIN DE LEITURA`;
+  });
 }
 
 function criarDestaque(item) {
-  const ehArtigo = item.tipo === 'artigo';
-  const card = criar('a', 'novo-destaque');
+  const card = criar('a', 'destaque');
   card.href = item.href;
-  card.appendChild(criarRedeDestaque());
+  card.setAttribute('data-revelar', '');
 
-  const tags = criar('div', 'novo-destaque__tags');
-  tags.appendChild(criar('span', 'novo-destaque__tag novo-destaque__tag--acento', 'Destaque'));
-  tags.appendChild(criar(
-    'span', 'novo-destaque__tag novo-destaque__tag--clara',
-    ehArtigo ? 'Artigo' : 'Entregue',
-  ));
-  card.appendChild(tags);
-
-  const base = criar('div', 'novo-destaque__base');
-  base.appendChild(criar('h3', 'novo-destaque__titulo', item.titulo));
-  const meta = criar('div', 'novo-destaque__meta');
-  const dataTxt = ehArtigo ? formatarData(item.data) : formatarData(item.updatedAt.slice(0, 10));
-  if (dataTxt) meta.appendChild(criar('span', null, dataTxt));
-  const detalhe = ehArtigo ? item.categoria : item.area;
-  if (detalhe) {
-    meta.appendChild(criar('span', 'novo-destaque__meta-sep'));
-    meta.appendChild(criar('span', null, detalhe));
+  const midia = criar('div', 'destaque__midia');
+  if (item.capa) {
+    const img = criar('img');
+    img.src = item.capa;
+    img.alt = '';
+    img.loading = 'lazy';
+    midia.appendChild(img);
+  } else {
+    // Sem imagem: tratamento tipográfico com a inicial do título, nunca moldura vazia.
+    midia.appendChild(criar('span', 'destaque__letra', item.titulo.charAt(0)));
   }
-  base.appendChild(meta);
-  card.appendChild(base);
-  return card;
-}
+  card.append(midia, criar('div', 'destaque__desfoque'), criar('div', 'destaque__veu'));
 
-function criarItemNovo(item) {
-  const ehArtigo = item.tipo === 'artigo';
-  const card = criar('a', 'novo-item');
-  card.href = item.href;
-
-  const marca = criar('div', 'novo-item__marca');
-  const ic = icone(ehArtigo ? 'documento' : 'check');
-  if (ic) marca.appendChild(ic);
-  card.appendChild(marca);
-
-  const corpo = criar('div', 'novo-item__corpo');
-  const linha = criar('div', 'novo-item__linha');
-  linha.appendChild(criar(
-    'span', `novo-item__tag novo-item__tag--${ehArtigo ? 'artigo' : 'entregue'}`,
-    ehArtigo ? 'Artigo' : 'Entregue',
-  ));
-  const rotuloMeta = ehArtigo
-    ? ['Notícias', item.categoria].filter(Boolean).join(' · ')
-    : ['Roadmap', item.area].filter(Boolean).join(' · ');
-  linha.appendChild(criar('span', 'novo-item__meta', rotuloMeta));
-  corpo.appendChild(linha);
-  corpo.appendChild(criar('div', 'novo-item__titulo', item.titulo));
+  const corpo = criar('div', 'destaque__corpo');
+  const texto = criar('div');
+  const tags = criar('div', 'destaque__tags');
+  tags.append(
+    criar('span', 'selo selo--cheio', 'Destaque'),
+    criar('span', 'selo selo--claro', item.tipo === 'artigo' ? 'Artigo' : 'Entregue'),
+  );
+  const meta = criar('div', 'destaque__meta');
+  metaLeitura(meta, item);
+  texto.append(tags, criar('h3', 'destaque__titulo', item.titulo), meta);
+  const seta = criar('span', 'destaque__seta');
+  const icSeta = icone('seta');
+  if (icSeta) seta.appendChild(icSeta);
+  seta.setAttribute('aria-hidden', 'true');
+  corpo.append(texto, seta);
   card.appendChild(corpo);
+  return card;
+}
 
-  card.appendChild(criar('span', 'novo-item__seta'));
+function criarNovidade(item) {
+  const card = criar('a', 'novidade');
+  card.href = item.href;
+  card.setAttribute('data-revelar', '');
+
+  const mini = criar('div', `novidade__miniatura novidade__miniatura--${item.tipo}`);
+  mini.setAttribute('aria-hidden', 'true');
+  if (item.capa) {
+    const img = criar('img');
+    img.src = item.capa;
+    img.alt = '';
+    img.loading = 'lazy';
+    mini.appendChild(img);
+  } else {
+    const ic = icone(item.tipo === 'artigo' ? 'documento' : 'check');
+    if (ic) mini.appendChild(ic);
+  }
+
+  const corpo = criar('div', 'novidade__corpo');
+  const linha = criar('div', 'novidade__linha');
+  linha.append(
+    criar('span', item.tipo === 'entregue' ? 'selo selo--acento' : 'selo', item.tipo === 'entregue' ? 'Entregue' : 'Artigo'),
+    criar('span', 'novidade__fonte', item.fonte),
+  );
+  const meta = criar('div', 'novidade__meta');
+  metaLeitura(meta, item);
+  corpo.append(linha, criar('div', 'novidade__titulo', item.titulo), meta);
+
+  const seta = icone('seta-externa', 'icone novidade__seta');
+  card.append(mini, corpo);
+  if (seta) card.appendChild(seta);
   return card;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Números do site                                                             */
+/* Busca única do hero                                                        */
 /* -------------------------------------------------------------------------- */
 
-function montarNumeros(itens, trilhas, artigos) {
-  const grade = $('#numeros-grade');
-  if (!grade) return;
-
-  const emExecucao = itens.filter((i) => i.fase === FASE.EXECUCAO).length;
-  const trilhasDisp = trilhas.filter((t) => t.disponivel === true).length;
-  const totalArtigos = artigos.length;
-  const areas = new Set(itens.map((i) => i.area).filter(Boolean)).size;
-
-  const numeros = [
-    { valor: emExecucao, rotulo: 'iniciativas em execução' },
-    { valor: trilhasDisp, rotulo: 'trilhas na academia' },
-    { valor: totalArtigos, rotulo: 'artigos publicados' },
-    { valor: areas, rotulo: 'áreas conectadas' },
-  ];
-
-  grade.textContent = '';
-  for (const n of numeros) {
-    const bloco = criar('div', 'numero');
-    const valor = criar('div', 'numero__valor');
-    bloco.appendChild(valor);
-    bloco.appendChild(criar('div', 'numero__rotulo', n.rotulo));
-    grade.appendChild(bloco);
-    animarContagem(valor, n.valor);
-  }
-
-  // Selo flutuante do hero: áreas realmente conectadas nos dados.
-  if (areas > 0) {
-    const flutuante = $('#hero-flutuante');
-    const valor = $('#hero-flutuante-valor');
-    if (flutuante && valor) {
-      valor.textContent = `${areas} áreas conectadas`;
-      flutuante.hidden = false;
-    }
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-/* Busca única do hero                                                         */
-/* -------------------------------------------------------------------------- */
-
-function montarBusca(itens, trilhas, artigos) {
-  const form = $('#busca-form');
-  const input = $('#busca-input');
+function montarBusca(itens, trilhas, artigos, urlEtapa) {
+  const form = $('#busca');
+  const campo = $('#busca-campo');
   const caixa = $('#busca-resultados');
-  if (!form || !input || !caixa) return;
 
-  // Índice em memória das três frentes.
   const indice = [
-    ...itens.map((i) => ({
-      frente: 'Roadmaps', icon: 'fabrica', rotulo: i.title,
-      href: `index.html#i=${i.id}`, norm: normalizar(i.title),
-    })),
-    ...trilhas.map((t) => ({
-      frente: 'Academia', icon: t.icone ?? 'livro', rotulo: t.nome,
-      href: 'academia.html', norm: normalizar(t.nome),
-    })),
-    ...artigos.map((a) => ({
-      frente: 'Notícias', icon: 'documento', rotulo: a.titulo,
-      href: `noticias.html#/${a.slug}`, norm: normalizar(a.titulo),
-    })),
-  ].filter((e) => e.rotulo);
-
+    ...itens.map((i) => ({ frente: 'Roadmaps', icone: 'fabrica', rotulo: i.title, meta: i.area, href: urlEtapa(i), norm: normalizar(`${i.title} ${i.project}`) })),
+    ...trilhas.map((t) => ({ frente: 'Academia', icone: t.icone || 'livro', rotulo: t.nome, meta: t.disponivel === true ? 'disponível' : 'em breve', href: `academia.html#trilha=${encodeURIComponent(t.id)}`, norm: normalizar(`${t.nome} ${t.ferramenta ?? ''}`) })),
+    ...artigos.map((a) => ({ frente: 'Notícias', icone: 'documento', rotulo: a.titulo, meta: a.categoria, href: `noticias.html#/${a.slug}`, norm: normalizar(a.titulo) })),
+  ];
   const ORDEM = ['Roadmaps', 'Academia', 'Notícias'];
-  let selecionavel = []; // itens <a> na ordem visual, para o teclado
-  let indiceSel = -1;
+  const escopos = new Set(ORDEM);
+  let opcoes = [];
+  let selecionada = -1;
 
-  function fechar() {
+  const fechar = () => {
     caixa.hidden = true;
-    input.setAttribute('aria-expanded', 'false');
-    input.removeAttribute('aria-activedescendant');
-    selecionavel = [];
-    indiceSel = -1;
-  }
+    campo.setAttribute('aria-expanded', 'false');
+    campo.removeAttribute('aria-activedescendant');
+    opcoes = [];
+    selecionada = -1;
+  };
 
-  function marcarSelecao() {
-    selecionavel.forEach((el, i) => {
-      el.setAttribute('aria-selected', String(i === indiceSel));
-      if (i === indiceSel) {
-        el.scrollIntoView({ block: 'nearest' });
-        input.setAttribute('aria-activedescendant', el.id);
-      }
-    });
-    if (indiceSel < 0) input.removeAttribute('aria-activedescendant');
-  }
+  const marcar = () => {
+    opcoes.forEach((op, i) => op.setAttribute('aria-selected', String(i === selecionada)));
+    const atual = opcoes[selecionada];
+    if (atual) {
+      campo.setAttribute('aria-activedescendant', atual.id);
+      atual.scrollIntoView({ block: 'nearest' });
+    } else {
+      campo.removeAttribute('aria-activedescendant');
+    }
+  };
 
-  function render(consulta) {
+  const render = () => {
+    const consulta = campo.value.trim();
     const q = normalizar(consulta);
     caixa.textContent = '';
-    selecionavel = [];
-    indiceSel = -1;
-    input.removeAttribute('aria-activedescendant');
-
+    opcoes = [];
+    selecionada = -1;
     if (!q) { fechar(); return; }
 
-    const achados = indice.filter((e) => e.norm.includes(q));
+    const achados = indice.filter((e) => escopos.has(e.frente) && e.norm.includes(q));
     if (!achados.length) {
-      caixa.appendChild(criar('p', 'busca__vazio', `Nada encontrado para “${consulta.trim()}”.`));
-      caixa.hidden = false;
-      input.setAttribute('aria-expanded', 'true');
-      return;
+      caixa.appendChild(criar('p', 'busca__vazio', `Nada encontrado para “${consulta}”.`));
     }
-
-    let ordem = 0;
+    let n = 0;
     for (const frente of ORDEM) {
-      const doGrupo = achados.filter((e) => e.frente === frente).slice(0, 4);
+      const doGrupo = achados.filter((e) => e.frente === frente).slice(0, 5);
       if (!doGrupo.length) continue;
       const grupo = criar('div', 'busca__grupo');
       grupo.setAttribute('role', 'group');
       grupo.setAttribute('aria-label', frente);
       grupo.appendChild(criar('div', 'busca__grupo-rotulo', frente));
-      for (const e of doGrupo) {
-        const item = criar('a', 'busca__item');
-        item.id = `busca-op-${ordem++}`;
-        item.href = e.href;
-        item.setAttribute('role', 'option');
-        item.setAttribute('aria-selected', 'false');
+      doGrupo.forEach((e) => {
+        const op = criar('a', 'busca__item');
+        op.id = `busca-op-${n++}`;
+        op.href = e.href;
+        op.setAttribute('role', 'option');
+        op.setAttribute('aria-selected', 'false');
         const ic = criar('span', 'busca__item-icone');
-        const marca = icone(e.icon);
+        const marca = icone(e.icone);
         if (marca) ic.appendChild(marca);
-        item.appendChild(ic);
-        const texto = criar('div', 'busca__item-texto');
-        texto.appendChild(criar('span', null, e.rotulo));
-        item.appendChild(texto);
-        grupo.appendChild(item);
-        selecionavel.push(item);
-      }
+        op.append(ic, criar('span', 'busca__item-texto', e.rotulo));
+        if (e.meta) op.appendChild(criar('span', 'busca__item-meta', e.meta));
+        grupo.appendChild(op);
+        opcoes.push(op);
+      });
       caixa.appendChild(grupo);
     }
-
     caixa.hidden = false;
-    input.setAttribute('aria-expanded', 'true');
-  }
+    campo.setAttribute('aria-expanded', 'true');
+  };
 
-  input.addEventListener('input', debounce(() => render(input.value), 120));
-
-  input.addEventListener('keydown', (ev) => {
-    if (caixa.hidden || !selecionavel.length) {
-      if (ev.key === 'Escape') input.blur();
-      return;
-    }
+  campo.addEventListener('input', debounce(render, 120));
+  campo.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') { fechar(); return; }
+    if (caixa.hidden || !opcoes.length) return;
     if (ev.key === 'ArrowDown') {
       ev.preventDefault();
-      indiceSel = (indiceSel + 1) % selecionavel.length;
-      marcarSelecao();
+      selecionada = (selecionada + 1) % opcoes.length;
+      marcar();
     } else if (ev.key === 'ArrowUp') {
       ev.preventDefault();
-      indiceSel = (indiceSel - 1 + selecionavel.length) % selecionavel.length;
-      marcarSelecao();
-    } else if (ev.key === 'Enter') {
-      const alvo = selecionavel[indiceSel] ?? selecionavel[0];
-      if (alvo) { ev.preventDefault(); window.location.assign(alvo.href); }
-    } else if (ev.key === 'Escape') {
-      fechar();
+      selecionada = (selecionada - 1 + opcoes.length) % opcoes.length;
+      marcar();
     }
   });
-
   form.addEventListener('submit', (ev) => {
     ev.preventDefault();
-    const alvo = selecionavel[indiceSel] ?? selecionavel[0];
+    if (caixa.hidden) render();
+    const alvo = opcoes[selecionada] ?? opcoes[0];
     if (alvo) window.location.assign(alvo.href);
   });
 
-  // Fecha ao clicar fora ou perder o foco do conjunto.
+  form.querySelectorAll('[data-escopo]').forEach((botao) => {
+    botao.addEventListener('click', () => {
+      const ligado = botao.getAttribute('aria-pressed') === 'true';
+      // Pelo menos uma frente fica ligada: busca em nada não ajuda ninguém.
+      if (ligado && escopos.size === 1) return;
+      botao.setAttribute('aria-pressed', String(!ligado));
+      if (ligado) escopos.delete(botao.dataset.escopo);
+      else escopos.add(botao.dataset.escopo);
+      if (campo.value.trim()) render();
+    });
+  });
+
   document.addEventListener('pointerdown', (ev) => {
     if (!form.contains(ev.target)) fechar();
   });
+
+  // Ctrl+K / ⌘K leva direto à busca.
+  document.addEventListener('keydown', (ev) => {
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'k') {
+      ev.preventDefault();
+      campo.focus();
+      campo.select();
+    }
+  });
+  if (/Mac|iPhone|iPad/.test(navigator.platform || '')) {
+    const atalho = form.querySelector('.busca__atalho');
+    if (atalho) atalho.textContent = '⌘ K';
+  }
 }

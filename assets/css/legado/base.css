@@ -1,0 +1,349 @@
+/* ==========================================================================
+   Base compartilhada pelas quatro páginas do site: roadmap (index.html), hub
+   (hub.html), Academia (academia.html) e Notícias (noticias.html).
+
+   Aqui vive só o que é comum a todas: reset, tipografia, botões, chips,
+   campos, selos, o cabeçalho premium e o cartão com spotlight. As cores e as
+   fontes vêm inteiras de tokens.css — nada é redeclarado.
+
+   Carregue sempre depois de tokens.css e antes do CSS da página.
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+/* Qualquer `display` declarado depois venceria o atributo hidden do
+   navegador, e elementos ocultos voltariam a aparecer. */
+[hidden] { display: none !important; }
+
+html {
+  /* Reserva a calha da barra de rolagem: sem isso a largura salta ~15px
+     quando um modal bloqueia a rolagem do documento, e a página sai do lugar. */
+  scrollbar-gutter: stable;
+}
+
+html,
+body { margin: 0; }
+
+/* A página cresce com o conteúdo: quem rola é o iframe do SharePoint. */
+body {
+  background: var(--cor-fundo);
+  color: var(--cor-tinta-2);
+  font-family: var(--fonte-corpo);
+  font-size: var(--texto-corpo);
+  line-height: var(--altura-corpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-tinta);
+  margin: 0;
+  line-height: 1.25;
+}
+
+p, dl, dd, figure, blockquote { margin: 0; }
+
+button, input, select { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--cor-laranja);
+  outline-offset: 2px;
+  border-radius: var(--raio-sm);
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Botões --------------------------------------------------------------- */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  padding: 9px 16px;
+  border-radius: var(--raio-pill);
+  border: 1px solid transparent;
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur-rapida) var(--easing),
+              border-color var(--dur-rapida) var(--easing),
+              color var(--dur-rapida) var(--easing);
+}
+
+.botao--primario {
+  background: var(--cor-laranja);
+  color: #fff;
+}
+.botao--primario:hover { background: var(--cor-laranja-forte); }
+
+.botao--secundario {
+  background: var(--cor-superficie);
+  border-color: var(--cor-borda-forte);
+  color: var(--cor-tinta);
+}
+.botao--secundario:hover { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
+
+.botao--texto {
+  background: none;
+  border: none;
+  color: var(--cor-tinta-3);
+  padding: 6px 10px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.botao--texto:hover { color: var(--cor-laranja-forte); }
+
+.botao-icone {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--cor-borda-forte);
+  background: var(--cor-superficie);
+  border-radius: var(--raio-sm);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--cor-tinta-2);
+}
+.botao-icone:hover:not(:disabled) { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
+.botao-icone:disabled { opacity: 0.4; cursor: default; }
+
+/* --- Chips e campos -------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--raio-pill);
+  border: 1px solid var(--cor-borda);
+  background: var(--cor-superficie-2);
+  font-family: var(--fonte-titulo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--cor-tinta-2);
+}
+
+.chip--acao { cursor: pointer; transition: all var(--dur-rapida) var(--easing); }
+.chip--acao:hover { border-color: var(--cor-borda-forte); }
+
+.chip__contagem {
+  font-variant-numeric: tabular-nums;
+  color: var(--cor-quente);
+  font-size: 10px;
+}
+
+.chip--ativo {
+  background: var(--cor-laranja);
+  border-color: var(--cor-laranja);
+  color: #fff;
+}
+.chip--ativo .chip__contagem { color: rgba(255, 255, 255, 0.85); }
+
+.campo {
+  padding: 6px 9px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie);
+  font-size: var(--texto-sm);
+  color: var(--cor-tinta-2);
+  max-width: 100%;
+}
+.campo:hover { border-color: var(--cor-quente); }
+.campo--select { cursor: pointer; }
+.campo--busca { min-width: 180px; }
+
+/* --- Selos ----------------------------------------------------------------- */
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--raio-pill);
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.selo--neutro { background: var(--cor-superficie-2); border-color: var(--cor-borda); color: var(--cor-tinta-3); }
+.selo--contorno { border-color: var(--cor-borda-forte); color: var(--cor-tinta-3); }
+.selo--acento { border-color: var(--cor-laranja); color: var(--cor-laranja-forte); }
+.selo--escuro { background: var(--cor-tinta-2); border-color: var(--cor-tinta-2); color: #fff; }
+
+/* --- Ícones ---------------------------------------------------------------- */
+
+/* Um único conjunto, com traço consistente (ver assets/icons/icones.js). */
+.icone {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.icone--grande { width: 20px; height: 20px; }
+.icone--titulo { width: 22px; height: 22px; stroke-width: 1.5; }
+
+/* --- Cabeçalho premium ------------------------------------------------------
+   Kicker em caixa alta espaçada aberto por um fio laranja, título display com
+   letter-spacing negativo leve e linha de apoio. Mesmo idioma do cabeçalho das
+   páginas de roadmap, agora numa só definição.
+   -------------------------------------------------------------------------- */
+
+.topo {
+  display: grid;
+  gap: var(--esp-2);
+  max-width: 64ch;
+}
+
+.topo__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--fonte-titulo);
+  font-size: 10px;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cor-tinta-3);
+  animation: base-entrada var(--dur-lenta) var(--easing) backwards;
+}
+
+/* Único acento de cor do cabeçalho, e seu único movimento próprio. */
+.topo__fio {
+  display: block;
+  width: 24px;
+  height: 2px;
+  flex: none;
+  border-radius: 1px;
+  background: var(--cor-laranja);
+  transform-origin: left center;
+  animation: base-fio 560ms var(--easing) 180ms backwards;
+}
+
+.topo__titulo {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: var(--peso-forte);
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  animation: base-entrada var(--dur-lenta) var(--easing) 70ms backwards;
+}
+
+/* O acento no título entra por aqui, nunca preenchendo o bloco inteiro. */
+.topo__destaque { color: var(--cor-laranja-forte); }
+
+.topo__apoio {
+  font-size: var(--texto-md);
+  color: var(--cor-tinta-3);
+  animation: base-entrada var(--dur-lenta) var(--easing) 140ms backwards;
+}
+
+/* --- Cartão com spotlight ---------------------------------------------------
+   O gesto principal do site: elevação leve, borda assumindo o acento e um
+   brilho que acompanha o ponteiro. Só onde existe ponteiro de verdade.
+   -------------------------------------------------------------------------- */
+
+.cartao-base {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--cor-superficie);
+  border: var(--borda-fina);
+  border-radius: var(--raio-lg);
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.03);
+  transition: transform var(--dur-media) var(--easing),
+              border-color var(--dur-media) var(--easing),
+              box-shadow var(--dur-media) var(--easing);
+}
+
+@media (hover: hover) {
+  .cartao-base::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    background: radial-gradient(
+      340px circle at var(--mx, 50%) var(--my, 0%),
+      var(--cor-laranja-vidro),
+      transparent 68%
+    );
+    transition: opacity var(--dur-media) var(--easing);
+  }
+
+  .cartao-base--ativo:hover {
+    transform: translateY(-3px);
+    border-color: var(--cor-laranja);
+    box-shadow: 0 10px 26px rgba(17, 17, 17, 0.09);
+  }
+
+  .cartao-base--ativo:hover::before { opacity: 1; }
+}
+
+/* --- Seções ----------------------------------------------------------------- */
+
+.secao__cabecalho {
+  display: grid;
+  gap: 6px;
+  margin-bottom: var(--esp-4);
+  max-width: 60ch;
+}
+
+.secao__titulo {
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-forte);
+  letter-spacing: -0.02em;
+}
+
+.secao__apoio {
+  font-size: var(--texto-sm);
+  color: var(--cor-tinta-3);
+}
+
+/* --- Movimento --------------------------------------------------------------- */
+
+@keyframes base-entrada {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes base-fio {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .cartao-base--ativo:hover { transform: none; }
+}
