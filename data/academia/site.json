@@ -1,14 +1,14 @@
 {
-  "_comment": "Textos e links da página da Academia.",
-  "kicker": "Academia Digital · Syensqo Itatiba",
-  "tituloAntes": "Capacite-se nas ferramentas que transformam ",
-  "tituloDestaque": "dados em decisões",
-  "tituloDepois": ".",
-  "apoio": "Trilhas de aprendizado práticas em Power Apps, Seeq, PI Vision e outras ferramentas que aceleram a inovação no dia a dia.",
+  "_comment": "Textos e links da página da Academia. O título é tituloAntes + tituloDestaque (em itálico laranja) + tituloDepois.",
+  "kicker": "Itatiba · Transformação Digital",
+  "tituloAntes": "Academia ",
+  "tituloDestaque": "Digital",
+  "tituloDepois": "",
+  "apoio": "Trilhas práticas para aprender as ferramentas digitais da planta, do primeiro aplicativo aos dados de processo.",
   "teams": {
     "url": "https://teams.microsoft.com/l/chat/0/0?users=murilo.dasilvaferreira@syensqo.com",
-    "titulo": "Não encontrou o que precisa?",
-    "texto": "Fale com o time Digital e diga qual ferramenta você quer aprender.",
-    "rotulo": "Falar com o Digital"
+    "titulo": "Não sabe por onde começar?",
+    "texto": "Fale com o time de Transformação Digital. A gente ajuda a escolher a trilha certa para o seu contexto.",
+    "rotulo": "Falar com o time no Teams"
   }
 }

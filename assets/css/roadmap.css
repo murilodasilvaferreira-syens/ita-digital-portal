@@ -479,28 +479,6 @@ button.raia__nome:hover { color: var(--laranja-forte); }
 
 /* --- Painel lateral ------------------------------------------------------------------ */
 
-.gaveta {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 90;
-  width: 460px;
-  max-width: calc(100vw - 24px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: var(--r-painel);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  background: rgba(250, 248, 244, 0.86);
-  -webkit-backdrop-filter: blur(30px) saturate(1.4);
-  backdrop-filter: blur(30px) saturate(1.4);
-  box-shadow: var(--sombra-painel);
-  transform: translateX(calc(100% + 40px));
-  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.gaveta.aberta { transform: translateX(0); }
-
 .gaveta__topo { display: flex; align-items: center; gap: 12px; padding: 18px 20px 0 24px; min-height: 52px; }
 .gaveta__voltar {
   flex: 1;
@@ -518,20 +496,7 @@ button.raia__nome:hover { color: var(--laranja-forte); }
   text-overflow: ellipsis;
 }
 .gaveta__voltar:hover { color: var(--tinta); }
-.gaveta__fechar {
-  flex: none;
-  margin-left: auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--linha-2);
-  background: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  color: var(--tinta-3);
-}
-.gaveta__fechar:hover { color: var(--tinta); border-color: rgba(17, 17, 17, 0.25); }
 
-.gaveta__corpo { flex: 1; overflow-y: auto; padding: 10px 24px 26px; }
 .gaveta__kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; line-height: 1.5; text-transform: uppercase; color: var(--quente-2); }
 .gaveta__titulo { margin-top: 10px; font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.05; letter-spacing: -0.015em; text-wrap: pretty; }
 .gaveta__contagem { margin-top: 8px; font-size: 13.5px; color: var(--quente); }
@@ -680,7 +645,6 @@ button.raia__nome:hover { color: var(--laranja-forte); }
 .gaveta__situacao dt { margin-top: 6px; font-size: 11.5px; color: var(--quente); }
 .gaveta__atencao { margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(247, 228, 214, 0.6); font-size: 13px; color: var(--alerta); }
 
-.gaveta__rodape { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 24px 20px; border-top: 1px solid var(--linha); }
 
 /* --- Área inválida -------------------------------------------------------------------- */
 
@@ -719,7 +683,6 @@ button.raia__nome:hover { color: var(--laranja-forte); }
   .quadro__barra { padding: 14px 14px 12px; }
   .quadro__dica { display: none; }
   .quadro__palco { margin: 0 6px 6px; border-radius: 16px; }
-  .gaveta { top: 8px; right: 8px; bottom: 8px; left: 8px; width: auto; max-width: none; }
   .gaveta__corpo { padding: 10px 18px 22px; }
   .gaveta__titulo { font-size: 30px; }
 }

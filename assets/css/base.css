@@ -553,6 +553,62 @@ input::placeholder { color: var(--quente-2); }
 .rodape__link:hover { color: var(--laranja); }
 .rodape--completo .rodape__copy { display: block; margin-top: 44px; }
 
+/* --- Painel lateral (gaveta) ------------------------------------------------------
+   Casca compartilhada: o roadmap usa como painel não modal (<aside>), a
+   Academia como <dialog> modal. O conteúdo de cada um fica no CSS da página.
+   ------------------------------------------------------------------------------- */
+
+.gaveta {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 90;
+  width: 460px;
+  max-width: calc(100vw - 24px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--r-painel);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(250, 248, 244, 0.86);
+  -webkit-backdrop-filter: blur(30px) saturate(1.4);
+  backdrop-filter: blur(30px) saturate(1.4);
+  box-shadow: var(--sombra-painel);
+  transform: translateX(calc(100% + 40px));
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.gaveta.aberta { transform: translateX(0); }
+
+dialog.gaveta {
+  margin: 0;
+  padding: 0;
+  inset: 12px 12px 12px auto;
+  height: auto;
+  max-height: none;
+  color: inherit;
+}
+dialog.gaveta:not([open]) { display: none; }
+dialog.gaveta::backdrop {
+  background: rgba(245, 241, 234, 0.45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.gaveta__fechar {
+  flex: none;
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--linha-2);
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  color: var(--tinta-3);
+}
+.gaveta__fechar:hover { color: var(--tinta); border-color: rgba(17, 17, 17, 0.25); }
+.gaveta__corpo { flex: 1; overflow-y: auto; padding: 10px 24px 26px; }
+.gaveta__rodape { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 16px 24px 20px; border-top: 1px solid var(--linha); }
+
 /* --- Revelação ao rolar ------------------------------------------------------------
    Só é aplicada quando shell.js marca <html class="fx">: sem JS, sem
    IntersectionObserver ou com movimento reduzido, tudo aparece de imediato.
@@ -606,6 +662,8 @@ input::placeholder { color: var(--quente-2); }
 
 @media (max-width: 720px) {
   .nav { padding: 10px 8px; }
+  .gaveta { top: 8px; right: 8px; bottom: 8px; left: 8px; width: auto; max-width: none; }
+  dialog.gaveta { inset: 8px; }
   .nav__link { padding: 8px 13px; font-size: 12.5px; }
   .rodape__colunas { gap: 32px; }
   .rodape__colunas > span { display: none; }
