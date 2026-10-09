@@ -81,6 +81,7 @@
   --laranja-suave: #f0b98c;
   --laranja-fraco: #f7e4d6;        /* fundo de selo e de destaque */
   --laranja-palido: #f3e1d0;
+  --laranja-tinta: #8a4318;        /* texto sobre fundo laranja claro */
   --laranja-vidro: rgba(232, 117, 42, 0.1);
   --laranja-borda: rgba(232, 117, 42, 0.35);
   --laranja-brilho: rgba(232, 117, 42, 0.28);

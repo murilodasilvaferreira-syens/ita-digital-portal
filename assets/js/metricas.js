@@ -283,3 +283,200 @@ export function leituras(itens) {
 
 /** Fases do roadmap, na ordem de leitura (reexportadas para quem só usa métricas). */
 export { FASE };
+
+/* -------------------------------------------------------------------------- */
+/* Indicadores (Observatório)                                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Mês anterior a 'YYYY-MM'. */
+export const mesAnterior = (mes) => somarMeses(mes, -1);
+
+/**
+ * Contagem no mês corrente contra o anterior, por um campo de data real.
+ * Sem base no mês anterior não há variação: devolve null (nunca "+∞%").
+ */
+export function variacaoPorCampo(itens, campo, mes) {
+  const anterior = mesAnterior(mes);
+  let atual = 0;
+  let antes = 0;
+  for (const item of itens) {
+    const m = mesDe(item[campo]);
+    if (m === mes) atual += 1;
+    else if (m === anterior) antes += 1;
+  }
+  return antes ? { pct: Math.round(((atual - antes) / antes) * 100), atual, anterior: antes } : null;
+}
+
+/** Projeto entra no mês da primeira solicitação entre as suas etapas. */
+export function variacaoProjetos(itens, mes) {
+  const primeiro = new Map();
+  for (const item of itens) {
+    const m = mesDe(item.requestedDate);
+    if (!m || item.project === 'Sem projeto') continue;
+    if (!primeiro.has(item.project) || m < primeiro.get(item.project)) primeiro.set(item.project, m);
+  }
+  const anterior = mesAnterior(mes);
+  let atual = 0;
+  let antes = 0;
+  primeiro.forEach((m) => { if (m === mes) atual += 1; else if (m === anterior) antes += 1; });
+  return antes ? { pct: Math.round(((atual - antes) / antes) * 100), atual, anterior: antes } : null;
+}
+
+/** Etapas com alguma data real (solicitação, início, conclusão, atualização) no intervalo de meses. */
+export function movimentadasEntre(itens, de, ate) {
+  return itens.filter((i) => CAMPOS_MOVIMENTO.some((c) => {
+    const m = mesDe(i[c]);
+    return m && m >= de && m <= ate;
+  }));
+}
+
+/** Soma acumulada de um mapa mês → n ao longo dos meses informados. */
+export function acumular(mapa, meses) {
+  let soma = 0;
+  return meses.map((m) => (soma += mapa[m] || 0));
+}
+
+/**
+ * Atividade por mês: cada acontecimento conta pela sua data real — etapas
+ * solicitadas, iniciadas e implantadas, e artigos publicados. Trilhas só
+ * entram quando o JSON trouxer a data de disponibilização.
+ */
+export function atividadePorMes(itens, trilhas = [], artigos = []) {
+  const saida = {};
+  const somar = (mapa, chave) => Object.entries(mapa).forEach(([m, n]) => {
+    if (!saida[m]) saida[m] = { total: 0, implantadas: 0, solicitadas: 0, iniciadas: 0, trilhas: 0, artigos: 0 };
+    saida[m][chave] += n;
+    saida[m].total += n;
+  });
+  somar(porMes(itens.filter((i) => i.status === 'Implantada'), 'doneDate'), 'implantadas');
+  somar(porMes(itens, 'requestedDate'), 'solicitadas');
+  somar(porMes(itens, 'startDate'), 'iniciadas');
+  somar(porMes(trilhas.filter((t) => t.disponivel === true), 'dataDisponibilizacao'), 'trilhas');
+  somar(porMes(artigos, 'data'), 'artigos');
+  return saida;
+}
+
+/** Contagem por área × status (área vazia vira "Sem área" e vai por último). */
+export function areaPorStatus(itens) {
+  const mapa = new Map();
+  for (const item of itens) {
+    if (!mapa.has(item.area)) mapa.set(item.area, { area: item.area, total: 0, status: {} });
+    const a = mapa.get(item.area);
+    a.total += 1;
+    a.status[item.status] = (a.status[item.status] || 0) + 1;
+  }
+  return [...mapa.values()];
+}
+
+export const FAIXAS_PROGRESSO = [
+  { rotulo: '0%', ok: (p) => p === 0 },
+  { rotulo: '1–25%', ok: (p) => p > 0 && p <= 25 },
+  { rotulo: '26–50%', ok: (p) => p > 25 && p <= 50 },
+  { rotulo: '51–75%', ok: (p) => p > 50 && p <= 75 },
+  { rotulo: '76–99%', ok: (p) => p > 75 && p < 100 },
+  { rotulo: '100%', ok: (p) => p >= 100 },
+];
+
+/** Iniciativas por faixa de progresso; progresso vazio fica fora e é contado à parte. */
+export function distribuicaoProgresso(itens) {
+  const contagem = FAIXAS_PROGRESSO.map(() => 0);
+  let semValor = 0;
+  for (const item of itens) {
+    if (item.progress === null) { semValor += 1; continue; }
+    const i = FAIXAS_PROGRESSO.findIndex((f) => f.ok(item.progress));
+    if (i >= 0) contagem[i] += 1;
+  }
+  return { contagem, semValor };
+}
+
+/**
+ * Sankey Áreas → Tecnologias → Status com conservação de totais: cada
+ * iniciativa vale 1 e divide esse peso entre as suas tecnologias, então cada
+ * coluna soma o total de iniciativas. Áreas e tecnologias além do topo vão
+ * para "Outras".
+ */
+export function fluxoTransformacao(itens, topAreas = 5, topTecs = 5) {
+  const tecsDe = (i) => (i.technologies.length ? [...new Set(i.technologies)] : ['Sem tecnologia']);
+  const totArea = {};
+  const pesoTec = {};
+  for (const i of itens) {
+    totArea[i.area] = (totArea[i.area] || 0) + 1;
+    const ts = tecsDe(i);
+    ts.forEach((t) => { pesoTec[t] = (pesoTec[t] || 0) + 1 / ts.length; });
+  }
+  const ordenar = (o) => Object.entries(o).sort((a, b) => b[1] - a[1]);
+  const areasTopo = ordenar(totArea).filter(([a]) => a !== 'Sem área').slice(0, topAreas).map(([a]) => a);
+  const tecsTopo = ordenar(pesoTec).slice(0, topTecs).map(([t]) => t);
+  const grupoArea = (a) => (areasTopo.includes(a) ? a : 'Outras áreas');
+  const grupoTec = (t) => (tecsTopo.includes(t) ? t : 'Outras');
+
+  const l1 = new Map();
+  const l2 = new Map();
+  const vA = {};
+  const vT = {};
+  const vS = {};
+  for (const i of itens) {
+    const a = grupoArea(i.area);
+    vA[a] = (vA[a] || 0) + 1;
+    vS[i.status] = (vS[i.status] || 0) + 1;
+    const ts = tecsDe(i);
+    const w = 1 / ts.length;
+    ts.forEach((t0) => {
+      const t = grupoTec(t0);
+      vT[t] = (vT[t] || 0) + w;
+      l1.set(`${a}→${t}`, (l1.get(`${a}→${t}`) || 0) + w);
+      l2.set(`${t}→${i.status}`, (l2.get(`${t}→${i.status}`) || 0) + w);
+    });
+  }
+  return {
+    areas: [...areasTopo, 'Outras áreas'].filter((k) => vA[k]).map((k) => ({ k, v: vA[k] })),
+    tecs: [...tecsTopo, 'Outras'].filter((k) => vT[k]).map((k) => ({ k, v: vT[k] })),
+    status: [...STATUS_ORDEM, ...Object.keys(vS).filter((s) => !STATUS_ORDEM.includes(s))].filter((k) => vS[k]).map((k) => ({ k, v: vS[k] })),
+    l1,
+    l2,
+    agrupou: areasTopo.length < Object.keys(totArea).filter((a) => a !== 'Sem área').length || tecsTopo.length < Object.keys(pesoTec).length,
+    semTecnologia: itens.filter((i) => !i.technologies.length).length,
+  };
+}
+
+/**
+ * Caminho suave que não ultrapassa os próprios pontos (para séries no tempo):
+ * cúbica monótona (Fritsch–Carlson), então um trecho plano continua plano e a
+ * curva nunca desce abaixo de zero entre dois meses.
+ */
+export function curva(pontos) {
+  const n = pontos.length;
+  if (!n) return '';
+  if (n < 3) return `M${pontos.map((p) => `${p[0]} ${p[1]}`).join('L')}`;
+  const dx = [];
+  const inc = [];
+  for (let i = 0; i < n - 1; i++) {
+    dx.push(pontos[i + 1][0] - pontos[i][0]);
+    inc.push(dx[i] ? (pontos[i + 1][1] - pontos[i][1]) / dx[i] : 0);
+  }
+  const tg = pontos.map((_, i) => {
+    if (i === 0) return inc[0];
+    if (i === n - 1) return inc[n - 2];
+    return inc[i - 1] * inc[i] <= 0 ? 0 : (inc[i - 1] + inc[i]) / 2;
+  });
+  for (let i = 0; i < n - 1; i++) {
+    if (!inc[i]) { tg[i] = 0; tg[i + 1] = 0; continue; }
+    const a = tg[i] / inc[i];
+    const b = tg[i + 1] / inc[i];
+    const h = a * a + b * b;
+    if (h > 9) {
+      const t = 3 / Math.sqrt(h);
+      tg[i] = t * a * inc[i];
+      tg[i + 1] = t * b * inc[i];
+    }
+  }
+  const f = (v) => v.toFixed(1);
+  let d = `M${f(pontos[0][0])} ${f(pontos[0][1])}`;
+  for (let i = 0; i < n - 1; i++) {
+    const [x0, y0] = pontos[i];
+    const [x1, y1] = pontos[i + 1];
+    const h = dx[i] / 3;
+    d += ` C${f(x0 + h)} ${f(y0 + tg[i] * h)} ${f(x1 - h)} ${f(y1 - tg[i + 1] * h)} ${f(x1)} ${f(y1)}`;
+  }
+  return d;
+}

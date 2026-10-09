@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Indicadores · Transformação Digital · Syensqo Itatiba</title>
+<meta name="description" content="Observatório da transformação digital de Itatiba: evolução das iniciativas, das pessoas e do conteúdo, calculada dos dados reais.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/indicadores.css">
+</head>
+<body class="indicadores">
+
+<div class="fundo-topo ind-fundo" aria-hidden="true"></div>
+
+<main id="pagina" class="pagina pagina--densa ind">
+
+  <!-- Cabeçalho ----------------------------------------------------------- -->
+  <section class="ind-topo">
+    <div class="ind-topo__texto">
+      <p class="kicker kicker--fio">Indicadores · Itatiba</p>
+      <h1 class="display ind-topo__titulo">Observatório da <em>Transformação</em></h1>
+      <p class="apoio ind-topo__apoio">Acompanhe a evolução das iniciativas, o desenvolvimento das pessoas e o movimento da transformação digital em Itatiba.</p>
+    </div>
+    <p class="ind-atualizado" id="atualizado" hidden><span class="ponto-vivo" aria-hidden="true"></span><span id="atualizado-texto"></span></p>
+  </section>
+
+  <div class="ind-filtros" role="group" aria-label="Filtros dos indicadores">
+    <span class="ind-filtros__rotulo">Filtros</span>
+    <div class="segmentos ind-periodos" role="group" aria-label="Período">
+      <button type="button" data-periodo="" aria-pressed="true">Tudo</button>
+      <button type="button" data-periodo="mes" aria-pressed="false">Este mês</button>
+      <button type="button" data-periodo="ano" aria-pressed="false">Este ano</button>
+    </div>
+    <label class="visualmente-oculto" for="filtro-area">Área</label>
+    <select class="seletor" id="filtro-area"></select>
+    <label class="visualmente-oculto" for="filtro-tema">Tema (tipo de ganho)</label>
+    <select class="seletor" id="filtro-tema"></select>
+    <button class="botao botao--texto" id="limpar" type="button" hidden>Limpar</button>
+    <span class="ind-filtros__escopo" id="escopo" aria-live="polite"></span>
+  </div>
+
+  <p class="estado-carga" id="estado-carga">Carregando indicadores…</p>
+  <div class="erro-carga" id="erro" hidden><h1>Não foi possível carregar os indicadores</h1><p id="erro-texto"></p></div>
+
+  <div id="conteudo" hidden>
+    <!-- KPIs ---------------------------------------------------------------- -->
+    <section class="ind-kpis" aria-label="Indicadores principais">
+      <div class="ind-kpis__grade" id="kpis"></div>
+      <p class="ind-nota-geral" id="nota-kpis"></p>
+    </section>
+
+    <!-- Portfólio no tempo ----------------------------------------------------- -->
+    <section class="ind-grade" aria-label="Portfólio no tempo">
+      <article class="painel" id="painel-evolucao">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Evolução do portfólio</h2>
+            <p class="painel__sub" id="evolucao-sub"></p>
+          </div>
+          <label class="visualmente-oculto" for="evolucao-metrica">Métrica</label>
+          <select class="seletor seletor--mini" id="evolucao-metrica">
+            <option value="status">Por status</option>
+            <option value="fluxo">Solicitações vs entregas</option>
+          </select>
+        </header>
+        <div class="evo">
+          <div class="evo__grafico" id="evo-grafico"></div>
+          <div class="evo__legenda" id="evo-legenda" role="group" aria-label="Séries (clique para mostrar ou esconder)"></div>
+        </div>
+        <p class="painel__nota" id="evolucao-nota"></p>
+      </article>
+
+      <article class="painel" id="painel-atividade">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo" id="atividade-titulo">Atividade ao longo do ano</h2>
+            <p class="painel__sub">Intensidade da transformação por mês: etapas solicitadas, iniciadas e implantadas, e artigos publicados.</p>
+          </div>
+        </header>
+        <div class="calendario" id="calendario"></div>
+        <div class="escala-continua"><span>Menor atividade</span><span class="escala-continua__faixa" aria-hidden="true"></span><span>Maior atividade</span></div>
+        <p class="painel__nota" id="atividade-nota"></p>
+      </article>
+
+      <article class="painel" id="painel-tecnologias">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Tecnologias em destaque</h2>
+            <p class="painel__sub">Ocorrências por tecnologia nas iniciativas</p>
+          </div>
+          <span class="painel__rotulo" id="tec-total"></span>
+        </header>
+        <div class="tecs" id="tecs"></div>
+        <p class="painel__nota">Cada tecnologia conta uma vez por iniciativa.</p>
+      </article>
+    </section>
+
+    <!-- Distribuição ------------------------------------------------------------ -->
+    <section class="ind-grade" aria-label="Distribuição do portfólio">
+      <article class="painel" id="painel-matriz">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Matriz Prioridade × Complexidade</h2>
+            <p class="painel__sub">Tamanho da bolha = nº de iniciativas</p>
+          </div>
+          <div class="painel__destaque" aria-live="polite"><span id="matriz-kicker"></span><b id="matriz-texto"></b></div>
+        </header>
+        <div class="mtz">
+          <span class="mtz__eixo-y" aria-hidden="true">Prioridade</span>
+          <div class="mtz__area">
+            <div class="mtz__plano" id="mtz-plano"></div>
+            <span class="mtz__eixo-x" aria-hidden="true">Complexidade</span>
+          </div>
+        </div>
+        <div class="legenda-status" id="mtz-legenda"></div>
+        <p class="painel__nota" id="matriz-nota"></p>
+      </article>
+
+      <article class="painel" id="painel-areas">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Áreas em movimento</h2>
+            <p class="painel__sub">Iniciativas por área e status</p>
+          </div>
+          <div class="painel__lado">
+            <label class="visualmente-oculto" for="areas-ordem">Ordenar áreas</label>
+            <select class="seletor seletor--mini" id="areas-ordem">
+              <option value="total">Mais iniciativas</option>
+              <option value="impl">Mais implantadas</option>
+              <option value="az">A–Z</option>
+            </select>
+            <span class="painel__dica" id="areas-dica" aria-live="polite"></span>
+          </div>
+        </header>
+        <div class="legenda-status legenda-status--compacta" id="areas-legenda" aria-hidden="true"></div>
+        <div class="tabela-areas" id="tabela-areas" role="table" aria-label="Iniciativas por área e status"></div>
+        <p class="painel__nota" id="areas-nota"></p>
+      </article>
+
+      <article class="painel" id="painel-fluxo">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Fluxo de transformação</h2>
+            <p class="painel__sub">Da origem das iniciativas até o status atual</p>
+          </div>
+          <div class="painel__destaque" aria-live="polite"><span id="fluxo-kicker"></span><b id="fluxo-texto"></b></div>
+        </header>
+        <div class="snk__colunas" aria-hidden="true"><span>Áreas de origem</span><span>Tecnologias</span><span>Status atual</span></div>
+        <div class="snk" id="snk"></div>
+        <p class="painel__nota" id="fluxo-nota"></p>
+      </article>
+    </section>
+
+    <!-- Pessoas e conteúdo -------------------------------------------------------- -->
+    <section class="ind-grade" aria-label="Progresso, Academia e conteúdo">
+      <article class="painel" id="painel-progresso">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Distribuição do progresso</h2>
+            <p class="painel__sub">Cada ponto é uma iniciativa</p>
+          </div>
+          <div class="painel__destaque" aria-live="polite"><span id="prg-kicker"></span><b id="prg-texto"></b></div>
+        </header>
+        <div class="prg" id="prg"></div>
+        <div class="mini-cards" id="prg-resumo"></div>
+        <div class="escala-continua escala-continua--progresso"><span>Menor progresso</span><span class="escala-continua__faixa" aria-hidden="true"></span><span>Maior progresso</span></div>
+      </article>
+
+      <article class="painel" id="painel-academia">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Academia Digital</h2>
+            <p class="painel__sub">Panorama das trilhas e conteúdos</p>
+          </div>
+          <a class="painel__link" href="academia.html">Abrir <span aria-hidden="true">→</span></a>
+        </header>
+        <div class="mini-cards mini-cards--icone" id="acd-stats"></div>
+        <div class="acd__disp"><span id="acd-disp"></span><span class="acd__segs" id="acd-segs" aria-hidden="true"></span></div>
+        <ul class="acd__lista" id="acd-lista"></ul>
+      </article>
+
+      <article class="painel" id="painel-conteudo">
+        <header class="painel__topo">
+          <div>
+            <h2 class="painel__titulo">Produção de conteúdo</h2>
+            <p class="painel__sub">Artigos publicados por período</p>
+          </div>
+          <label class="visualmente-oculto" for="conteudo-periodo">Agrupar por</label>
+          <select class="seletor seletor--mini" id="conteudo-periodo">
+            <option value="mensal">Mensal</option>
+            <option value="trimestral">Trimestral</option>
+          </select>
+        </header>
+        <div class="cnt__grafico" id="cnt-grafico"></div>
+        <div class="mini-cards" id="cnt-stats"></div>
+        <p class="painel__nota">Calculado de content/noticias/index.json pela data de cada artigo.</p>
+      </article>
+    </section>
+  </div>
+</main>
+
+<script type="module" src="assets/js/indicadores.js"></script>
+</body>
+</html>
