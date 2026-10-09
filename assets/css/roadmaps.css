@@ -219,7 +219,6 @@ a.area:focus-visible .area__seta { background: var(--laranja); color: var(--bran
 .area__alerta::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--alerta); flex: none; }
 
 .area__vazio { margin-top: 22px; font-size: 13px; color: var(--quente); }
-.area--sem-link { cursor: default; }
 
 /* --- Responsivo -------------------------------------------------------------------- */
 

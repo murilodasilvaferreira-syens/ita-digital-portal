@@ -93,7 +93,7 @@ export function escreverHash(campos, { substituir = false } = {}) {
  * Brilho que acompanha o ponteiro nos cartões de um container.
  * Só onde há ponteiro de verdade, e nunca com movimento reduzido.
  */
-export function ligarSpotlight(container, seletor = '.cartao-base') {
+export function ligarSpotlight(container, seletor = '.cartao') {
   if (!window.matchMedia('(hover: hover)').matches || movimentoReduzido()) return;
 
   container.addEventListener('pointermove', (evento) => {
@@ -133,53 +133,10 @@ export function animarContagem(elemento, valor, { sufixo = '' } = {}) {
   }, { threshold: 0.4 });
 
   observador.observe(elemento);
-}
-
-/** Rolagem suave para âncoras internas, respeitando movimento reduzido. */
-export function ligarRolagemSuave(raiz = document) {
-  raiz.addEventListener('click', (evento) => {
-    const link = evento.target.closest('a[data-rolar]');
-    if (!link) return;
-    const alvo = document.querySelector(link.getAttribute('href'));
-    if (!alvo) return;
-    evento.preventDefault();
-    alvo.scrollIntoView({ behavior: movimentoReduzido() ? 'auto' : 'smooth', block: 'start' });
-  });
-}
-
-/* -------------------------------------------------------------------------- */
-/* Foco                                                                       */
-/* -------------------------------------------------------------------------- */
-
-const FOCAVEIS = 'a[href], button:not(:disabled), input:not(:disabled), select, textarea, [tabindex]:not([tabindex="-1"])';
-
-/**
- * Prende o foco dentro de um elemento sobreposto e o devolve ao fechar.
- * Retorna a função que solta o foco.
- */
-export function prenderFoco(container, origem) {
-  const aoTeclar = (evento) => {
-    if (evento.key !== 'Tab') return;
-    const focaveis = [...container.querySelectorAll(FOCAVEIS)].filter((n) => n.offsetParent !== null);
-    if (!focaveis.length) return;
-
-    const primeiro = focaveis[0];
-    const ultimo = focaveis[focaveis.length - 1];
-    if (evento.shiftKey && document.activeElement === primeiro) {
-      evento.preventDefault();
-      ultimo.focus();
-    } else if (!evento.shiftKey && document.activeElement === ultimo) {
-      evento.preventDefault();
-      primeiro.focus();
-    }
-  };
-
-  container.addEventListener('keydown', aoTeclar);
-  const primeiro = container.querySelector(FOCAVEIS);
-  if (primeiro) primeiro.focus();
-
-  return () => {
-    container.removeEventListener('keydown', aoTeclar);
-    if (origem && document.contains(origem)) origem.focus();
-  };
+  // Iframe em segundo plano não recebe callbacks: mostra o número final.
+  setTimeout(() => {
+    if (elemento.textContent !== `0${sufixo}` || !alvo) return;
+    observador.disconnect();
+    elemento.textContent = `${alvo}${sufixo}`;
+  }, 2600);
 }

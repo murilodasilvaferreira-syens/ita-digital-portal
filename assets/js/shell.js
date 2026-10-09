@@ -6,7 +6,7 @@
  * escritos aqui. Todo texto entra por textContent.
  */
 
-import { criar, linkExterno, buscarJSON, movimentoReduzido } from './ui.js';
+import { criar, linkExterno, buscarJSON, movimentoReduzido, ligarSpotlight } from './ui.js';
 
 const PAGINAS = [
   { id: 'inicio', rotulo: 'Início', href: 'home.html' },
@@ -258,5 +258,7 @@ export async function montarCasca({ ativa, rodape = 'simples', marca = 'Transfor
   montarNav(ativa, novaIniciativa, site);
   montarRodape(rodape, marca, site);
   ligarEfeitos();
+  // Brilho dos cartões: um ouvinte só, delegado, vale para o que for renderizado depois.
+  ligarSpotlight(document);
   return site;
 }

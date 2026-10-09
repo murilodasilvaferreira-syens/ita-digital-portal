@@ -1,19 +1,27 @@
 # Site da área Digital — Syensqo Itatiba
 
-Site interno da área de Digital da planta. São quatro páginas, todas publicadas
-no GitHub Pages e incorporadas em páginas do SharePoint por iframe:
+Site interno da Transformação Digital da planta. Todas as páginas são
+publicadas no GitHub Pages e incorporadas em páginas do SharePoint por iframe:
 
 | Página | O que é |
 | --- | --- |
-| `home.html` | Porta de entrada: liga as três frentes e mostra o que há de novo entre elas, com dados reais |
-| `index.html?area=<slug>` | Roadmap de uma área: árvore de dependências e painel de gestão |
-| `hub.html` | Portal central, com um card por área e o resumo de cada uma |
-| `academia.html` | Academia Digital: trilhas de treinamento, recursos e casos |
-| `noticias.html` | Portal de notícias: publicações curtas sobre IA, dados e M365 |
+| `home.html` | **Início** — busca única, destinos, a planta em números, trilhas e movimento recente |
+| `hub.html` | **Roadmaps** — pulso das áreas e um card por área |
+| `index.html?area=<slug>` | Roadmap de dependências de uma área (sem `area`, todas) |
+| `areas/<slug>/` | Endereço estável de cada área, para colar no iframe; encaminha para `index.html?area=` |
+| `indicadores.html` | **Indicadores** — o Observatório da Transformação, calculado dos dados reais |
+| `academia.html` | **Academia Digital** — trilhas, perfis, casos, curiosidade e recursos |
+| `noticias.html` | **Notícias** — listagem editorial e leitura do artigo em `#/<slug>` |
+| `areas.html` | Índice técnico, com o endereço de incorporação de cada área |
 
 É um site estático puro — sem build, sem npm, sem framework e sem nenhuma
 requisição a domínio externo. Fontes, ícones e bibliotecas ficam versionados em
 `assets/`.
+
+O visual segue o **Portal Digital v2** feito no Claude Design (o `.zip` de
+referência está na raiz do repositório): Instrument Serif nos títulos, Geist na
+interface, Geist Mono em rótulos e dados, cartões de vidro, navegação em pílula
+flutuante e gráficos desenhados em SVG/CSS a partir dos JSON.
 
 ---
 
@@ -26,305 +34,240 @@ Microsoft List (SharePoint)
 Power Automate  ── de hora em hora ──▶  data/initiatives.json  (via API do GitHub)
         │
         ▼
-GitHub Pages  ──▶  iframe na página da área  ──▶  index.html?area=manutencao
+GitHub Pages  ──▶  iframe na página do SharePoint  ──▶  areas/manutencao/
 ```
 
 > **`data/initiatives.json` é escrito só pelo Power Automate.**
 > Não edite, não formate e não gere esse arquivo à mão: a próxima execução do
 > fluxo sobrescreve tudo. O portal apenas lê.
 
----
+As outras fontes são editadas à mão, e é nelas que se publica conteúdo — o
+JavaScript não tem conteúdo dentro dele:
 
-## A porta de entrada (`home.html`)
-
-É a home do site: liga as três frentes (Roadmaps, Academia, Notícias) e mostra o
-que há de novo entre elas. Não tem conteúdo próprio — todos os números e textos
-saem, ao vivo, dos mesmos arquivos que as outras páginas já leem. `assets/js/home.js`
-carrega quatro fontes em paralelo, cada `fetch` com `cache: 'no-store'`:
-`data/initiatives.json` (pela mesma camada `data.js`, então a fase é derivada igual
-ao resto do site), `data/academia/trilhas.json`, `content/noticias/index.json` e
-`config/site.json` (links de Teams e de nova iniciativa). Se uma fonte falhar, só a
-seção dela some — as outras continuam.
-
-O que cada bloco cruza:
-
-| Bloco | De onde vem o dado |
+| Arquivo | O que guarda |
 | --- | --- |
-| **Três destinos** | Roadmaps: nº de iniciativas `Implantada` com `updatedAt` no mês corrente. Academia: nº de trilhas `disponivel: true`. Notícias: título do artigo mais recente por `data`. |
-| **Trilhas para se capacitar** | Todas as trilhas de `trilhas.json`, disponíveis primeiro e "em breve" discretas, sem link. |
-| **O que há de novo** | Artigos mais recentes de `index.json` (o 1º vira o destaque grande) + iniciativas `Implantada` nos últimos 7 dias, rotuladas "Entregue". Tudo ordenado por data, no máximo 4 itens. Trilhas só entrariam aqui se o JSON tivesse um campo de novidade — como não tem, a fonte é ignorada. |
-| **Números** | Iniciativas em fase Execução (todas as áreas) · trilhas disponíveis · artigos no índice · áreas distintas nos dados. Contam de 0 ao entrar na tela, como nas outras páginas. |
-| **Busca do hero** | Um índice em memória com título de iniciativa, nome de trilha e título de artigo; o resultado vai agrupado por frente e leva à página e ao item (`noticias.html#/<slug>`, `index.html#i=<id>`, `academia.html`). |
-
-Sem dado suficiente, cada seção encolhe em vez de deixar buraco: a Academia e o
-feed somem inteiros se não houver trilha nem novidade, e um destino sem número
-mostra um texto de apoio em vez de "0".
-
-A imagem da hero fica em `assets/img/hero-landing-*.{webp,jpg}`, servida por um
-`<picture>` com WebP e fallback JPEG em dois tamanhos (800 e 1200px) — a original
-pesada não vai para o repositório. Para regerar a partir de um novo arquivo, use
-qualquer otimizador de imagem local (o site continua estático, sem build).
+| `config/areas.json` | slug → nome oficial da área, descrição, `pageUrl` e `ocultarEstatisticas` |
+| `config/site.json` | link do Forms de nova iniciativa, contato do Teams, `staleDays` |
+| `data/academia/*.json` | trilhas e perfis, recursos, casos, curiosidade e textos da Academia |
+| `content/noticias/` | `index.json`, um `.md` por artigo e as imagens de capa |
 
 ---
 
 ## Rodar localmente
 
-O `fetch` dos JSON não funciona abrindo o `index.html` pelo duplo clique
-(`file://` bloqueia módulos ES e requisições). Suba um servidor:
+O `fetch` dos JSON não funciona abrindo o arquivo pelo duplo clique (`file://`
+bloqueia módulos ES e requisições). Suba um servidor na raiz:
 
 ```bash
-# Windows
-python -m http.server 8000
-
-# macOS / Linux
-python3 -m http.server 8000
+python -m http.server 8000      # Windows
+python3 -m http.server 8000     # macOS / Linux
 ```
-
-E abra:
 
 | URL | O que mostra |
 | --- | --- |
-| `http://localhost:8000/home.html` | Porta de entrada: destinos, feed cruzado, números e busca única |
-| `http://localhost:8000/hub.html` | Portal central: um card por área, com o resumo vivo |
-| `http://localhost:8000/academia.html` | Academia Digital: trilhas, recursos e casos |
-| `http://localhost:8000/noticias.html` | Portal de notícias |
-| `http://localhost:8000/noticias.html#/o-que-e-rag` | Uma publicação aberta |
-| `http://localhost:8000/areas.html` | Índice técnico, com o endereço de incorporação de cada painel |
-| `http://localhost:8000/areas/confiabilidade/` | Painel de uma área (endereço estável, usado no iframe) |
-| `http://localhost:8000/index.html?area=confiabilidade` | O mesmo painel, na forma com parâmetro |
+| `http://localhost:8000/home.html` | Início |
+| `http://localhost:8000/hub.html` | Roadmaps (`#ordem=avanco` ordena os cards pelo avanço) |
+| `http://localhost:8000/areas/confiabilidade/` | Roadmap de uma área, pelo endereço estável |
 | `http://localhost:8000/index.html` | Todas as áreas, consolidado |
 | `http://localhost:8000/index.html?area=xyz` | Estado "Área não encontrada" |
+| `http://localhost:8000/indicadores.html#periodo=ano&area=digital` | Indicadores filtrados |
+| `http://localhost:8000/academia.html#trilha=power-apps` | Academia com o detalhe de uma trilha aberto |
+| `http://localhost:8000/noticias.html#/o-que-e-rag` | Uma notícia aberta |
+| `http://localhost:8000/areas.html` | Índice técnico |
 
-Estado da interface vai na hash, então esses endereços também funcionam:
-`#fase=execucao,planejamento`, `#projeto=maintenance-analytics`, `#tech=power-bi`,
-`#q=inspecao`, `#i=79` (detalhe aberto), `#raia=digital::digital-batchsheet`
-(resumo do projeto).
+O estado da interface vai sempre na hash, então todo endereço acima pode ser
+compartilhado. No roadmap valem as chaves de sempre: `#fase=execucao,planejamento`,
+`#projeto=<slug>`, `#tech=<slug>`, `#q=<texto>`, `#i=79` (etapa aberta) e
+`#raia=digital::digital-batchsheet` (resumo do projeto).
 
 ---
 
 ## Arquitetura
 
 ```
-home.html                 porta de entrada: hero com busca, destinos, feed cruzado, números
-index.html                roadmap de uma área: cabeçalho, filtros, árvore, gestão e detalhe
-hub.html                  portal central: um card por área, com acesso e resumo vivo
-academia.html             Academia Digital: trilhas, recursos, curiosidade e casos
-noticias.html             portal de notícias: listagem editorial e leitura do artigo
-areas.html                índice técnico, com o endereço de incorporação de cada painel
-areas/<slug>/index.html   endereço estável de cada área; encaminha para a aplicação
+home.html  hub.html  index.html  indicadores.html  academia.html  noticias.html  areas.html
+areas/<slug>/index.html   endereço estável de cada área; encaminha preservando a hash
 .nojekyll                 impede o Jekyll do Pages de mexer nos arquivos
-config/areas.json         slug -> nome oficial, descrição, pageUrl e flag de estatísticas
-config/site.json          link do Forms, contato do Teams, textos do portal
-assets/css/tokens.css     cores, tipografia, espaçamento, movimento e @font-face
-assets/css/base.css       reset, tipografia, botões, chips, selos, ícones, cabeçalho e cartão
-assets/css/app.css        o que é só do roadmap
-assets/css/hub.css        o que é só do portal central
-assets/css/academia.css   o que é só da Academia
-assets/css/noticias.css   o que é só das Notícias
-assets/css/home.css       o que é só da porta de entrada
-assets/img/hero-landing-*.{webp,jpg}  imagem da hero, otimizada em dois tamanhos
-assets/fonts/             Poppins 400/500/600 (latin e latin-ext) + licença OFL
-assets/img/favicon.svg    ícone do portal
-assets/js/data.js         carga, saneamento, derivações e índices do grafo
-assets/js/tree.js         layout e render da árvore em SVG, zoom, destaque de cadeia
-assets/js/panels.js       painel de gestão e painel de detalhe/resumo
-assets/js/app.js          estado, filtros, hash e orquestração
-assets/js/hub.js          monta o índice de areas.html
-assets/js/portal.js       monta os cards do hub.html, com o resumo por área
-assets/js/home.js         monta a porta de entrada: cruza iniciativas, trilhas e notícias
-assets/js/ui.js           utilitários comuns: DOM, hash, foco, spotlight, contagem
-assets/js/academia.js     monta a Academia a partir de data/academia/
-assets/js/noticias.js     listagem, roteamento por hash e leitura do artigo
-assets/icons/icones.js    conjunto único de ícones SVG do site
+
+assets/css/tokens.css     única fonte de verdade visual: cores, status, tipografia, raios, sombras, movimento, @font-face
+assets/css/base.css       reset, casca (nav, rodapé, fio de progresso), tipografia de display, vidro, cartão,
+                          botões, campos, chips, selos, painel lateral (gaveta) e revelação ao rolar
+assets/css/<página>.css   só o que é daquela página (home, roadmaps, roadmap, indicadores, academia, noticias, areas)
+
+assets/js/shell.js        casca compartilhada: nav em pílula, rodapé, revelação, brilho dos cartões, links do Teams/Forms
+assets/js/ui.js           utilitários de DOM, hash, debounce, contagem animada
+assets/js/data.js         carga e saneamento das iniciativas, fase derivada, índices do grafo
+assets/js/metricas.js     todos os números derivados das iniciativas (Início, Roadmaps e Indicadores usam os mesmos)
+assets/js/conteudo.js     artigos e trilhas: leitura, ordenação, tempo de leitura, datas
+assets/js/grafo.js        layout do roadmap — só geometria, sem DOM
+assets/js/quadro.js       quadro de dependências: cards sobre arestas SVG, zoom, arrasto, destaque de cadeia
+assets/js/atencao.js      "O que pede atenção": atrasadas, próximas e aguardando
+assets/js/gaveta.js       painel lateral do roadmap: detalhe da etapa ou resumo do projeto
+assets/js/roadmap.js      orquestra index.html: estado na hash, filtros, render
+assets/js/home.js | roadmaps.js | indicadores.js | academia.js | noticias.js | areas.js   uma por página
+
+assets/icons/icones.js    conjunto de ícones SVG do site
+assets/fonts/             Instrument Serif, Geist e Geist Mono (subconjunto latin) + licenças OFL
+assets/img/               favicon e as imagens de fundo do Início, em WebP e JPEG, dois tamanhos
 assets/vendor/            marked (MIT), versionado com a licença
-data/academia/            trilhas, casos, recursos, curiosidade e textos da página
-content/noticias/         index.json, um .md por artigo e as imagens de capa
-data/initiatives.json     escrito pelo Power Automate — não mexer
 ```
 
-As páginas em `areas/<slug>/` são só o endereço: elas encaminham para
-`index.html?area=<slug>` preservando a hash, em vez de repetir o HTML da
-aplicação dez vezes — assim não existe cópia para dessincronizar quando o
-`index.html` mudar.
+Regras que valem para todas as páginas:
 
-Os quatro módulos JS conversam numa direção só:
+- **Uma página = um HTML + um CSS + um módulo JS.** Tudo que se repete entre
+  páginas mora em `tokens.css`, `base.css`, `shell.js`, `metricas.js` ou
+  `conteudo.js` — não há CSS duplicado entre páginas.
+- **Cor nova vira token.** Nenhum CSS de página inventa valor solto de cor,
+  raio ou sombra que outra página também precise.
+- **Todo dado entra por `textContent`.** A única exceção é o corpo do artigo de
+  Notícias (ver abaixo).
+- **Fonte que falha não derruba a página.** Cada página carrega suas fontes em
+  paralelo; se uma falhar, só a seção dela some.
 
-```
-app.js  ──▶  data.js   (carrega e deriva)
-   │
-   ├────▶  tree.js     (recebe os itens já filtrados)
-   └────▶  panels.js   (recebe os mesmos itens)
-```
+### Paleta de status
+
+Uma paleta só para o site todo, definida em `tokens.css` e usada pelo roadmap,
+pelos cards de Roadmaps e por todos os gráficos de Indicadores:
+
+| Status | Token | Cor |
+| --- | --- | --- |
+| Implantada | `--st-implantada` | laranja `#e8752a` |
+| Em desenvolvimento | `--st-desenvolvimento` | laranja médio `#f0a472` |
+| Dependente | `--st-dependente` | areia `#cfc5b6` |
+| Backlog | `--st-backlog` | grafite `#6b6459` |
+| Ideia | `--st-ideia` | areia clara `#e3d9c8` |
+
+O roadmap ainda agrupa os status em **fases** (Planejamento, Execução, Entregue,
+Interrompida) para filtros e contagens — ver `data.js`.
 
 ### `data.js` — o que é derivado dos dados brutos
 
 A Microsoft List entrega muito campo nulo, e isso é normal. A camada de dados
 normaliza tudo antes de qualquer render:
 
+- **Linha em branco é descartada:** registro sem título **e** sem status (linha
+  vazia criada na lista) não entra em nenhuma contagem.
 - `technologies`, `gainTypes` e `dependsOn` viram listas simples.
-- Texto passa por `DOMParser` → `textContent` → espaços normalizados → `null` se
-  sobrar vazio. Nada de dado entra no DOM por `innerHTML`.
+- Texto passa por `DOMParser` → `textContent` → espaços normalizados → `null`
+  se sobrar vazio.
 - Dependência inválida é descartada: para si mesma, para id inexistente ou que
-  fecharia ciclo (o layout por nível trava com ciclo). O descarte sai num
-  `console.warn` com o relatório.
+  fecharia ciclo. O descarte sai num `console.warn`.
 - `Implantada` conta como 100% mesmo sem `progress`; `doneDate` só vale se o
   status for `Implantada`.
 
-Campos derivados que a interface usa:
+| Status da lista | Fase |
+| --- | --- |
+| Ideia, Em análise, Aprovada, Backlog, **Dependente** | Planejamento |
+| Em desenvolvimento, Em testes | Execução |
+| Implantada | Entregue |
+| Em pausa, Cancelada | Interrompida |
 
-| Campo | Significado |
+"Dependente" é planejamento: a etapa espera outra terminar e ainda não começou.
+Status desconhecido também cai em Planejamento.
+
+| Campo derivado | Significado |
 | --- | --- |
 | `fase` | Planejamento, Execução, Entregue ou Interrompida |
 | `bloqueada` | Tem dependência que ainda não está Implantada |
 | `prontaParaIniciar` | Está em Planejamento e todas as dependências fecharam |
 | `atrasada` / `diasAtraso` | `dueDate` no passado, fora de Implantada e Cancelada |
 | `semAtualizacao` | `updatedAt` com mais de `staleDays` dias e fase ≠ Entregue |
-| `independente` | Sem dependência e sem quem dependa dela |
 | `chaveRaia` | `área::projeto` — o mesmo projeto existe em áreas diferentes |
-
-### `tree.js` — os três modos de layout
-
-Um SVG por render, com as raias como faixas empilhadas e **posições absolutas**:
-por isso uma dependência que cruza projetos é desenhada como qualquer outra.
-
-| Modo | Quando | Como fica |
-| --- | --- | --- |
-| Horizontal | a cadeia cabe na largura | colunas por nível, da esquerda para a direita |
-| Serpentina | não cabe | quebra em zigue-zague, com conector curvo de continuidade |
-| Vertical | abaixo de 600px | um card de largura total por linha, traço vertical entre eles |
-
-Uma aresta que liga projetos diferentes desce por um corredor — o vão entre duas
-colunas, que é livre de cards em toda a altura — e entra pela lateral do
-destino. É isso que impede a curva de acabar escondida atrás de um card.
-
-O nível de cada iniciativa é o **caminho mais longo** pelas dependências do
-mesmo projeto, e os níveis são recompactados quando um filtro esvazia um deles.
-A ordem das raias é topológica: se um projeto depende de outro, ele vem depois,
-e as duas ficam vizinhas para a linha não atravessar raia alheia.
-
-Zoom fica nos botões **+ / −**, no Ctrl+roda e na pinça — a roda sozinha nunca é
-capturada, para não sequestrar a rolagem da página do SharePoint. Em 100% a
-árvore inteira cabe na largura e não há nada a arrastar; passando disso, a área
-vira uma superfície com cursor `grab`, inércia ao soltar e limite elástico. O
-arrasto pode começar em cima de um card (que é quase toda a superfície): só
-depois de 4px de movimento o gesto vira arrasto, e aí o clique não abre o
-detalhe. Duplo clique num card enquadra ele no centro.
-
-**Ampliar** expande a árvore sobre a área visível do iframe, escondendo
-cabeçalho e painel de gestão — por CSS, não pela API de tela cheia, que costuma
-ser bloqueada dentro de iframe. Sai pelo botão ou por Esc.
-
-### `panels.js` — as três listas
-
-Cada bloco mostra 5 itens e expande com "ver todas (N)":
-
-1. **Atrasadas** — mais antiga primeiro, com quantos dias de atraso.
-2. **Próximas** — o que está em execução (com selo `bloqueada` quando a
-   dependência ainda não fechou, porque o que já começou não pode sumir da
-   vista), depois o que está pronto para iniciar. Nada com dependência pendente
-   entra pela porta das "prontas".
-3. **Aguardando** — travadas que ainda não começaram, com de quem dependem e em
-   que status a dependência está.
-
-Seção sem conteúdo é omitida inteira, no painel e nos cards: nunca aparece
-rótulo seguido de traço.
 
 ---
 
-## Altura do web part
+## Início (`home.html`)
 
-A página **não rola por dentro**: ela cresce com o conteúdo e quem rola é o
-iframe. Por isso a altura do web part é o que decide se o gestor vê tudo de uma
-vez ou precisa rolar.
+Não tem conteúdo próprio — tudo sai, ao vivo, dos mesmos arquivos que as outras
+páginas leem.
 
-Alturas reais do conteúdo, medidas com os 87 itens de hoje:
+| Bloco | De onde vem |
+| --- | --- |
+| **Busca única** (Ctrl/⌘ K) | Índice em memória com iniciativas, trilhas e artigos; resultados agrupados por frente, com escopo Roadmaps/Academia/Notícias |
+| **Letreiro** | Nomes das áreas de `config/areas.json` |
+| **Destinos** | Roadmaps: implantadas no mês pela `doneDate`. Academia: trilhas disponíveis. Notícias: último artigo, com selo NOVO até 14 dias |
+| **A planta em números** | Portfólio por status, evolução das implantadas, matriz prioridade × complexidade, ritmo por área e leituras — tudo de `metricas.js` |
+| **Trilhas** | Até três trilhas; "em breve" vira um "Avise-me" pelo Teams |
+| **Movimento recente** | Artigos + implantadas pela data de conclusão, mais recentes primeiro |
 
-| Área | itens | 1200px | 900px | 640px | 380px |
-| --- | --- | --- | --- | --- | --- |
-| Digital | 18 | 2180px | 3030px | 4169px | 4270px |
-| Confiabilidade | 14 | 2509px | 3160px | 4296px | 4095px |
-| Automação | 12 | 2075px | 2534px | 3567px | 3563px |
-| SGI | 10 | 1974px | 2309px | 3027px | 3055px |
-| Laboratório | 8 | 1492px | 1638px | 2451px | 2460px |
-| Produção | 8 | 1726px | 1995px | 2626px | 2593px |
-| Processos | 6 | 1467px | 1779px | 2206px | 2228px |
-| Manutenção | 5 | 918px | 1226px | 1717px | 1785px |
-| Logística | 3 | 930px | 1029px | 1262px | 1392px |
-| HSE | 3 | 906px | 1029px | 1244px | 1346px |
-| Todas as áreas | 87 | 8785px | 9735px | 14620px | 14709px |
+O ritmo por área conta só meses já ocorridos: data de início planejada no
+futuro não é movimento.
 
-**Recomendação por porte de área**, para o monitor da planta (~1200px de largura
-disponível), já com folga para a área crescer:
+## Roadmaps (`hub.html`)
 
-| Porte | Áreas de hoje | Altura do web part |
-| --- | --- | --- |
-| Grande (12+ iniciativas) | Digital (2180px), Confiabilidade (2509px), Automação | **2600px** |
-| Média (6 a 11) | SGI, Laboratório, Produção, Processos | **2100px** |
-| Pequena (até 5) | Manutenção, Logística (930px), HSE | **1000px** |
+O **pulso das áreas** desenha cada área como um nó (tamanho = volume, cor =
+avanço médio, linhas tracejadas = projetos em comum). Abaixo, um card por área,
+ordenável por volume ou por avanço.
 
-Duas observações que mudam a conta:
+O card leva ao **`pageUrl`** da área em `config/areas.json` — a página dela no
+SharePoint — em nova aba, porque o hub roda num iframe e um link comum abriria a
+página espremida nele. Sem `pageUrl`, o card abre o roadmap da área no próprio
+portal. `ocultarEstatisticas: true` mostra só o nome e o acesso. Etapas sem área
+preenchida aparecem num card "Outros", que leva à visão de todas as áreas.
 
-- **A altura cresce cerca de 60% no celular.** No app do Teams (~380px) a mesma
-  Confiabilidade passa de 2509px para 4095px, porque cada iniciativa vira um
-  card de largura total. Se o web part tiver altura fixa em pixels, no celular
-  vai sobrar rolagem — o que está certo, é o iframe rolando.
-- **A visão consolidada não cabe em web part nenhum** (8785px com 87 itens).
-  Use `areas.html` como entrada e deixe o consolidado para quem abre o portal
-  fora do SharePoint.
+## Roadmap de dependências (`index.html`)
 
-Se não quiser calibrar altura por área, o botão **Ampliar** resolve pelo outro
-lado: a árvore passa a ocupar a área visível do iframe, seja ela qual for.
+Cada projeto é uma **raia**; cada etapa, um card. As arestas mostram quem
+depende de quem, inclusive entre projetos e entre áreas.
 
-## O portal central (`hub.html`)
+- **Layout** (`grafo.js`): horizontal quando a raia cabe, serpentina quando
+  não cabe, vertical abaixo de ~600px. O nível de cada etapa é o caminho mais
+  longo pelas dependências; as raias seguem ordem topológica. Arestas entre
+  projetos descem por corredores livres de card.
+- **Quadro** (`quadro.js`): zoom pelos botões, Ctrl+roda e pinça — a roda
+  sozinha nunca é capturada, para não sequestrar a rolagem do SharePoint.
+  Acima de 100% o quadro arrasta com inércia. Passar o mouse num card acende a
+  cadeia (o que vem antes e o que vem depois). **Ampliar** expande o quadro
+  sobre a área visível do iframe, por CSS (a API de tela cheia costuma ser
+  bloqueada em iframe); sai por Esc.
+- **O que pede atenção** (`atencao.js`): atrasadas, próximas e aguardando,
+  cinco por lista com "ver todas".
+- **Painel lateral** (`gaveta.js`): detalhe da etapa ou resumo do projeto, sem
+  bloquear o quadro. Navegar por uma dependência empilha o painel; "voltar"
+  desempilha.
 
-Página aberta a todos, para ser incorporada numa página do SharePoint como
-qualquer outra: um card por área, levando ao roadmap daquela área.
+Seção sem dado some inteira: nunca aparece rótulo seguido de traço.
 
-Cada card lê o mesmo `data/initiatives.json` pela mesma camada `data.js`, então
-os números do card são os mesmos que o gestor vê ao abrir a área: proporção de
-entregues, contagem por fase e — só quando existe — o número de atrasadas. Não
-há nada para preencher à mão.
+## Indicadores (`indicadores.html`)
 
-O link de cada card vai para o campo **`pageUrl`** da área em
-`config/areas.json`, que é o endereço da página dela no SharePoint:
+O Observatório da Transformação. Nove painéis e seis KPIs, todos calculados no
+navegador (`metricas.js`), com filtros de **período** (tudo, este mês, este
+ano), **área** e **tema** (tipo de ganho) guardados na hash
+(`#periodo=mes&area=<slug>&tema=<slug>`).
 
-```json
-{
-  "slug": "confiabilidade",
-  "name": "Confiabilidade",
-  "description": "Inspeções de ativos, dados de confiabilidade e analytics de manutenção preditiva.",
-  "pageUrl": "https://<tenant>.sharepoint.com/sites/<site>/SitePages/confiabilidade.aspx",
-  "ocultarEstatisticas": false
-}
-```
+| Painel | Como é calculado |
+| --- | --- |
+| KPIs | Projetos distintos, etapas, implantadas, áreas, trilhas e artigos. A variação compara o mês corrente com o anterior pela data real (`requestedDate`, `doneDate`); sem base no mês anterior não há variação |
+| Evolução do portfólio | Acumulado dos últimos 6 meses com registro: implantadas por `doneDate`, iniciadas por `startDate`, backlog por `requestedDate` sem início; ou solicitações × entregas |
+| Atividade do ano | Cada acontecimento pela sua data real; meses futuros aparecem tracejados (datas previstas) |
+| Tecnologias | Cada tecnologia conta uma vez por iniciativa |
+| Matriz prioridade × complexidade | Bolhas por status em cada célula; sem classificação fica de fora e é informado |
+| Áreas em movimento | Iniciativas por área × status, cada coluna com escala própria; "Sem área" por último |
+| Fluxo de transformação | Sankey área → tecnologia → status; cada iniciativa vale 1 e divide o peso entre suas tecnologias |
+| Distribuição do progresso | Um ponto por iniciativa, em seis faixas |
+| Academia / Produção de conteúdo | `trilhas.json` e `content/noticias/index.json` (artigos por mês ou trimestre) |
 
-- Enquanto `pageUrl` estiver vazio, o card aparece como **"em breve"**, em tom
-  neutro e sem link — melhor do que um endereço quebrado. Hoje todas as áreas
-  estão assim: preencha conforme publicar cada página.
-- `ocultarEstatisticas: true` mostra só o nome e o acesso, sem o resumo.
-- Os cards abrem em nova aba (`target="_blank" rel="noopener"`). Isso é
-  necessário, e não estético: o hub roda dentro de um iframe, e um link comum
-  abriria a página da área espremida nele.
+"Filtrar por período" mantém as etapas com alguma data real (solicitação,
+início, conclusão ou atualização) dentro do período. O mockup mostrava
+visualizações e usuários únicos simulados em "Produção de conteúdo"; como não
+existe fonte para isso, o painel mostra só o que é real (artigos, categorias e
+data do último).
 
 ## Academia Digital (`academia.html`)
 
-Todo o conteúdo vem de `data/academia/`, e é lá que se publica — o JavaScript
-não tem conteúdo dentro dele.
-
-| Arquivo | O que guarda |
+| Arquivo em `data/academia/` | O que guarda |
 | --- | --- |
 | `trilhas.json` | As trilhas e os perfis de "Por onde começar" |
-| `recursos.json` | Os atalhos da seção Recursos rápidos |
-| `casos.json` | Os casos de sucesso |
+| `recursos.json` | A biblioteca de recursos (sempre em nova aba; só `http(s)`) |
+| `casos.json` | Os casos de sucesso (texto corrido ou `desafio`/`solucao`/`resultado`) |
 | `curiosidade.json` | A curiosidade da semana |
-| `site.json` | Kicker, título, frase de apoio e o link do Teams |
+| `site.json` | Kicker, título, frase de apoio e o convite do Teams |
 
-Os indicadores do topo (trilhas disponíveis, ferramentas e horas de conteúdo)
-são **calculados** a partir de `trilhas.json`. Não existe número digitado à mão.
+Os números do topo e o trilho do catálogo são **calculados** de `trilhas.json`.
+O detalhe de uma trilha abre num painel lateral e fica em `#trilha=<id>` — o
+endereço que o Início, a busca e os Indicadores usam.
 
-### Adicionar ou mudar uma trilha
-
-Acrescente um item em `trilhas.json`:
+Para acrescentar uma trilha, inclua um item em `trilhas.json`:
 
 ```json
 {
@@ -344,46 +287,32 @@ Acrescente um item em `trilhas.json`:
 }
 ```
 
-- `disponivel: false` põe a trilha no grupo **Em breve**, discreta e sem link —
-  aí `link` pode ficar de fora.
-- `icone` é um nome de `assets/icons/icones.js` (`raio`, `serie`, `monitor`,
-  `fluxo`, `barras`, `fabrica`, `dados`, `livro`…). Nome desconhecido
-  simplesmente não desenha ícone, sem quebrar o card.
+- `disponivel: false` põe a trilha em **Em breve**; aí `link` pode faltar.
+- `nivel` usa Iniciante, Intermediário ou Avançado (os pontinhos de nível).
 - `duracaoHoras`, `aulas`, `aprende`, `preRequisitos` e `publico` são opcionais:
-  cada um some do card e do painel quando não existe.
+  cada um some quando não existe.
+- `dataDisponibilizacao` (opcional, `AAAA-MM-DD`) faz a trilha entrar na
+  "Atividade do ano" dos Indicadores.
+- Cada perfil em `perfis` aponta para o `id` de uma trilha. Perfil apontando
+  para trilha inexistente é ignorado.
 
-Para mudar as recomendações de "Por onde começar", edite `perfis` no mesmo
-arquivo — cada perfil aponta para o `id` de uma trilha. Perfil apontando para
-trilha inexistente é ignorado, e a seção some se nenhum sobrar.
+## Notícias (`noticias.html`)
 
----
+Publicar uma notícia são **dois passos**.
 
-## Portal de Notícias (`noticias.html`)
-
-Publicar uma notícia são **dois passos**: criar o arquivo do texto e acrescentar
-a entrada no índice.
-
-### 1. Escreva o artigo
-
-Crie `content/noticias/<slug>.md`. O slug é o endereço da publicação: minúsculo,
-sem acento, com hífens. Modelo para copiar:
+**1. Escreva o artigo** em `content/noticias/<slug>.md` (slug minúsculo, sem
+acento, com hífens):
 
 ```markdown
 Abertura em um parágrafo, que é o que prende a leitura. Sem repetir o título.
 
 ## Primeiro subtítulo
 
-Texto do primeiro bloco. Pode usar **negrito**, *itálico*, [link](https://…),
-listas, tabelas, citação com `>` e bloco de código.
-
-## Segundo subtítulo
-
-Fechamento, de preferência com o que muda na prática para quem leu.
+Texto. Pode usar **negrito**, *itálico*, [link](https://…), listas, tabelas,
+citação com `>` e bloco de código.
 ```
 
-### 2. Acrescente ao índice
-
-Em `content/noticias/index.json`, no topo da lista `artigos`:
+**2. Acrescente ao índice** `content/noticias/index.json`:
 
 ```json
 {
@@ -402,27 +331,57 @@ Em `content/noticias/index.json`, no topo da lista `artigos`:
 
 | Campo | Para que serve |
 | --- | --- |
-| `destaque` | `true` põe a publicação como manchete; sem nenhum, entra a mais recente |
-| `link` | Botão "Abrir link relacionado" no fim do artigo; sem ele, o botão some |
-| `capa` | Imagem em `content/noticias/img/`; sem ela, o card usa a capa tipográfica |
+| `destaque` | `true` põe a publicação na manchete; sem nenhum, entra a mais recente |
+| `link` | Botão "Abrir link relacionado" no fim do artigo |
+| `capa` | Imagem em `content/noticias/img/`; sem ela, a mídia usa a inicial em tipografia |
 | `rascunho` | `true` marca visivelmente que o texto ainda está sendo escrito |
 
-O **tempo de leitura é calculado** do próprio texto (200 palavras por minuto) —
-não existe campo para isso. As categorias dos chips saem sozinhas do índice: use
-uma categoria nova e o chip aparece.
+O **tempo de leitura é calculado** do texto (200 palavras por minuto). As
+categorias saem sozinhas do índice. A leitura abre em `noticias.html#/<slug>`,
+em página inteira — o mockup previa um painel lateral, mas ele teria rolagem
+interna dentro do iframe; aqui a página cresce com o texto. Slug inexistente
+mostra "Artigo não encontrado".
 
-### Detalhes que valem saber
+O corpo do artigo é a **única** parte do site renderizada como HTML. Por isso o
+HTML embutido no Markdown fica desligado (uma tag aparece como texto), e link ou
+imagem só aceitam `http:`, `https:` e `mailto:` — `javascript:` e `data:` perdem
+o atributo. O renderizador é o `marked`, versionado em `assets/vendor/`.
 
-- O endereço de uma publicação é `noticias.html#/<slug>`, e funciona para
-  compartilhar direto.
-- Slug que não existe mostra "Artigo não encontrado" com a volta para a lista,
-  em vez de página em branco.
-- O corpo do artigo é a única parte do site renderizada como HTML. Por isso o
-  HTML embutido no Markdown fica **desligado**: uma tag escrita no texto aparece
-  como texto. Link e imagem só aceitam `http:`, `https:` e `mailto:` (mais
-  endereço relativo e âncora) — `javascript:` e `data:` perdem o atributo. O
-  renderizador é o `marked`, versionado em `assets/vendor/` com a licença MIT
-  junto — nada é buscado de CDN.
+---
+
+## Altura do web part
+
+A página **não rola por dentro**: ela cresce com o conteúdo e quem rola é o
+iframe. Alturas medidas com os dados de hoje (89 etapas válidas):
+
+| Roadmap da área | etapas | 1200px | 380px |
+| --- | --- | --- | --- |
+| Digital | 18 | 3150px | 5680px |
+| Confiabilidade | 14 | 3260px | 5490px |
+| Automação | 12 | 2730px | 4730px |
+| SGI | 10 | 2740px | 4350px |
+| Produção | 8 | 2460px | 3850px |
+| Laboratório | 8 | 2230px | 3580px |
+| Processos | 6 | 2180px | 3400px |
+| Manutenção | 5 | 1580px | 3100px |
+| Logística | 3 | 1570px | 2650px |
+| HSE | 3 | 1570px | 2540px |
+| Todas as áreas | 89 | 10740px | 18690px |
+
+| Página | 1200px | 380px |
+| --- | --- | --- |
+| Início | 5340px | 8590px |
+| Roadmaps | 2570px | 5240px |
+| Indicadores | 2760px | 5980px |
+| Academia | 5400px | 7810px |
+| Notícias (lista) | 2100px | 2460px |
+
+Sugestão para o monitor da planta (~1200px): **3300px** para as áreas grandes
+(12+ etapas), **2800px** para as médias e **1700px** para as pequenas. No
+celular a altura cresce bastante porque cada card ocupa a largura toda — com
+altura fixa, sobra rolagem, o que está certo: é o iframe rolando. A visão
+consolidada não cabe em web part nenhum; use `hub.html` como entrada. Se não
+quiser calibrar altura, o botão **Ampliar** do roadmap resolve pelo outro lado.
 
 ---
 
@@ -442,12 +401,8 @@ uma categoria nova e o chip aparece.
    }
    ```
 
-   O `slug` é o valor aceito em `?area=`: minúsculo, sem acento e sem espaço
-   (`Manutenção` → `manutencao`). Deixe `pageUrl` vazio por enquanto: o card no
-   hub já aparece, como "em breve", e vira link assim que você publicar a
-   página da área no SharePoint e colar o endereço aqui.
-3. Crie o endereço da área copiando qualquer pasta existente e trocando as duas
-   ocorrências do slug e o nome:
+   O `slug` é o valor aceito em `?area=`: minúsculo, sem acento e sem espaço.
+3. Crie o endereço da área copiando uma pasta existente:
 
    ```bash
    mkdir -p areas/utilidades
@@ -456,13 +411,13 @@ uma categoria nova e o chip aparece.
    ```
 
 4. Na página do SharePoint da área, incorpore
-   `https://<usuário>.github.io/ita-digital-portal/areas/utilidades/`.
-   O endereço de cada área também aparece pronto em `areas.html`.
-5. Copie o endereço dessa página do SharePoint para o `pageUrl` da área, para
-   o card do hub deixar de ser "em breve".
+   `https://<usuário>.github.io/ita-digital-portal/areas/utilidades/` (o
+   endereço também aparece pronto, com botão de copiar, em `areas.html`).
+5. Cole o endereço dessa página do SharePoint no `pageUrl` da área.
 
-Se o slug não existir na configuração, a página mostra "Área não encontrada" com
-os slugs válidos — falha visível, para ninguém rodar meses com o embed errado.
+Área na lista que não existe em `config/areas.json` aparece como aviso em
+`areas.html`; slug errado no iframe mostra "Área não encontrada" com os slugs
+válidos.
 
 ---
 
@@ -472,30 +427,29 @@ Troque os placeholders de `config/site.json`:
 
 | Campo | Trocar por |
 | --- | --- |
-| `newInitiative.url` | Link do Microsoft Forms de nova iniciativa |
-| `teams.email` | E-mail que recebe o chat do Teams |
+| `newInitiative.url` | Link do Microsoft Forms de nova iniciativa (botão "Nova iniciativa" da navegação e do Início) |
+| `teams.email` | E-mail que recebe os chats do Teams (rodapé, "Avise-me" das trilhas, "Seguir no Teams") |
 | `teams.message` / `teams.initiativeMessage` | Textos que já vêm preenchidos no chat |
 
-`staleDays` controla em quantos dias sem `updatedAt` uma iniciativa é marcada
-como parada (padrão: 30).
+`staleDays` controla em quantos dias sem `updatedAt` uma etapa é marcada como
+parada (padrão: 30).
 
 ---
 
 ## Decisões que valem saber
 
 - **Sem `localStorage` e sem cookie.** Dentro do iframe do SharePoint eles podem
-  ser bloqueados, então todo o estado vive na hash da URL.
-- **Fontes versionadas.** A Poppins está em `assets/fonts/` e é carregada por
-  `@font-face` local, com fallback de sistema declarado — a rede corporativa
-  pode bloquear o Google Fonts. Licença SIL OFL, em `assets/fonts/OFL.txt`.
-- **Nenhuma rolagem interna.** A página é um documento que flui: cabeçalho,
-  árvore inteira e painel de gestão inteiro, com a altura dada pelo conteúdo.
-  Quem rola é o iframe. As duas exceções são sobrepostas — o painel de detalhe
-  e o modo Ampliar.
-- **Árvore em cima, gestão embaixo**, as duas em largura total. A árvore é o
-  elemento central e recebe a página inteira; as três listas da gestão se
-  distribuem em três colunas acima de 900px, duas entre 600 e 900px e uma
-  abaixo disso. Coluna com lista vazia não estica para acompanhar as outras.
-- **Links externos** sempre com `target="_blank"` e `rel="noopener"`.
-- **`prefers-reduced-motion`** desliga entrada escalonada, pulso, fluxo das
-  arestas e preenchimento das barras.
+  ser bloqueados, então todo estado vive na hash da URL.
+- **Fontes versionadas.** Instrument Serif, Geist e Geist Mono ficam em
+  `assets/fonts/` (subconjunto latin, WOFF2), carregadas por `@font-face` local
+  com fallback de sistema — a rede corporativa pode bloquear o Google Fonts.
+  Licenças SIL OFL ao lado dos arquivos.
+- **Nenhuma rolagem interna.** Quem rola é o iframe. As exceções são sobrepostas
+  e fecham por Esc: os painéis laterais (roadmap e Academia) e o modo Ampliar.
+- **Revelação ao rolar com salvaguarda.** Cartões e gráficos entram em cena ao
+  aparecer na tela; num iframe em segundo plano (sem callbacks do
+  IntersectionObserver) tudo aparece sozinho depois de ~1,6s.
+- **`prefers-reduced-motion`** desliga revelação, letreiro, pulsos, contagens e
+  transições dos gráficos — tudo aparece no estado final.
+- **Links externos** sempre com `target="_blank"` e `rel="noopener"`, e só
+  `http(s)` vira link.

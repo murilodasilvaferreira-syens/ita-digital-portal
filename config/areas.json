@@ -1,5 +1,5 @@
 {
-  "_comment": "Mapa de slug -> area. O slug e o valor aceito em ?area= na URL do iframe (sem acento, minusculo). O nome precisa ser identico ao campo 'area' da Microsoft List. A descricao aparece no cabecalho e nos cards do hub. pageUrl e o endereco da pagina do SharePoint daquela area, usado pelo hub.html: enquanto estiver vazio, o card aparece como 'em breve' e nao e clicavel. ocultarEstatisticas: true mostra so o nome e o acesso, sem o resumo de iniciativas.",
+  "_comment": "Mapa de slug -> area. O slug e o valor aceito em ?area= na URL do iframe (sem acento, minusculo). O nome precisa ser identico ao campo 'area' da Microsoft List. A descricao aparece no cabecalho do roadmap e nos cards de hub.html. pageUrl e o endereco da pagina do SharePoint daquela area: o card do hub abre essa pagina em nova aba; vazio, o card abre o roadmap da area (index.html?area=) no proprio portal. ocultarEstatisticas: true mostra so o nome e o acesso, sem o resumo de iniciativas.",
   "areas": [
     {
       "slug": "digital",
