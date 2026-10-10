@@ -174,19 +174,6 @@ input::placeholder { color: var(--quente-2); }
 }
 .nav__link--cta:hover { color: var(--fundo); background: #2b2b2b; }
 
-/* Fio de progresso de leitura no topo (criado por shell.js). */
-.fio-progresso {
-  position: fixed;
-  inset: 0 0 auto;
-  height: 2px;
-  z-index: 200;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(232, 117, 42, 0), var(--laranja) 40%, var(--laranja-forte));
-  box-shadow: 0 0 10px rgba(232, 117, 42, 0.45);
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-}
-
 /* --- Tipografia de display --------------------------------------------------- */
 
 .kicker {

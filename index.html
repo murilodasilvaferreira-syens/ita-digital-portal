@@ -85,7 +85,14 @@
         </button>
       </div>
     </div>
-    <div class="quadro__palco" id="palco"></div>
+    <div class="quadro__palco" id="palco">
+      <!-- Detalhe da etapa ou resumo do projeto: abre ancorado no topo da raia. -->
+      <section class="det" id="detalhe" role="dialog" aria-modal="false" aria-label="Detalhe" hidden>
+        <span class="det__fio" aria-hidden="true"></span>
+        <div class="det__corpo" data-det="corpo"></div>
+        <div class="det__rodape" data-det="rodape" hidden></div>
+      </section>
+    </div>
     <div class="quadro__vazio" id="quadro-vazio" hidden>
       <p class="quadro__vazio-titulo">Nenhuma iniciativa</p>
       <p>Nenhuma etapa corresponde aos filtros atuais.</p>
@@ -113,16 +120,6 @@
   <p class="rd-invalida__rotulo">Áreas válidas:</p>
   <ul class="rd-invalida__lista" id="area-invalida-lista"></ul>
 </div>
-
-<!-- Painel lateral: detalhe da etapa ou resumo do projeto -------------------------- -->
-<aside class="gaveta" id="gaveta" role="dialog" aria-modal="false" aria-label="Detalhe" hidden>
-  <div class="gaveta__topo">
-    <button class="gaveta__voltar" type="button" data-gaveta="voltar" hidden></button>
-    <button class="gaveta__fechar" type="button" data-gaveta="fechar" aria-label="Fechar painel">×</button>
-  </div>
-  <div class="gaveta__corpo" data-gaveta="corpo"></div>
-  <div class="gaveta__rodape" data-gaveta="rodape" hidden></div>
-</aside>
 
 <script type="module" src="assets/js/roadmap.js"></script>
 </body>

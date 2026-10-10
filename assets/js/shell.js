@@ -1,6 +1,6 @@
 /**
  * Casca compartilhada por todas as páginas: navegação em pílula, rodapé,
- * revelação ao rolar e fio de progresso de leitura.
+ * revelação ao rolar.
  *
  * Os links de "Nova iniciativa" e do Teams vêm de config/site.json — nunca
  * escritos aqui. Todo texto entra por textContent.
@@ -194,23 +194,6 @@ function ligarEfeitos() {
     if (viuAlgo) return;
     document.querySelectorAll('[data-revelar]').forEach(mostrar);
   }, 1600);
-
-  // Fio de progresso de leitura.
-  const fio = criar('div', 'fio-progresso');
-  fio.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(fio);
-  let pendente = false;
-  const atualizar = () => {
-    pendente = false;
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    fio.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
-  };
-  window.addEventListener('scroll', () => {
-    if (pendente) return;
-    pendente = true;
-    window.requestAnimationFrame(atualizar);
-  }, { passive: true });
-  atualizar();
 }
 
 /**

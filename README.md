@@ -90,8 +90,8 @@ areas/<slug>/index.html   endereço estável de cada área; encaminha preservand
 .nojekyll                 impede o Jekyll do Pages de mexer nos arquivos
 
 assets/css/tokens.css     única fonte de verdade visual: cores, status, tipografia, raios, sombras, movimento, @font-face
-assets/css/base.css       reset, casca (nav, rodapé, fio de progresso), tipografia de display, vidro, cartão,
-                          botões, campos, chips, selos, painel lateral (gaveta) e revelação ao rolar
+assets/css/base.css       reset, casca (nav, rodapé), tipografia de display, vidro, cartão, botões,
+                          campos, chips, selos, painel lateral (gaveta, usado pela Academia) e revelação ao rolar
 assets/css/<página>.css   só o que é daquela página (home, roadmaps, roadmap, indicadores, academia, noticias, areas)
 
 assets/js/shell.js        casca compartilhada: nav em pílula, rodapé, revelação, brilho dos cartões, links do Teams/Forms
@@ -102,7 +102,7 @@ assets/js/conteudo.js     artigos e trilhas: leitura, ordenação, tempo de leit
 assets/js/grafo.js        layout do roadmap — só geometria, sem DOM
 assets/js/quadro.js       quadro de dependências: cards sobre arestas SVG, zoom, arrasto, destaque de cadeia
 assets/js/atencao.js      "O que pede atenção": atrasadas, próximas e aguardando
-assets/js/gaveta.js       painel lateral do roadmap: detalhe da etapa ou resumo do projeto
+assets/js/detalhe.js      painel do roadmap, ancorado na raia: detalhe da etapa ou resumo do projeto
 assets/js/roadmap.js      orquestra index.html: estado na hash, filtros, render
 assets/js/home.js | roadmaps.js | indicadores.js | academia.js | noticias.js | areas.js   uma por página
 
@@ -227,9 +227,15 @@ depende de quem, inclusive entre projetos e entre áreas.
   bloqueada em iframe); sai por Esc.
 - **O que pede atenção** (`atencao.js`): atrasadas, próximas e aguardando,
   cinco por lista com "ver todas".
-- **Painel lateral** (`gaveta.js`): detalhe da etapa ou resumo do projeto, sem
-  bloquear o quadro. Navegar por uma dependência empilha o painel; "voltar"
-  desempilha.
+- **Painel de detalhe** (`detalhe.js`): abre **ancorado no topo da raia** da
+  etapa (ou do projeto) e ocupa a largura do quadro — o palco cresce para ele
+  caber e a página rola até ele quando fica fora da área confortável. Não
+  bloqueia o quadro: rolar ou arrastar dentro do painel não mexe no roadmap.
+  O corpo tem duas colunas — à esquerda o que se lê (próximo passo, descrição,
+  objetivo, comentário), à direita a cadeia de dependências — e uma faixa final
+  com os dados de cadastro (pessoas, datas, tecnologias, ganhos). Navegar por
+  uma dependência empilha o painel; "voltar" desempilha. Fecha no ×, no Esc ou
+  ao limpar `#i=`/`#raia=` da hash.
 
 Seção sem dado some inteira: nunca aparece rótulo seguido de traço.
 
@@ -448,7 +454,8 @@ parada (padrão: 30).
   com fallback de sistema — a rede corporativa pode bloquear o Google Fonts.
   Licenças SIL OFL ao lado dos arquivos.
 - **Nenhuma rolagem interna.** Quem rola é o iframe. As exceções são sobrepostas
-  e fecham por Esc: os painéis laterais (roadmap e Academia) e o modo Ampliar.
+  e fecham por Esc: o painel de detalhe do roadmap, o painel lateral da
+  Academia e o modo Ampliar.
 - **Revelação ao rolar com salvaguarda.** Cartões e gráficos entram em cena ao
   aparecer na tela; num iframe em segundo plano (sem callbacks do
   IntersectionObserver) tudo aparece sozinho depois de ~1,6s.

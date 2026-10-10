@@ -55,7 +55,10 @@ function marcaBloqueio() {
 /* Quadro                                                                     */
 /* -------------------------------------------------------------------------- */
 
-export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, aoAtualizar }) {
+/** Altura mínima que o palco reserva abaixo do topo do painel ancorado. */
+const ALTURA_PAINEL = 560;
+
+export function criarQuadro({ palco, painel, dataset, aoAbrirDetalhe, aoAbrirProjeto, aoAtualizar }) {
   let layout = null;
   let itensVisiveis = [];
   let mostrarArea = false;
@@ -64,6 +67,9 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
   let inercia = null;
   let idHover = null;
   let idSelecionado = null;
+  // Painel de detalhe: a que raia ele está ancorado e em que altura do palco.
+  let ancora = null; // { tipo: 'item', id } | { tipo: 'raia', chave }
+  let painelTopo = 8;
 
   const plano = criar('div', 'quadro__plano');
   const camadaRaias = criar('div', 'quadro__raias');
@@ -241,10 +247,38 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
   const minimo = () => Math.min(0, larguraVisivel() - (layout ? layout.largura * escala : 0));
   const limitar = (v) => Math.max(minimo(), Math.min(0, v));
 
+  /* ---- painel ancorado -------------------------------------------------------
+     O painel de detalhe abre no topo da raia da etapa (ou do projeto) e ocupa a
+     largura do quadro. Fica fora do plano, então não acompanha o zoom: só o
+     ponto de ancoragem é convertido para a escala atual. */
+
+  /** Topo do painel, em pixels de tela; mantém o último se a raia sumiu do filtro. */
+  function topoAncora() {
+    if (!layout || !ancora) return painelTopo;
+    const raia = ancora.tipo === 'raia'
+      ? layout.raias.find((r) => r.chave === ancora.chave)
+      : layout.raias.find((r) => r.itens.some((i) => i.id === ancora.id));
+    return raia ? Math.round(raia.topo * escala) : painelTopo;
+  }
+
+  /** O palco cresce para o painel caber inteiro abaixo da raia onde ancorou. */
+  function alturaPalco() {
+    const base = Math.round(layout.altura * escala);
+    return ancora ? Math.max(base, topoAncora() + ALTURA_PAINEL) : base;
+  }
+
+  function posicionarPainel() {
+    if (!painel || !ancora || !layout) return;
+    painelTopo = topoAncora();
+    painel.style.top = `${painelTopo}px`;
+    painel.style.maxHeight = `${Math.max(260, alturaPalco() - painelTopo - 8)}px`;
+  }
+
   function aplicar({ suave = false } = {}) {
     plano.classList.toggle('quadro__plano--suave', suave && !movimentoReduzido());
     plano.style.transform = `translateX(${deslocX}px) scale(${escala})`;
-    if (layout) palco.style.height = `${Math.round(layout.altura * escala)}px`;
+    if (layout) palco.style.height = `${alturaPalco()}px`;
+    posicionarPainel();
   }
 
   function avisar() {
@@ -296,6 +330,7 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
 
   // Roda só com Ctrl: sem isso, a página do SharePoint deixaria de rolar.
   palco.addEventListener('wheel', (ev) => {
+    if (ev.target.closest('.det')) return; // rolar dentro do painel não dá zoom
     if (!ev.ctrlKey) return;
     ev.preventDefault();
     pararInercia();
@@ -311,7 +346,7 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
 
   palco.addEventListener('pointerdown', (ev) => {
     if (ev.button !== 0 && ev.pointerType === 'mouse') return;
-    if (ev.target.closest('.raia__nome')) return;
+    if (ev.target.closest('.raia__nome') || ev.target.closest('.det')) return;
     pararInercia();
     ponteiros.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
     if (ponteiros.size === 2) {
@@ -453,6 +488,18 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
 
   return {
     render,
+    /** Ancora o painel no topo da raia do alvo (ou solta, com `null`). */
+    ancorarPainel(alvo) {
+      ancora = alvo;
+      if (layout) aplicar({ suave: true });
+    },
+    /** Rola a página até o painel quando ele está fora da área confortável. */
+    revelarPainel() {
+      if (!painel || !ancora) return;
+      const y = palco.getBoundingClientRect().top + painelTopo;
+      if (y >= 90 && y <= window.innerHeight * 0.55) return;
+      window.scrollTo({ top: window.scrollY + y - 110, behavior: movimentoReduzido() ? 'auto' : 'smooth' });
+    },
     /** Destaque temporário (hover numa lista fora do quadro). */
     destacar: (id) => hover(id),
     /** Etapa aberta no painel: a cadeia dela fica acesa enquanto ele estiver aberto. */
@@ -460,9 +507,9 @@ export function criarQuadro({ palco, dataset, aoAbrirDetalhe, aoAbrirProjeto, ao
       idSelecionado = id;
       if (layout) aplicarDestaque();
     },
-    focarNo(id, { centralizar = true } = {}) {
+    focarNo(id, { centralizar = true, vertical = true } = {}) {
       if (!layout || !layout.nos.has(id)) return false;
-      if (centralizar) centralizarNo(id);
+      if (centralizar) centralizarNo(id, { vertical });
       return true;
     },
     focarElemento(id) {

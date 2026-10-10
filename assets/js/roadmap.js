@@ -15,7 +15,7 @@ import { montarCasca, urlTeams, urlNovaIniciativa } from './shell.js';
 import { criar, plural } from './ui.js';
 import { criarQuadro, classeFase } from './quadro.js';
 import { criarAtencao } from './atencao.js';
-import { criarGaveta } from './gaveta.js';
+import { criarDetalhe } from './detalhe.js';
 
 const FASE_POR_SLUG = new Map(FASES_ORDEM.map((f) => [criarSlug(f), f]));
 const ATRASO_BUSCA = 250;
@@ -204,6 +204,7 @@ async function iniciar() {
 
   const quadro = criarQuadro({
     palco,
+    painel: $('#detalhe'),
     dataset,
     aoAbrirDetalhe: (id, el) => {
       origemFoco = el;
@@ -234,8 +235,8 @@ async function iniciar() {
     aoDestacar: (id) => quadro.destacar(id),
   });
 
-  const gaveta = criarGaveta({
-    raiz: $('#gaveta'),
+  const detalhe = criarDetalhe({
+    raiz: $('#detalhe'),
     dataset,
     site,
     aoAbrirItem: (id, opcoes = {}) => {
@@ -269,11 +270,17 @@ async function iniciar() {
   };
   botaoAmpliar.addEventListener('click', () => definirAmpliado(!secaoQuadro.classList.contains('quadro--ampliado')));
 
+  /** Fecha o painel e solta a âncora, devolvendo o palco à altura do layout. */
+  function fecharPainel() {
+    detalhe.esconder();
+    quadro.ancorarPainel(null);
+  }
+
   document.addEventListener('keydown', (ev) => {
     if (ev.key !== 'Escape') return;
-    if (gaveta.aberta) {
+    if (detalhe.aberto) {
       ev.preventDefault();
-      gaveta.esconder();
+      fecharPainel();
       escreverEstado({ aberta: null, resumo: '' }, { substituir: true });
     } else if (secaoQuadro.classList.contains('quadro--ampliado')) {
       ev.preventDefault();
@@ -322,10 +329,13 @@ async function iniciar() {
       const chaveAberta = `i:${estado.aberta}`;
       if (abertoAgora !== chaveAberta) {
         abertoAgora = chaveAberta;
-        if (gaveta.mostrarItem(estado.aberta, opcoes)) {
+        if (detalhe.mostrarItem(estado.aberta, opcoes)) {
           quadro.selecionar(estado.aberta);
+          quadro.ancorarPainel({ tipo: 'item', id: estado.aberta });
           // Clique no próprio card não precisa enquadrar: ele já está à vista.
-          if (opcoes.focar) quadro.focarNo(estado.aberta);
+          // O enquadramento é só horizontal — quem rola a página é o painel.
+          if (opcoes.focar) quadro.focarNo(estado.aberta, { vertical: false });
+          quadro.revelarPainel();
         }
       }
     } else if (estado.resumo) {
@@ -337,12 +347,15 @@ async function iniciar() {
         const daRaia = estado.resumo === 'independentes'
           ? (quadro.layout?.raias.find((r) => r.chave === 'independentes')?.itens ?? [])
           : visiveis.filter((i) => i.chaveRaia === estado.resumo);
-        gaveta.mostrarProjeto(estado.resumo, daRaia, opcoes);
+        if (detalhe.mostrarProjeto(estado.resumo, daRaia, opcoes)) {
+          quadro.ancorarPainel({ tipo: 'raia', chave: estado.resumo });
+          quadro.revelarPainel();
+        }
       }
     } else if (abertoAgora) {
       abertoAgora = null;
       quadro.selecionar(null);
-      if (gaveta.aberta) gaveta.esconder();
+      if (detalhe.aberto) fecharPainel();
       if (origemFoco && document.contains(origemFoco)) origemFoco.focus({ preventScroll: true });
       origemFoco = null;
     }
