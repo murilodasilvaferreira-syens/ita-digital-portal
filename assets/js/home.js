@@ -25,12 +25,6 @@ function svg(tag, atributos = {}) {
   return no;
 }
 
-/** Texto com um trecho em negrito: ("12 entregas", " neste mês"). */
-function textoComDestaque(alvo, forte, resto) {
-  alvo.textContent = '';
-  alvo.append(criar('b', null, forte), document.createTextNode(resto));
-}
-
 async function tentar(promessa, rotulo) {
   try {
     return await promessa;
@@ -108,26 +102,7 @@ function montarLetreiro(areas, itens) {
 /* -------------------------------------------------------------------------- */
 
 function montarFrentes(itens, trilhas, artigos) {
-  // Roadmaps: entregas (conclusão) do mês; sem nenhuma, o último mês com entrega.
-  const vivo = $('#frente-roadmaps-vivo');
-  if (itens.length) {
-    const mes = M.mesAtual();
-    const doMes = M.implantadasNoMes(itens, mes);
-    if (doMes > 0) {
-      textoComDestaque(vivo, `${doMes} ${plural(doMes, 'entrega', 'entregas')}`, ' neste mês');
-    } else {
-      const meses = Object.keys(M.porMes(itens.filter((i) => i.status === 'Implantada'), 'doneDate')).sort();
-      const ultimo = meses[meses.length - 1];
-      if (ultimo) {
-        const n = M.implantadasNoMes(itens, ultimo);
-        textoComDestaque(vivo, `${n} ${plural(n, 'entrega', 'entregas')}`, ` em ${M.nomeMesLongo(ultimo)}`);
-      } else {
-        textoComDestaque(vivo, `${itens.length} etapas`, ' no roadmap');
-      }
-    }
-  }
-
-  // Academia: duas trilhas (disponíveis primeiro) e a contagem real.
+  // Academia: duas trilhas (disponíveis primeiro).
   const listaTrilhas = $('#frente-trilhas');
   const ordenadas = [...trilhas].sort((a, b) => Number(b.disponivel === true) - Number(a.disponivel === true));
   ordenadas.slice(0, 2).forEach((t) => {
@@ -141,12 +116,6 @@ function montarFrentes(itens, trilhas, artigos) {
     }
     listaTrilhas.appendChild(li);
   });
-  if (trilhas.length) {
-    const disp = trilhas.filter((t) => t.disponivel === true).length;
-    const vivoAcademia = $('#frente-academia-vivo');
-    if (disp) textoComDestaque(vivoAcademia, `${disp} ${plural(disp, 'trilha', 'trilhas')}`, ` ${plural(disp, 'disponível', 'disponíveis')} de ${trilhas.length}`);
-    else textoComDestaque(vivoAcademia, `${trilhas.length} trilhas`, ' em preparação');
-  }
 
   // Notícias: o artigo mais recente, com tempo de leitura do próprio texto.
   const recente = artigos[0];
@@ -157,7 +126,6 @@ function montarFrentes(itens, trilhas, artigos) {
     $('#frente-artigo-novo').hidden = (diasDesde(recente.data) ?? 99) > 14;
     const data = dataCurta(recente.data, { ano: false });
     $('#frente-artigo-data').textContent = data;
-    $('#frente-noticias-vivo').textContent = 'Artigo mais recente';
     minutosDoArtigo(recente.slug).then((min) => {
       if (min) $('#frente-artigo-data').textContent = `${data} · ${min} min`;
     });
@@ -170,7 +138,7 @@ function montarFrentes(itens, trilhas, artigos) {
 
 function montarNumeros(itens) {
   const projetos = M.projetosDistintos(itens);
-  $('#numeros-kicker').textContent = `Indicadores · ${itens.length} etapas · ${projetos} projetos`;
+  $('#numeros-kicker').textContent = 'Indicadores';
 
   montarPortfolio(itens, projetos);
   montarEvolucao(itens);

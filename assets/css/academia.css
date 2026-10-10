@@ -144,8 +144,7 @@
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(232, 117, 42, 0.14), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 .ac-recomendada__topo {
   display: flex;
@@ -258,8 +257,7 @@
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(232, 117, 42, 0.12), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 .ac-curiosidade__categoria { margin-top: 18px; font-family: var(--serif); font-style: italic; font-size: 30px; line-height: 1.1; color: var(--quente); }
 .ac-curiosidade__titulo { font-size: clamp(30px, 3.2vw, 44px); line-height: 1.04; letter-spacing: -0.015em; }
@@ -338,8 +336,7 @@
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(232, 117, 42, 0.12), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 .ac-convite > * { position: relative; }
 .ac-convite__titulo { font-size: clamp(40px, 4.8vw, 68px); line-height: 1; letter-spacing: -0.02em; }

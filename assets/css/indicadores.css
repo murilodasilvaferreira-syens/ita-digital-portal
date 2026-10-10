@@ -881,3 +881,9 @@
   .ind-kpi__valor,
   .ind-kpi__valor--vazio { font-size: 30px; }
 }
+
+/* Notas de rodapé dos painéis, nota geral dos KPIs e contador de escopo
+   ocultados a pedido (deixar o Observatório mais limpo). */
+.painel__nota,
+.ind-nota-geral,
+.ind-filtros__escopo { display: none; }

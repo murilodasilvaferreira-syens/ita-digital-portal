@@ -11,7 +11,7 @@
  */
 
 import { criar, linkExterno, animarContagem, plural, lerHash, escreverHash } from './ui.js';
-import { carregarPortal, formatarDataHora } from './data.js';
+import { carregarPortal } from './data.js';
 import { montarCasca, revelar, entrarEmCena } from './shell.js';
 import * as M from './metricas.js';
 import { icone } from '../icons/icones.js';
@@ -62,7 +62,7 @@ async function iniciar() {
   const resumo = M.resumoPorArea(itens);
   const reais = resumo.filter((r) => !r.semArea);
 
-  montarTotais(itens, reais.length, dataset.atualizadoEm);
+  montarTotais(itens, reais.length);
   if (reais.length > 1) montarPulso(reais, itens);
   montarAreas(resumo, areas);
   revelar();
@@ -72,17 +72,11 @@ async function iniciar() {
 /* Cabeçalho                                                                  */
 /* -------------------------------------------------------------------------- */
 
-function montarTotais(itens, nAreas, atualizadoEm) {
+function montarTotais(itens, nAreas) {
   animarContagem($('#total-etapas'), itens.length);
   animarContagem($('#total-projetos'), M.projetosDistintos(itens));
   animarContagem($('#total-areas'), nAreas);
   animarContagem($('#total-implantadas'), M.contarPorStatus(itens).get('Implantada') || 0);
-
-  const quando = formatarDataHora(atualizadoEm);
-  if (quando) {
-    $('#rm-atualizado-texto').textContent = `Dados atualizados em ${quando}`;
-    $('#rm-atualizado').hidden = false;
-  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -328,9 +322,5 @@ function criarCard(r, cfg) {
   }
   resumo.append(anel, status);
   card.appendChild(resumo);
-
-  if (r.atrasadas) {
-    card.appendChild(criar('p', 'area__alerta', `${r.atrasadas} ${plural(r.atrasadas, 'etapa atrasada', 'etapas atrasadas')}`));
-  }
   return card;
 }

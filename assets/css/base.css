@@ -76,12 +76,6 @@ input::placeholder { color: var(--quente-2); }
   z-index: 0;
   overflow: hidden;
 }
-.fundo-topo::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(900px 340px at var(--brilho-x, 50%) 120px, rgba(232, 117, 42, 0.1), transparent 72%);
-}
 .fundo-topo::after {
   content: '';
   position: absolute;

@@ -31,7 +31,6 @@ let teamsUrl = null;
 /* -------------------------------------------------------------------------- */
 
 function montarHero(site) {
-  $('#hero-kicker').textContent = site.kicker || 'Academia Digital';
   const titulo = $('#hero-titulo');
   titulo.textContent = '';
   if (site.tituloAntes) titulo.append(site.tituloAntes);
@@ -61,10 +60,6 @@ function montarNumeros() {
 }
 
 function montarCatalogo() {
-  const disp = TRILHAS.filter(disponivel).length;
-  const resumo = `${disp} de ${TRILHAS.length} ${TRILHAS.length === 1 ? 'trilha disponível' : 'trilhas disponíveis'}`;
-  $('#catalogo-resumo').textContent = resumo;
-  $('#trilhas-resumo').textContent = resumo;
   const lista = $('#catalogo');
   lista.textContent = '';
   const primeiraBreve = TRILHAS.findIndex((t) => !disponivel(t));
@@ -137,10 +132,7 @@ function montarPerfis(perfis) {
     card.textContent = '';
     card.appendChild(criar('span', 'ac-recomendada__luz'));
     const topo = criar('div', 'ac-recomendada__topo');
-    topo.append(
-      criar('span', null, `Trilha recomendada · ${p.nome}`),
-      criar('span', `selo selo--quadrado ${disponivel(t) ? 'selo--suave' : ''} ac-selo-mono`, disponivel(t) ? 'Disponível' : 'Em breve'),
-    );
+    topo.appendChild(criar('span', `selo selo--quadrado ${disponivel(t) ? 'selo--suave' : ''} ac-selo-mono`, disponivel(t) ? 'Disponível' : 'Em breve'));
     card.append(topo, criar('h3', 'ac-recomendada__nome', t.nome));
     if (t.descricao) card.appendChild(criar('p', 'ac-recomendada__desc', t.descricao));
     card.appendChild(listaMeta(metaTrilha(t), 'ac-meta ac-recomendada__meta'));
@@ -186,8 +178,6 @@ function montarDestaques() {
     ver.append('Ver detalhes da trilha ', criar('span', null, '→'));
     ver.addEventListener('click', (e) => { e.stopPropagation(); abrir(t.id, ver); });
     acoes.appendChild(ver);
-    const resumo = [t.aulas ? `${t.aulas} aulas` : null, t.nivel].filter(Boolean).join(' · ');
-    if (resumo) acoes.appendChild(criar('span', 'ac-destaque__resumo', resumo));
     lado.appendChild(acoes);
 
     const ficha = criar('div', 'ac-destaque__ficha');
@@ -257,55 +247,6 @@ function montarEmBreve() {
 /* -------------------------------------------------------------------------- */
 /* Casos, curiosidade, recursos e convite                                     */
 /* -------------------------------------------------------------------------- */
-
-function montarCasos(casos) {
-  const validos = casos.filter((c) => c && c.titulo);
-  if (!validos.length) return;
-  const alvo = $('#casos-lista');
-  alvo.textContent = '';
-  validos.forEach((caso, i) => {
-    const card = criar('article', 'cartao ac-caso');
-    const topo = criar('p', 'ac-caso__topo');
-    topo.append(criar('span', 'ac-caso__n', doisDigitos(i + 1)));
-    if (caso.ferramenta) topo.append(criar('span', null, caso.ferramenta));
-    card.append(topo, criar('h3', 'ac-caso__titulo', caso.titulo));
-    // Estruturado quando os campos existem; senão, o texto corrido.
-    const blocos = [['Desafio', caso.desafio], ['Solução', caso.solucao], ['Resultado', caso.resultado]].filter(([, v]) => v);
-    if (blocos.length) {
-      const dl = criar('dl', 'ac-caso__blocos');
-      blocos.forEach(([k, v]) => {
-        const par = criar('div');
-        par.append(criar('dt', null, k), criar('dd', null, v));
-        dl.appendChild(par);
-      });
-      card.appendChild(dl);
-    } else if (caso.descricao) {
-      card.appendChild(criar('p', 'ac-caso__texto', caso.descricao));
-    }
-    alvo.appendChild(card);
-  });
-  $('#casos').hidden = false;
-}
-
-function montarCuriosidade(dados) {
-  if (!dados?.titulo) return;
-  const card = $('#curiosidade-card');
-  card.textContent = '';
-  card.appendChild(criar('span', 'ac-curiosidade__luz'));
-  const lado = criar('div', 'ac-curiosidade__lado');
-  lado.append(criar('p', 'kicker kicker--acento', 'Curiosidade da semana'));
-  if (dados.categoria) lado.append(criar('p', 'ac-curiosidade__categoria', dados.categoria));
-  const corpo = criar('div', 'ac-curiosidade__corpo');
-  corpo.appendChild(criar('h2', 'display ac-curiosidade__titulo', dados.titulo));
-  (dados.paragrafos || []).forEach((p) => corpo.appendChild(criar('p', 'ac-curiosidade__texto', p)));
-  if (dados.dica) {
-    const dica = criar('p', 'ac-curiosidade__dica');
-    dica.append(criar('b', null, 'Dica'), criar('span', null, dados.dica));
-    corpo.appendChild(dica);
-  }
-  card.append(lado, corpo);
-  $('#curiosidade').hidden = false;
-}
 
 function origemDe(url) {
   if (/teams\.microsoft/i.test(url)) return 'Teams';
@@ -461,16 +402,12 @@ async function iniciar() {
   let site;
   let academia;
   let recursos;
-  let casos;
-  let curiosidade;
   try {
-    [, site, academia, recursos, casos, curiosidade] = await Promise.all([
+    [, site, academia, recursos] = await Promise.all([
       montarCasca({ ativa: 'academia', marca: 'Academia Digital · Transformação Digital Itatiba' }),
       opcional(buscarJSON('data/academia/site.json')),
       carregarTrilhas(),
       opcional(buscarJSON('data/academia/recursos.json')),
-      opcional(buscarJSON('data/academia/casos.json')),
-      opcional(buscarJSON('data/academia/curiosidade.json')),
     ]);
   } catch (erro) {
     $('#estado-carga').hidden = true;
@@ -489,8 +426,6 @@ async function iniciar() {
   montarPerfis(academia.perfis);
   montarDestaques();
   montarEmBreve();
-  montarCasos(casos?.casos || []);
-  montarCuriosidade(curiosidade);
   montarRecursos(recursos?.recursos || []);
   montarConvite(site?.teams);
 

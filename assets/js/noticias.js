@@ -176,10 +176,6 @@ function renderLista() {
   const busca = $('#busca');
   if (document.activeElement !== busca && busca.value !== (estado.q ?? '')) busca.value = estado.q ?? '';
 
-  $('#resultado').textContent = filtrando
-    ? `${visiveis.length} ${visiveis.length === 1 ? 'resultado' : 'resultados'}${estado.categoria ? ` · ${estado.categoria}` : ''}`
-    : `${ARTIGOS.length} ${ARTIGOS.length === 1 ? 'artigo' : 'artigos'} · todas as categorias`;
-
   // Sem filtro: manchete + até três secundárias + o resto. Com filtro, a
   // manchete sai e os resultados ocupam as secundárias e a lista.
   const manchete = filtrando ? null : escolherManchete(ARTIGOS);
@@ -373,10 +369,6 @@ async function iniciar() {
 
   $('#total').textContent = String(ARTIGOS.length);
   $('#total-rotulo').textContent = ARTIGOS.length === 1 ? 'artigo publicado' : 'artigos publicados';
-  if (ARTIGOS[0]?.data) {
-    $('#ultima-texto').textContent = `Última · ${dataCurta(ARTIGOS[0].data)}`;
-    $('#ultima').hidden = false;
-  }
   montarCategorias();
 
   const convite = $('#convite-teams');

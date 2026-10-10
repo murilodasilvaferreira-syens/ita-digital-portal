@@ -264,9 +264,7 @@ data do último).
 | --- | --- |
 | `trilhas.json` | As trilhas e os perfis de "Por onde começar" |
 | `recursos.json` | A biblioteca de recursos (sempre em nova aba; só `http(s)`) |
-| `casos.json` | Os casos de sucesso (texto corrido ou `desafio`/`solucao`/`resultado`) |
-| `curiosidade.json` | A curiosidade da semana |
-| `site.json` | Kicker, título, frase de apoio e o convite do Teams |
+| `site.json` | Título, frase de apoio e o convite do Teams |
 
 Os números do topo e o trilho do catálogo são **calculados** de `trilhas.json`.
 O detalhe de uma trilha abre num painel lateral e fica em `#trilha=<id>` — o
