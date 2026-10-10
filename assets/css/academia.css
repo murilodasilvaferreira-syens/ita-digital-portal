@@ -46,7 +46,7 @@
 .ac-numeros__valor--acento { color: var(--laranja); }
 .ac-numeros dt { font-size: 14px; color: var(--tinta-3); }
 
-.ac-catalogo { margin-top: clamp(48px, 5.4vw, 76px); padding: 30px 36px 28px; border-radius: 24px; }
+.ac-catalogo { margin-top: clamp(48px, 5.4vw, 76px); padding: 30px 36px 28px; }
 .ac-catalogo__topo {
   display: flex;
   align-items: center;
@@ -135,8 +135,6 @@
   margin-top: 118px;
   padding: 36px 36px 32px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 22px 52px rgba(58, 58, 58, 0.07);
 }
 .ac-recomendada > * { position: relative; }
 .ac-recomendada .ac-recomendada__luz {
@@ -174,9 +172,6 @@
 .ac-destaque {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 24px 60px rgba(58, 58, 58, 0.07);
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease);
@@ -253,9 +248,7 @@
   grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
   gap: 32px 64px;
   padding: clamp(32px, 4.4vw, 60px);
-  border-radius: 30px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
 }
 .ac-curiosidade > * { position: relative; }
 .ac-curiosidade .ac-curiosidade__luz {
@@ -335,10 +328,7 @@
   gap: 32px 48px;
   align-items: end;
   padding: clamp(36px, 5vw, 72px) clamp(28px, 5vw, 72px) clamp(32px, 4.4vw, 64px);
-  border-radius: 32px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 24px 60px rgba(58, 58, 58, 0.07);
 }
 .ac-convite::before {
   content: '';

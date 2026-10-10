@@ -18,7 +18,7 @@
 }
 
 .tecnico__grade { margin-top: 36px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 18px; }
-.tecnico__area { display: flex; flex-direction: column; gap: 14px; padding: 24px; border-radius: var(--r-card); }
+.tecnico__area { display: flex; flex-direction: column; gap: 14px; padding: 24px; }
 .tecnico__nome { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
 .tecnico__nome a:hover { color: var(--laranja-forte); }
 .tecnico__texto { font-size: 13.5px; line-height: 1.55; color: var(--tinta-3); }

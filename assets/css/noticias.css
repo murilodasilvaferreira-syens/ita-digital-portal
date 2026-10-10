@@ -122,10 +122,7 @@
 .nt-manchete {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  border-radius: 30px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 24px 60px rgba(58, 58, 58, 0.08);
   transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .nt-manchete__midia { min-height: 460px; }
@@ -164,10 +161,7 @@
 .nt-secundaria {
   display: flex;
   flex-direction: column;
-  border-radius: var(--r-card);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 10px 26px rgba(58, 58, 58, 0.05);
   transition: transform 0.34s var(--ease), box-shadow 0.34s var(--ease), border-color 0.34s var(--ease);
 }
 .nt-secundaria__midia { height: 172px; flex: none; background: var(--midia-fundo-suave); }
@@ -210,13 +204,16 @@
   grid-template-columns: 64px minmax(0, 1fr);
   gap: 18px;
   padding: 22px 20px;
-  border-radius: 18px;
-  border: 1px solid var(--linha);
-  background: rgba(255, 255, 255, 0.4);
-  transition: background-color var(--dur-media) var(--ease), border-color var(--dur-media) var(--ease), transform var(--dur-media) var(--ease);
+  border-radius: var(--r-painel);
+  border: 1px solid var(--cartao-borda);
+  background: var(--cartao-fundo);
+  -webkit-backdrop-filter: var(--cartao-desfoque);
+  backdrop-filter: var(--cartao-desfoque);
+  box-shadow: var(--sombra-cartao);
+  transition: background-color var(--dur-media) var(--ease), border-color var(--dur-media) var(--ease), transform var(--dur-media) var(--ease), box-shadow var(--dur-media) var(--ease);
 }
 .nt-item:hover,
-.nt-item:focus-visible { background: rgba(255, 255, 255, 0.7); border-color: var(--laranja); transform: translateY(-3px); color: inherit; }
+.nt-item:focus-visible { border-color: var(--laranja); transform: translateY(-3px); color: inherit; }
 .nt-item__lado { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .nt-item__n { font-family: var(--mono); font-size: 11px; color: var(--quente-3); }
 .nt-item__glifo {
@@ -251,10 +248,7 @@
   gap: 28px 40px;
   align-items: center;
   padding: clamp(32px, 4vw, 56px);
-  border-radius: 30px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow: 0 24px 60px rgba(58, 58, 58, 0.07);
 }
 .nt-convite::before {
   content: '';

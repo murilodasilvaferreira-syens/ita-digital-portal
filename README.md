@@ -119,6 +119,11 @@ Regras que valem para todas as páginas:
   `conteudo.js` — não há CSS duplicado entre páginas.
 - **Cor nova vira token.** Nenhum CSS de página inventa valor solto de cor,
   raio ou sombra que outra página também precise.
+- **Um efeito de card só.** Todo card do site usa o mesmo vidro, borda e
+  sombra (tokens `--cartao-fundo`, `--cartao-borda`, `--cartao-desfoque` e
+  `--sombra-cartao`), aplicados pelas primitivas `.vidro` (estática) e
+  `.cartao` (clicável, com hover e brilho). Os painéis de Indicadores são a
+  exceção: têm o próprio tratamento, mais denso de informação.
 - **Todo dado entra por `textContent`.** A única exceção é o corpo do artigo de
   Notícias (ver abaixo).
 - **Fonte que falha não derruba a página.** Cada página carrega suas fontes em

@@ -260,30 +260,26 @@ input::placeholder { color: var(--quente-2); }
 
 /* --- Superfícies ------------------------------------------------------------- */
 
-.vidro {
+/* Efeito único de card do site (padrão do Convite): mesmo vidro, borda e
+   sombra em todo card — menos os painéis de Indicadores. `.vidro` é a
+   superfície estática; `.cartao` é a versão clicável, que soma hover e brilho. */
+.vidro,
+.cartao {
   position: relative;
   border-radius: var(--r-painel);
-  border: 1px solid var(--linha);
-  background: var(--vidro);
-  -webkit-backdrop-filter: var(--desfoque);
-  backdrop-filter: var(--desfoque);
-  box-shadow: var(--sombra-card);
+  border: 1px solid var(--cartao-borda);
+  background: var(--cartao-fundo);
+  -webkit-backdrop-filter: var(--cartao-desfoque);
+  backdrop-filter: var(--cartao-desfoque);
+  box-shadow: var(--sombra-cartao);
 }
 
 /* Cartão clicável: sobe e ganha sombra; o brilho segue o ponteiro (--mx/--my). */
 .cartao {
-  position: relative;
   isolation: isolate;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border-radius: var(--r-card);
-  border: 1px solid transparent;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.34)) padding-box,
-    rgba(17, 17, 17, 0.09) border-box;
-  -webkit-backdrop-filter: var(--desfoque);
-  backdrop-filter: var(--desfoque);
   transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease);
 }
 .cartao::after {
