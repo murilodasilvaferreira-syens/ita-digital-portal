@@ -185,7 +185,10 @@ a.area:focus-visible .area__seta { background: var(--laranja); color: var(--bran
   border-radius: var(--r-xs);
 }
 
-.area__resumo { margin-top: 22px; display: flex; align-items: center; gap: 16px; }
+/* Indicador (anel + legenda) ancorado na base: alinha entre todos os cards da
+   linha, que o grid já deixa com a mesma altura. O padding garante respiro
+   mínimo mesmo no card mais cheio, onde a margem automática zera. */
+.area__resumo { margin-top: auto; padding-top: 22px; display: flex; align-items: center; gap: 16px; }
 .anel { position: relative; width: 58px; height: 58px; flex: none; }
 .anel svg { width: 58px; height: 58px; transform: rotate(-90deg); }
 .anel__trilha { fill: none; stroke: rgba(17, 17, 17, 0.07); stroke-width: 4; }
