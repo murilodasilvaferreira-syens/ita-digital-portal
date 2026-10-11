@@ -866,8 +866,9 @@ function renderAcademia() {
   const aulas = t.reduce((s, x) => s + (Number(x.aulas) || 0), 0);
   const comAulas = t.filter((x) => Number(x.aulas) > 0).length;
   const horas = t.reduce((s, x) => s + (Number(x.duracaoHoras) || 0), 0);
+  // Sem cartão de total de trilhas: o número já aparece no KPI "Trilhas na
+  // Academia" e na linha "N de N trilhas disponíveis" logo abaixo.
   miniCards($('#acd-stats'), [
-    { icone: 'trilhas', valor: t.length, rotulo: plural(t.length, 'trilha', 'trilhas') },
     { icone: 'aulas', valor: aulas, rotulo: comAulas < t.length ? `aulas · ${comAulas} ${plural(comAulas, 'trilha', 'trilhas')}` : 'aulas' },
     { icone: 'horas', valor: `${horas}h`, rotulo: 'duração total' },
   ]);

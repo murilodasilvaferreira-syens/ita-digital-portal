@@ -190,14 +190,18 @@
 
 /* --- Grade de painéis --------------------------------------------------------- */
 
+/* Dois painéis por linha: cada gráfico ganha o dobro de largura. Cada faixa tem
+   três painéis, então o terceiro ocupa a linha inteira — nunca sobra buraco.
+   A margem entre faixas é maior que o gap interno, para a faixa ler como bloco. */
 .ind-grade {
-  margin-top: 12px;
+  margin-top: 30px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
   align-items: stretch;
 }
-.ind-kpis + .ind-grade { margin-top: 16px; }
+.ind-grade > .painel:nth-child(3) { grid-column: 1 / -1; }
+.ind-kpis + .ind-grade { margin-top: 22px; }
 
 .painel {
   container-type: inline-size;
@@ -321,6 +325,9 @@
 
 /* Cartões pequenos de resumo. */
 .mini-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+/* No painel que ocupa a linha inteira os cartões esticariam até ~1250px e
+   ficariam quase vazios: limita a largura e deixa alinhados à esquerda. */
+@container (min-width: 760px) { .mini-cards { max-width: 720px; } }
 .mini-card {
   min-width: 0;
   padding: 11px 12px;
@@ -347,6 +354,8 @@
 .mini-card__extra { font-family: var(--mono); font-size: 9.5px; color: var(--quente-2); }
 .mini-card__rotulo { margin-top: 5px; font-size: 11px; line-height: 1.3; color: var(--tinta-4); }
 
+/* Resumo da Academia: dois cartões, lado a lado em metades iguais. */
+.mini-cards--icone { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .mini-cards--icone .mini-card { padding: 12px 12px 11px; }
 .mini-cards--icone .mini-card__topo { flex-direction: column; align-items: flex-start; gap: 10px; }
 .mini-cards--icone .mini-card__ic {
@@ -476,6 +485,11 @@
 /* --- Tecnologias ------------------------------------------------------------------ */
 
 .tecs { flex: 1; display: flex; align-items: flex-end; gap: 8px; margin-top: 20px; min-height: 168px; }
+/* Linha inteira: coluna de ~170px com barra de 38px vira fiapo — engrossa. */
+@container (min-width: 760px) {
+  .tecs { min-height: 206px; gap: 14px; }
+  .tecs .tec__barra { max-width: 78px; }
+}
 .tec {
   flex: 1;
   min-width: 0;
@@ -864,10 +878,7 @@
   .mini-card__valor { font-size: 18px; }
 }
 
-/* Duas colunas: o terceiro painel de cada faixa ocupa a linha toda, sem buraco. */
 @media (min-width: 721px) and (max-width: 1100px) {
-  .ind-grade { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ind-grade > .painel:nth-child(3) { grid-column: 1 / -1; }
   .ind-kpis__grade { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
